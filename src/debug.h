@@ -25,5 +25,8 @@
 	}\
 } while(0)
 
+#include <stdio.h>
 extern FILE *dbgstream;
 extern int debug_level;
+
+#endif
