@@ -35,6 +35,10 @@ int main(void) {
 	return 0;
 }
 
+//int main(void) {
+//	display_usage();
+//	return 0;
+//}
 
 //struct Options {
 //	int calculate_mass;
