@@ -16,15 +16,19 @@ static void display_usage(void) {
 	puts("  -h:  Calculate the result of heats algorithm");
 	puts("  -H:  Calculate the result of hybrid algorithm");
 	puts("  -N:  Calculate the result of HNBI algorithm");
-	puts("  -u:  File containing extra attribute of the recommending object");
-	puts("  -i:  File containing full dataset");
-	puts("  -T:  File containing train dataset");
-	puts("  -t:  File containing test dataset");
+	puts("");
+	puts("OPTIONS with argments");
+	puts("  -i filename:  File containing full dataset");
+	puts("  -T filename:  File containing train dataset");
+	puts("  -t filename:  File containing test dataset");
+	puts("                if -i is used, then -T and -t will be ignored.");
+	puts("                else, -T and -t both have to be present.");
+	puts("  -u filename:  File containing extra attribute of the recommending object");
 	puts("  -d:  Rate used to divide full dataset to train and test dataset");
 	puts("       only valid when -i option is used");
 	puts("  -l:  Number of times which the algorthim calculation need to be performed");
 	puts("       in order to get reasonable average result");
-	puts("  -L:  Number of the recommending object which will be used to computer metrics");
+	puts("  -L:  Number of the recommending objects which will be used to computer metrics");
 	puts("  -s:  Random seed");
 	puts("  -?:  help");
 	exit(0);
@@ -34,11 +38,6 @@ int main(void) {
 	display_usage();
 	return 0;
 }
-
-//int main(void) {
-//	display_usage();
-//	return 0;
-//}
 
 //struct Options {
 //	int calculate_mass;
