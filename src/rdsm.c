@@ -4,6 +4,7 @@
 #include <math.h>
 #include <getopt.h>
 #include <string.h>
+#include <stdbool.h>
 
 #include "debug.h"
 #include "random.h"
@@ -12,25 +13,41 @@ static void display_usage(void) {
 	puts("BNRS - Bipart Network Recommemder System 1.0 (Apr 2015)\n");
 	puts("usage: bnrs [OPTIONS]\n");
 	puts("OPTIONS:");
+	puts("  -?:  help");
 	puts("  -m:  Calculate the result of mass algorithm");
 	puts("  -h:  Calculate the result of heats algorithm");
 	puts("  -H:  Calculate the result of hybrid algorithm");
 	puts("  -N:  Calculate the result of HNBI algorithm");
 	puts("");
-	puts("OPTIONS with argments");
-	puts("  -i filename:  File containing full dataset");
-	puts("  -T filename:  File containing train dataset");
-	puts("  -t filename:  File containing test dataset");
-	puts("                if -i is used, then -T and -t will be ignored.");
-	puts("                else, -T and -t both have to be present.");
-	puts("  -u filename:  File containing extra attribute of the recommending object");
-	puts("  -d:  Rate used to divide full dataset to train and test dataset");
+	puts("OPTIONS with arguments:");
+	puts("  -i filename:");
+	puts("       File containing full dataset");
+	puts("       if -i is used, then -T and -t will be ignored.");
+	puts("       else, -T and -t both have to be present.");
+	puts("");
+	puts("  -T filename:");
+	puts("       File containing train dataset");
+	puts("");
+	puts("  -t filename:");
+	puts("       File containing test dataset");
+	puts("");
+	puts("  -u filename:  ");
+	puts("       File containing extra attribute of the recommending objects");
+	puts("");
+	puts("  -d doubleValue:  ");
+	puts("       Rate used to divide full dataset to train and test dataset");
 	puts("       only valid when -i option is used");
-	puts("  -l:  Number of times which the algorthim calculation need to be performed");
+	puts("");
+	puts("  -l intValue:  ");
+	puts("       Number of times which the algorthim calculation need to be performed");
 	puts("       in order to get reasonable average result");
-	puts("  -L:  Number of the recommending objects which will be used to computer metrics");
-	puts("  -s:  Random seed");
-	puts("  -?:  help");
+	puts("");
+	puts("  -L intValue:  ");
+	puts("       Number of the recommended objects which will be used to computer metrics");
+	puts("");
+	puts("  -s unsignedlongValue: ");
+	puts("       Random seed");
+	puts("");
 	exit(0);
 }
 
@@ -39,86 +56,64 @@ int main(void) {
 	return 0;
 }
 
-//struct Options {
-//	int calculate_mass;
-//	int calculate_heat;
-//	int calculate_hybrid;
-//	int calculate_HNBI;
-//	int calculate_RENBI;
-//	int calculate_UCF;
-//	int calculate_ICF;
-//	int calculate_SVD;
-//
-//	char *user_extra_att;
-//	char *total_filename;
-//	char *train_filename;
-//	char *test_filename;
-//
-//	int loopNum;
-//	double dataset_divide_rate;
-//	int random_seed;
-//	int L;
-//	int K;
-//	int F;
-//
-//	int random;
-//};
-//
-//static void init_Options(struct Options *op) {
-//	op->calculate_mass = 0;
-//	op->calculate_heat = 0;
-//	op->calculate_hybrid = 0;
-//	op->calculate_HNBI = 0;
-//	op->calculate_RENBI = 0;
-//	op->calculate_UCF = 0;
-//	op->calculate_ICF = 0;
-//	op->calculate_SVD = 0;
-//
-//	op->user_extra_att = NULL;
-//	op->total_filename = NULL;
-//	op->train_filename = NULL;
-//	op->test_filename = NULL;
-//
-//	op->loopNum = 1;
-//	op->dataset_divide_rate = 0.1;
-//	op->random_seed = 1;
-//	op->L = 50;
-//	op->K = 50;
-//	op->F = 100;
-//
-//	op->random = 0;
-//}
-//
-//static void set_Optins(int argc, char **argv, struct Options *op) {
-//	static const char *optString = "mhHNECFS?u:i:T:t:l:d:s:L:K:f:";
-//	struct option longOpts[] = {
-//		{"mass", no_argument, NULL, 'm'},
-//		{"heat", no_argument, NULL, 'h'},
-//		{"hybrid", no_argument, NULL, 'H'},
-//		{"HNBI", no_argument, NULL, 'N'},
-//		{"RENBI", no_argument, NULL, 'E'},
-//		{"UCF", no_argument, NULL, 'C'},
-//		{"ICF", no_argument, NULL, 'F'},
-//		{"SVD", no_argument, NULL, 'S'},
-//
-//		{"help", no_argument, NULL, '?'},
-//
-//		{"usersExtraAtt", required_argument, NULL, 'u'},
-//		{"dataset", required_argument, NULL, 'i'},
-//		{"trainset", required_argument, NULL, 'T'},
-//		{"testset", required_argument, NULL, 't'},
-//
-//		{"loopNum", required_argument, NULL, 'l'},
-//		{"dividerate", required_argument, NULL, 'd'},
-//		{"random-seed", required_argument, NULL, 's'},
-//		{"recmlistLength", required_argument, NULL, 'L'},
-//		{"CFuserSimlistLength", required_argument, NULL, 'K'},
-//		{"SVD-F", required_argument, NULL, 'f'}
-//	};
-//	int longIndex = 0;
-//	int opt = getopt_long(argc, argv, optString, longOpts, &longIndex);
-//	while (opt != -1) {
-//		switch (opt) {
+struct OPTIONS {
+	bool alg_mass;
+	bool alg_heats;
+	bool alg_hybrid;
+	bool alg_HNBI;
+
+	char *filename_full;
+	char *filename_train;
+	char *filename_test;
+	char *filename_leftobjectattr;
+
+	double rate_dividefulldataset;
+	int num_looptimes;
+	int num_toprightused;
+	int seed_random;
+};
+
+static void init_Options(struct OPTIONS *op) {
+	op->alg_mass = 0;
+	op->alg_heats = 0;
+	op->alg_hybrid = 0;
+	op->alg_HNBI = 0;
+
+	op->filename_leftobjectattr = NULL;
+	op->filename_full = NULL;
+	op->filename_train = NULL;
+	op->filename_test = NULL;
+
+	op->rate_dividefulldataset = 0.1;
+	op->num_looptimes = 1;
+	op->num_toprightused = 50;
+	op->seed_random = 1;
+}
+
+static void set_Optins(int argc, char **argv, struct OPTIONS *op) {
+	static const char *optString = "?mhHNi:T:t:u:d:l:L:s:";
+	struct option longOpts[] = {
+		{"help", no_argument, NULL, '?'},
+
+		{"alg_mass", no_argument, NULL, 'm'},
+		{"alg_heat", no_argument, NULL, 'h'},
+		{"alg_hybrid", no_argument, NULL, 'H'},
+		{"alg_HNBI", no_argument, NULL, 'N'},
+
+		{"filename_full", required_argument, NULL, 'i'},
+		{"filename_train", required_argument, NULL, 'T'},
+		{"filename_test", required_argument, NULL, 't'},
+		{"filename_leftobjectattr", required_argument, NULL, 'u'},
+
+		{"rate_dividefulldataset", required_argument, NULL, 'd'},
+		{"num_looptimes", required_argument, NULL, 'l'},
+		{"num_toprightobjectused", required_argument, NULL, 'L'},
+		{"seed_random", required_argument, NULL, 's'},
+	};
+	int longIndex = 0;
+	int opt = getopt_long(argc, argv, optString, longOpts, &longIndex);
+	while (opt != -1) {
+		switch (opt) {
 //			//sign
 //			case 'm':
 //				op->calculate_mass = 1;
@@ -201,8 +196,8 @@ int main(void) {
 //				break;
 //		}
 //		opt = getopt_long(argc, argv, optString, longOpts, &longIndex);
-//	}
-//}
+	}
+}
 //
 //static void verify_Options(struct Options *Options) {
 //	//algorithms
