@@ -16,17 +16,22 @@
 #define LOG_INFO     (4)
 #define LOG_DBG      (5)
 
+#include <stdio.h>
+#include <stdlib.h>
+
 #define LOG(level, ...) do {\
-	if (level <= debug_level) {\
-		fprintf(dbgstream, "%s:%d", __FILE__, __LINE__);\
-		fprintf(dbgstream, __VA_ARGS__);\
-		fprintf(dbgstream, "\n");\
-		fflush(dbgstream);\
+	if (level <= loglevel) {\
+		fprintf(logstream, "[%s: %dline] =>> ", __FILE__, __LINE__);\
+		fprintf(logstream, __VA_ARGS__);\
+		fprintf(logstream, "\n");\
+		fflush(logstream);\
+	}\
+	if (level == LOG_FATAL || level == LOG_ERR) {\
+		exit(-1);\
 	}\
 } while(0)
 
-#include <stdio.h>
-extern FILE *dbgstream;
-extern int debug_level;
+extern FILE *logstream;
+extern int loglevel;
 
 #endif

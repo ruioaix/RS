@@ -6,16 +6,17 @@
 #include <string.h>
 #include <stdbool.h>
 
-#include "debug.h"
+#include "log.h"
 #include "random.h"
+#include "utils.h"
 
 static void display_usage(void) {
 	puts("BNRS - Bipart Network Recommemder System 1.0 (Apr 2015)\n");
 	puts("usage: bnrs [OPTIONS]\n");
 	puts("OPTIONS:");
-	puts("  -?:  help");
+	puts("  -h:  help");
 	puts("  -m:  Calculate the result of mass algorithm");
-	puts("  -h:  Calculate the result of heats algorithm");
+	puts("  -e:  Calculate the result of heats algorithm");
 	puts("  -H:  Calculate the result of hybrid algorithm");
 	puts("  -N:  Calculate the result of HNBI algorithm");
 	puts("");
@@ -51,11 +52,6 @@ static void display_usage(void) {
 	exit(0);
 }
 
-int main(void) {
-	display_usage();
-	return 0;
-}
-
 struct OPTIONS {
 	bool alg_mass;
 	bool alg_heats;
@@ -69,15 +65,15 @@ struct OPTIONS {
 
 	double rate_dividefulldataset;
 	int num_looptimes;
-	int num_toprightused;
-	int seed_random;
+	int num_toprightused2cmptmetrics;
+	unsigned long seed_random;
 };
 
-static void init_Options(struct OPTIONS *op) {
-	op->alg_mass = 0;
-	op->alg_heats = 0;
-	op->alg_hybrid = 0;
-	op->alg_HNBI = 0;
+static void init_OPTIONS(struct OPTIONS *op) {
+	op->alg_mass = false;
+	op->alg_heats = false;
+	op->alg_hybrid = false;
+	op->alg_HNBI = false;
 
 	op->filename_leftobjectattr = NULL;
 	op->filename_full = NULL;
@@ -86,17 +82,17 @@ static void init_Options(struct OPTIONS *op) {
 
 	op->rate_dividefulldataset = 0.1;
 	op->num_looptimes = 1;
-	op->num_toprightused = 50;
+	op->num_toprightused2cmptmetrics = 50;
 	op->seed_random = 1;
 }
 
-static void set_Optins(int argc, char **argv, struct OPTIONS *op) {
-	static const char *optString = "?mhHNi:T:t:u:d:l:L:s:";
+static void set_OPTOINS(int argc, char **argv, struct OPTIONS *op) {
+	static const char *optString = "hmeHNi:T:t:u:d:l:L:s:";
 	struct option longOpts[] = {
-		{"help", no_argument, NULL, '?'},
+		{"help", no_argument, NULL, 'h'},
 
 		{"alg_mass", no_argument, NULL, 'm'},
-		{"alg_heat", no_argument, NULL, 'h'},
+		{"alg_heat", no_argument, NULL, 'e'},
 		{"alg_hybrid", no_argument, NULL, 'H'},
 		{"alg_HNBI", no_argument, NULL, 'N'},
 
@@ -107,157 +103,133 @@ static void set_Optins(int argc, char **argv, struct OPTIONS *op) {
 
 		{"rate_dividefulldataset", required_argument, NULL, 'd'},
 		{"num_looptimes", required_argument, NULL, 'l'},
-		{"num_toprightobjectused", required_argument, NULL, 'L'},
+		{"num_toprightused2cmptmetrics", required_argument, NULL, 'L'},
 		{"seed_random", required_argument, NULL, 's'},
+		{0, 0, 0, 0},
 	};
 	int longIndex = 0;
-	int opt = getopt_long(argc, argv, optString, longOpts, &longIndex);
-	while (opt != -1) {
+	int opt;
+	do {
+		opt = getopt_long(argc, argv, optString, longOpts, &longIndex);
+		if (opt == -1) break;
 		switch (opt) {
-//			//sign
-//			case 'm':
-//				op->calculate_mass = 1;
-//				//printf("m\n");
-//				break;
-//			case 'h':
-//				op->calculate_heat = 1;
-//				//printf("h\n");
-//				break;
-//			case 'H':
-//				op->calculate_hybrid = 1;
-//				//printf("H\n");
-//				break;
-//			case 'N':
-//				op->calculate_HNBI = 1;
-//				break;
-//			case 'E':
-//				op->calculate_RENBI = 1;
-//				break;
-//			case 'C':
-//				op->calculate_UCF = 1;
-//				break;
-//			case 'F':
-//				op->calculate_ICF = 1;
-//				break;
-//			case 'S':
-//				op->calculate_SVD = 1;
-//				break;
-//
-//				//help
-//			case '?':
-//				display_usage();
-//				break;
-//
-//				//file
-//			case 'u':
-//				op->user_extra_att = optarg;
-//				//printf("testset: %s\n", optarg);
-//				break;
-//			case 'i':
-//				op->total_filename = optarg;
-//				//printf("dataset: %s\n", optarg);
-//				break;
-//			case 'T':
-//				op->train_filename = optarg;
-//				//printf("trainset: %s\n", optarg);
-//				break;
-//			case 't':
-//				op->test_filename = optarg;
-//				//printf("testset: %s\n", optarg);
-//				break;
-//
-//				//arguments
-//			case 'l':
-//				op->loopNum = strtol(optarg, NULL, 10);
-//				break;
-//			case 'd':
-//				op->dataset_divide_rate = strtod(optarg, NULL);
-//				//printf("d\n");
-//				break;
-//			case 's':
-//				op->random_seed = strtol(optarg, NULL, 10);
-//				break;
-//			case 'L':
-//				op->L = strtol(optarg, NULL, 10);
-//				break;
-//			case 'K':
-//				op->K = strtol(optarg, NULL, 10);
-//				break;
-//			case 'f':
-//				op->F = strtol(optarg, NULL, 10);
-//				break;
-//
-//			case '0':
-//				if (strcmp("randomize", longOpts[longIndex].name) == 0) {
-//					op->random = 1;
-//				}
-//				break;
-//			default:
-//				break;
-//		}
-//		opt = getopt_long(argc, argv, optString, longOpts, &longIndex);
-	}
+			case 'h':
+				display_usage();
+				exit(0);
+				break;
+			case 'm':
+				op->alg_mass = true;
+				break;
+			case 'e':
+				op->alg_heats = true;
+				break;
+			case 'H':
+				op->alg_hybrid = true;
+				break;
+			case 'N':
+				op->alg_HNBI = true;
+				break;
+			case 'i':
+				op->filename_full = optarg;
+				break;
+			case 'T':
+				op->filename_train = optarg;
+				break;
+			case 't':
+				op->filename_test = optarg;
+				break;
+			case 'u':
+				op->filename_leftobjectattr = optarg;
+				break;
+
+			case 'd':
+				op->rate_dividefulldataset = strtod(optarg, NULL);
+				break;
+			case 'l':
+				op->num_looptimes = strtol(optarg, NULL, 10);
+				break;
+			case 'L':
+				op->num_toprightused2cmptmetrics  = strtol(optarg, NULL, 10);
+				break;
+			case 's':
+				op->seed_random = strtol(optarg, NULL, 10);
+				break;
+
+			case '?':
+				break;
+			default:
+				abort();
+		}
+	} while (1);
 }
-//
-//static void verify_Options(struct Options *Options) {
-//	//algorithms
-//	if (Options->calculate_mass == 0 && 
-//			Options->calculate_heat == 0 && 
-//			Options->calculate_hybrid == 0 && 
-//			Options->calculate_HNBI == 0 && 
-//			Options->calculate_RENBI == 0 && 
-//			Options->calculate_UCF == 0 && 
-//			Options->calculate_ICF == 0 && 
-//			Options->calculate_SVD == 0) {
-//		//isError("no algorithms selected, what do you want to calculate?");
-//	}
-//
-//	//dataset & dataset_divide_rate
-//	if (Options->total_filename == NULL && 
-//			(Options->train_filename == NULL || Options->test_filename == NULL)) {
-//		//isError("dataset not enough.");
-//	}
-//	else if (Options->total_filename != NULL && 
-//			(Options->train_filename != NULL || Options->test_filename != NULL)) {
-//		//isError("dataset too much.\n");
-//	}
-//	else if (Options->total_filename != NULL) {
-//		if (Options->dataset_divide_rate <= 0 || Options->dataset_divide_rate >= 1) {
-//			//isError("We will use the whole dataset file: %s, but why the divide_rate is %f?", Options->total_filename, Options->dataset_divide_rate);
-//		}
-//		else {
-//			printf("using the whole dataset file: %s, divide_rate is %f.",
-//					Options->total_filename, Options->dataset_divide_rate);
-//		}
-//	}
-//	else {
-//		printf("using the trainset file: %s and the testset file: %s", Options->train_filename, Options->test_filename);
-//				
-//	}
-//
-//	//loopnum
-//	if (Options->loopNum < 1) {
-//		//isError("are you sure you want to set the loopNum to %d?", Options->loopNum);
-//	}
-//
-//	//L
-//	if (Options->L < 1) {
-//		//isError("are you sure you want to set the L to %d?", Options->L);
-//	}
-//}
-//
-//static void do_work(struct Options *oa);
-//
-//int main(int argc, char **argv) {
-//
-//
-//	struct Options Options;
-//	init_Options(&Options);
-//	set_Optins(argc, argv, &Options);
-//	verify_Options(&Options);
-//	do_work(&Options);
-//	return 0;
-//}
+
+static void verify_OPTIONS(struct OPTIONS *op) {
+	//algorithms
+	if (!( op->alg_mass || op->alg_heats || op->alg_hybrid || op->alg_HNBI )) {
+		LOG(LOG_FATAL, "no algorithms selected, what do you want to calculate?");
+	}
+	LOG(LOG_INFO, "Algorithm:");
+	LOG(LOG_INFO, "  mass:   %s", trueorfalse(op->alg_mass));
+	LOG(LOG_INFO, "  heats:  %s", trueorfalse(op->alg_heats));
+	LOG(LOG_INFO, "  hybrid: %s", trueorfalse(op->alg_hybrid));
+	LOG(LOG_INFO, "  HNBI:   %s", trueorfalse(op->alg_HNBI));
+
+	//dataset
+	if (op->filename_full == NULL && (op->filename_train == NULL || op->filename_test == NULL)) {
+		LOG(LOG_FATAL, "Dataset not enough, what do you want to calculate?");
+	}
+	
+	//rate_dividefulldataset
+	if (op->filename_full) {
+		if (op->rate_dividefulldataset <= 0 || op->rate_dividefulldataset >= 1) {
+			LOG(LOG_FATAL, "We will use the whole dataset file: %s, but why the divide_rate is %f?", op->filename_full , op->rate_dividefulldataset);
+		}
+		else {
+		   op->filename_train = NULL;
+		   op->filename_test = NULL;
+		   LOG(LOG_INFO, "Full dataset: %s", op->filename_full);
+		   LOG(LOG_INFO, "Divide rate:  %f", op->rate_dividefulldataset);
+		}
+		//loopnum
+		if (op->num_looptimes < 1) {
+			LOG(LOG_FATAL, "Are you sure you want to set the loopNum to %d?", op->num_looptimes);
+		}
+		LOG(LOG_INFO, "The num of loop times for each algorithm: %d", op->num_looptimes);
+	}
+	else {
+		LOG(LOG_INFO, "Train dataset: %s", op->filename_train);
+		LOG(LOG_INFO, "Test dataset:  %s", op->filename_test);
+		//loopnum
+		if (op->num_looptimes != 1) {
+			LOG(LOG_FATAL, "Sorry, we can only loop for 1 time, not %d times, because you supply train and test dataset.", op->num_looptimes);
+		}
+		op->num_looptimes = 1;
+		LOG(LOG_INFO, "The num of loop times for each algorithm: %d", op->num_looptimes);
+	}
+
+	//L
+	if (op->num_toprightused2cmptmetrics < 1) {
+		LOG(LOG_FATAL, "Are you sure you want to set the num of the top right objects which will be used to computer metrics to %d?", op->num_toprightused2cmptmetrics);
+	}
+	LOG(LOG_INFO, "The num of top recommeded right objects: %d", op->num_toprightused2cmptmetrics);
+
+	//random seed
+	LOG(LOG_INFO, "The seed of random number generater: %lu", op->seed_random);
+}
+
+int loglevel = LOG_DBG;
+FILE *logstream;
+
+int main(int argc, char **argv) {
+	//dbgstream = fopen("/tmp/rdsm.log", "w");
+	logstream = stdout;
+	struct OPTIONS op;
+	init_OPTIONS(&op);
+	set_OPTOINS(argc, argv, &op);
+	verify_OPTIONS(&op);
+	return 0;
+}
+
 //
 //static void do_work_divide(struct Options *oa);
 //static void do_work_merge(void) { }

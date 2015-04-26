@@ -27,15 +27,15 @@ autodependence := $(patsubst %.c,$(bin_folder)/%.d,$(all_sources))
 ifneq "$(MAKECMDGOALS)" "clean"
 	include $(autodependence)
 endif
-$(bin_folder)/%.d: %.c
+$(bin_folder)/$(src_folder)/%.d: $(src_folder)/%.c
 	set -e; rm -f $@; \
 		$(CC) -M $(CPPFLAGS) $< > $@.$$$$; \
-		sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@; \
+		sed 's,\($*\)\.o[ :]*,$(bin_folder)/$(src_folder)/\1.o $@ : ,g' < $@.$$$$ > $@; \
 		rm -f $@.$$$$
 ##################################################################
 
 ## .o compiled from .c  (working for both lib and app) ###########
-$(bin_folder)/%.o : %.c 
+$(bin_folder)/$(src_folder)/%.o : $(src_folder)/%.c 
 	$(COMPILE.c) $(OUTPUT_OPTION) $<
 ##################################################################
 
