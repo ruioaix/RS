@@ -26,7 +26,7 @@
 		fprintf(logstream, "\n");\
 		fflush(logstream);\
 	}\
-	if (level == LOG_FATAL || level == LOG_ERR) {\
+	if (level == LOG_FATAL) {\
 		exit(-1);\
 	}\
 } while(0)
