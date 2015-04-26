@@ -323,6 +323,26 @@ void freeLF(struct LineFile *lf) {
 	free(lf);
 }
 
+int columnsNumLF(const struct LineFile * const lf) {
+	int i, num = 0;
+	for (i = 0; i < lf->iNum; ++i) {
+		if (*(lf->ilist[i]) != NULL) {
+			++num;
+		}	
+	}
+	for (i = 0; i < lf->dNum; ++i) {
+		if (*(lf->dlist[i]) != NULL) {
+			++num;
+		}	
+	}
+	for (i = 0; i < lf->sNum; ++i) {
+		if (*(lf->slist[i]) != NULL) {
+			++num;
+		}	
+	}
+	return num;
+}
+
 void printLF(struct LineFile *lf, char *filename) {
 	if (NULL == lf) {
 		LOG(LOG_INFO, "lf == NULL, print nothing.\n");

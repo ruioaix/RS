@@ -4,6 +4,10 @@ char *trueorfalse(bool b) {
 	return b ? "true" : "false";
 }
 
+char *leftorright(enum SIDE s) {
+	return  s ? "RIGHT" : "LEFT";
+}
+
 #include "utils.h"
 #include "log.h"
 #include <stdlib.h>

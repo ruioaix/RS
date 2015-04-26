@@ -2,7 +2,11 @@
 #define UTILS_H 
 #include <stdbool.h>
 
+enum SIDE {LEFT, RIGHT};
+enum TYPE {INT, DOUBLE};
+
 char *trueorfalse(bool b);
+char *leftorright(enum SIDE s);
 
 #include <stdio.h>
 void *malloc_safe(size_t size, const char *filename, const int lineNum);

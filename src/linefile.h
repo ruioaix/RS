@@ -70,6 +70,8 @@ struct LineFile *createLF(char * filename, ...);
 /// free;
 void freeLF(struct LineFile *lf);
 
+int columnsNumLF(const struct LineFile * const lf);
+
 /// print the struct LineFile's content into a file
 void printLF(struct LineFile *lf, char *filename);
 
