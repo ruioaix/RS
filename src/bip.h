@@ -42,4 +42,9 @@ void printBIP(BIP *bip, char *filename);
 //so maybe some users/items are not existed in the small part.
 void divideBIP(BIP *left, BIP *right, double rate, struct LineFile **small_part, struct LineFile **big_part);
 
+
+typedef struct CORES BIPS;
+void freeBIPS(BIPS *bips);
+BIPS *createBIPS(const struct LineFile * const file);
+
 #endif
