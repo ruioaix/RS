@@ -14,4 +14,12 @@ struct CORE {
 	double **aler;
 };
 
+struct CORES {
+	int num;
+	enum TYPE *sign;
+	struct CORE **core;
+};
+
+void freeCORE(struct CORE *core);
+void freeCORES(struct CORES *cores);
 #endif
