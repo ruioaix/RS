@@ -1,10 +1,9 @@
 #include "alg_mass.h"
 #include "bip.h"
-#include "task.h"
-#include "metrics.h"
 #include "utils.h"
 #include <string.h>
 #include "sort.h"
+#include <stdlib.h>
 
 static void mass_recommend_Bip(int lid, double *lts, double *rts, int lmaxId, int rmaxId, int *ldegree, int *rdegree, int **lrela, int **rrela) {
 
@@ -92,11 +91,7 @@ static struct METRICS *alg_mass(struct TASK *task) {
 	BIP *trainl = task->train->core[0];
 	BIP *trainr = task->train->core[1];
 	BIP *testl = task->test->core[0];
-	BIP *testr = task->test->core[1];
 	
-	NET *right = task->train_right->core[0];
-	NET *right_cosin_similarity = task->train_right->core[1];
-
 	int L = task->num_toprightused2cmptmetrics;
 
 	int lmaxId = trainl->maxId;
@@ -113,7 +108,7 @@ static struct METRICS *alg_mass(struct TASK *task) {
 
 	struct METRICS *retn = createMTC();
 	int *topL = scalloc(L*(trainl->maxId + 1), sizeof(int));
-	double R, RL, PL, HL, IL, NL, COV;
+	double R, RL, PL, HL, IL, NL;
 
 	//only use in this function.
 	int *rank = smalloc((trainr->maxId + 1)*sizeof(int));
@@ -131,27 +126,16 @@ static struct METRICS *alg_mass(struct TASK *task) {
 				//rvlts[uidId[i]] = 0;
 			}
 			Bip_core_common_part(rmaxId, rdegree, rvlts, ridts, topL, L, rank);
-			set_R_RL_PL_METRICS(i, L, rank, trainl, trainr, testl, R, RL, PL);
+			set_R_RL_PL_METRICS(i, L, rank, trainl, trainr, testl, &R, &RL, &PL);
 		}
 	}
 
-	metrics_HL_COV_Bip(i1maxId, i1degree, i2maxId, L, topL, user_gender, user_age, HL, COV);
-	metrics_IL_Bip(i1maxId, i1degree, i1idNum, i2maxId, L, topL, itemSim, user_gender, user_age, IL);
-	metrics_NL_Bip(i1maxId, i1degree, i1idNum, i2degree, L, topL, user_gender, user_age, NL);
+	set_HL_METRICS(L, topL, trainl, trainr, &HL);
+	set_IL_METRICS(L, topL, trainl, trainr, task->trainr_cosin_similarity, &IL);
+	set_NL_METRICS(L, topL, trainl, trainr, &NL);
 
-	for (i = 0; i < CA_METRICS_BIP; ++i) {
-		retn->R[i] = R[i] / args->testset_edge_num[i];
-		retn->RL[i] = RL[i] / args->testset_node_num[i];
-		retn->PL[i] = PL[i] / args->testset_node_num[i];
-		retn->HL[i] = HL[i];
-		retn->IL[i] = IL[i] / args->testset_node_num[i];
-		retn->NL[i] = NL[i] / args->testset_node_num[i];
-		retn->COV[i] = COV[i];
-	}
-
-	free(i1source); free(rvlts);
-	free(i1sourceA); free(rvltsA);
-	free(i1id); free(ridts);
+	free(lvlts); free(rvlts);
+	free(lidts); free(ridts);
 	free(rank);
 	return retn;
 }

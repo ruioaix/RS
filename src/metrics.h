@@ -15,6 +15,7 @@ struct METRICS *createMTC(void);
 void freeMTC(struct METRICS *m);
 
 #include "bip.h"
+#include "net.h"
 void set_R_RL_PL_METRICS(int lid, int L, int *rank, BIP *trainl, BIP *trainr, BIP *testl, double *R, double *RL, double *PL);
 void set_HL_METRICS(int L, int *alltrianl_topL, BIP *trainl, BIP *trainr, double *HL);
 void set_IL_METRICS(int L, int *alltrianl_topL, BIP *trainl, BIP *trainr, NETS *cosin_similarity, double *IL);

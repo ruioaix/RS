@@ -14,18 +14,13 @@
  * 		one is indexed by i1(left).
  * 		one is indexed by i2(right).
  *
- * struct METRICS contains the result(all metrics) for all kinds of recommendation algorithm.
- *
  */
 #ifndef BIP_H
 #define BIP_H
 
+#include "utils.h"
 #include "core.h"
 #include "linefile.h"
-#include "net.h"
-#include "metrics.h"
-#include "task.h"
-#include "utils.h"
 
 typedef struct CORE BIP;
 

@@ -1,5 +1,6 @@
 #ifndef UTILS_H
 #define UTILS_H 
+#include <stdio.h>
 #include <stdbool.h>
 
 enum SIDE {LEFT, RIGHT};
@@ -8,7 +9,6 @@ enum TYPE {INT, DOUBLE};
 char *trueorfalse(bool b);
 char *leftorright(enum SIDE s);
 
-#include <stdio.h>
 void *malloc_safe(size_t size, const char *filename, const int lineNum);
 void *calloc_safe(size_t num, size_t size, const char *filename, const int lineNum);
 void *realloc_safe(void *p, size_t size, const char *filename, const int lineNum);

@@ -8,7 +8,7 @@ struct TASK {
 	struct METRICS * (*alg)(struct TASK *);
 	BIPS* train;
 	BIPS* test;
-	NETS* train_right;
+	NETS* trainr_cosin_similarity;
 	int num_toprightused2cmptmetrics;
 
 	//used to improve efficient

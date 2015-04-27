@@ -84,7 +84,7 @@ static inline void set_rela_aler_BIP(int *il, int *ii, double *dd, int *degree, 
 }
 
 static inline BIP *assignBIP(int maxId, int minId, long edgesNum, int idNum, int degreeMax, int degreeMin, int *degree, int **rela, double **aler) {
-	BIP *bip = smalloc(sizeof(NET));
+	BIP *bip = smalloc(sizeof(BIP));
 	bip->maxId=maxId;
 	bip->minId=minId;
 	bip->edgesNum=edgesNum;
