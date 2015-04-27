@@ -13,6 +13,7 @@ char *leftorright(enum SIDE s) {
 #include <stdlib.h>
 //memory 
 inline void *malloc_safe(size_t size, const char *filename, const int lineNum) {
+	if (size == 0) return NULL;
 	void *tmp = malloc(size);
 	if (tmp == NULL) {
 		LOG(LOG_FATAL, "malloc failed: \"%s\" file, %d line.\n",  filename, lineNum);
@@ -20,6 +21,7 @@ inline void *malloc_safe(size_t size, const char *filename, const int lineNum) {
 	return tmp;
 }
 inline void *calloc_safe(size_t num, size_t size, const char *filename, const int lineNum) {
+	if (num == 0 || size == 0) return NULL;
 	void *tmp = calloc(num, size);
 	if (tmp == NULL) {
 		LOG(LOG_FATAL, "calloc failed: \"%s\" file, %d line.\n",  filename, lineNum);
@@ -27,6 +29,10 @@ inline void *calloc_safe(size_t num, size_t size, const char *filename, const in
 	return tmp;
 }
 inline void *realloc_safe(void *p, size_t size, const char *filename, const int lineNum) {
+	if (size == 0) {
+		LOG(LOG_ERR, "realloc size == 0, return the origin pointer");
+		return p;
+	}
 	void *tmp = realloc(p, size);
 	if (tmp == NULL) {
 		LOG(LOG_FATAL, "realloc failed: \"%s\" file, %d line.\n",  filename, lineNum);

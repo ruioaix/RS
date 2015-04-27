@@ -40,6 +40,6 @@ void printBIP(BIP *bip, char *filename);
 //	for each available user(degree of this user is at least one), at least there will be an edge related this user in big part.
 //	for each available item(degree of this item is at least one), at least there will be an edge related this item in big part.
 //so maybe some users/items are not existed in the small part.
-void divide_Bip(BIP *left, BIP *right, double rate, struct LineFile **small_part, struct LineFile **big_part);
+void divideBIP(BIP *left, BIP *right, double rate, struct LineFile **small_part, struct LineFile **big_part);
 
 #endif

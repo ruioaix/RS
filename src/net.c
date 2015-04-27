@@ -54,50 +54,6 @@ static void set_degree_idNum_NET(int *i1, int *i2, long linesNum, int maxId, int
 	*idNum_retn = idNum;
 }
 
-static void set_degreeMax_degreeMin_and_prepare_rela_aler_NET(int maxId, int *degree, double *d1, int *countMax_retn, int *countMin_retn, int ***rela_retn, double ***aler_retn) {
-	int countMax=0;
-	int countMin = INT_MAX;
-	int i;
-	int **rela = smalloc((maxId+1)*sizeof(void *));
-	double **aler = NULL;
-	if (d1 != NULL) {
-		aler = smalloc((maxId+1)*sizeof(void *));
-	}
-
-	for(i=0; i<maxId+1; ++i) {
-		countMax = countMax > degree[i] ? countMax : degree[i];
-		countMin = countMin < degree[i] ? countMin : degree[i];
-		if (degree[i] != 0) {
-			rela[i] = smalloc(degree[i]*sizeof(int));
-			if (aler) aler[i] = malloc(degree[i]*sizeof(double));
-		}
-		else {
-			rela[i] = NULL;
-			if (aler) aler[i] = NULL;
-		}
-	}
-	*countMax_retn = countMax;
-	*countMin_retn = countMin;
-	*rela_retn = rela;
-	*aler_retn = aler;
-}
-
-static void set_rela_aler_NET(int *i1, int *i2, double *d1, long linesNum, int maxId, int **rela, double **aler){
-	int *temp_count=scalloc(maxId+1, sizeof(int));
-	long i;
-	for(i=0; i<linesNum; ++i) {
-		int ii1 = i1[i];
-		int ii2 = i2[i];
-		rela[ii1][temp_count[ii1]]=ii2;
-		if (aler) aler[ii1][temp_count[ii1]]=d1[i];
-		++temp_count[ii1];
-		rela[ii2][temp_count[ii2]]=ii1;
-		if (aler) aler[ii2][temp_count[ii2]]=d1[i];
-		++temp_count[ii2];
-	}
-	free(temp_count);
-}
-
 static void set_degreeMax_degreeMin_rela_aler_NET(int *i1, int *i2, int *ii, double *dd, int *degree, int maxId, long linesNum, int *countMax_retn, int *countMin_retn, int ***rela_retn, double ***aler_retn) {
 	int countMax=0;
 	int countMin = INT_MAX;
@@ -139,7 +95,7 @@ static void set_degreeMax_degreeMin_rela_aler_NET(int *i1, int *i2, int *ii, dou
 	*aler_retn = aler;
 }
 
-static NET *assignNET(int maxId, int minId, int edgesNum, int idNum, int degreeMax, int degreeMin, int *degree, int **rela, double **aler) {
+static NET *assignNET(int maxId, int minId, long edgesNum, int idNum, int degreeMax, int degreeMin, int *degree, int **rela, double **aler) {
 	NET *net = smalloc(sizeof(NET));
 	net->maxId=maxId;
 	net->minId=minId;
