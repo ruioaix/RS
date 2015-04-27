@@ -44,18 +44,16 @@ void set_R_RL_PL_METRICS(int lid, int L, int *rank, BIP *trainl, BIP *trainr, BI
 	}
 }
 
-void set_HL_COV_METRICS(int L, int *alltrianl_topL, BIP *trainl, BIP *trainr, double *HL, double *COV) {
+void set_HL_METRICS(int L, int *alltrianl_topL, BIP *trainl, BIP *trainr, double *HL) {
 	int *sign = scalloc((trainr->maxId + 1), sizeof(int));
-	int *sign1 = scalloc((trainr->maxId + 1), sizeof(int));
 
 	int i, j, k;
-
+	int num_samerobjs_in2lobjpair = 0;
+	*HL = 0;
 	for (i = 0; i < trainl->maxId + 1; ++i) {
 		if (trainl->degree[i]) {
-			memset(sign, 0, (trainr->maxId + 1)*sizeof(int));
 			for (k = i*L; k < i*L+L; ++k) {
 				sign[alltrianl_topL[k]] = 1;
-				sign1[alltrianl_topL[k]] = 1;
 			}
 			for (j = i + 1; j < trainl->maxId + 1; ++j) {
 				if (trainl->degree[j]) {
@@ -66,23 +64,57 @@ void set_HL_COV_METRICS(int L, int *alltrianl_topL, BIP *trainl, BIP *trainr, do
 						}
 					}
 					*HL += 1 - ((double)Cij)/(double)L;
-					cou++;
+					++num_samerobjs_in2lobjpair;
+				}
+			}
+			for (k = i*L; k < i*L+L; ++k) {
+				sign[alltrianl_topL[k]] = 0;
+			}
+		}
+	}
+	free(sign);
+	*HL /= num_samerobjs_in2lobjpair;
+}
+
+void set_IL_METRICS(int L, int *alltrianl_topL, BIP *trainl, BIP *trainr, NETS *cosin_similarity, double *IL) {
+	if (cosin_similarity == NULL) return;
+	NET *sim_id = cosin_similarity->core[0];
+	NET *sim_vl = cosin_similarity->core[1];
+	double *sign = scalloc((trainr->maxId + 1), sizeof(double));
+	int i, j, k;
+	*IL = 0;
+	for (i = 0; i < trainl->maxId + 1; ++i) {
+		if (trainl->degree[i]) {
+			int *topL = alltrianl_topL + i*L;
+			for (j = 0; j < L; ++j) {
+				int id = topL[j];
+				for (k = 0; k < sim_id->degree[id]; ++k) {
+					sign[sim_id->rela[id][k]] = sim_vl->aler[id][k];
+				}
+				for (k = j + 1; k < L; ++k) {
+					id = topL[k];
+					*IL += sign[id];
+				}
+				for (k = 0; k < sim_id->degree[id]; ++k) {
+					sign[sim_id->rela[id][k]] = 0;
 				}
 			}
 		}
 	}
-	HL[0] /= cou[0];
-	for (j = 1; j < ca_metrics_bip; ++j) {
-		cov[j] = 0;
-		for (i = j*(i2maxId + 1); i < (j+1) * (i2maxId + 1); ++i) {
-			if (sign2[i]) {
-				cov[j]++;
-			}	
-		}
-		COV[j] = (double)(cov[j])/(i2maxId+1);
-		HL[j] /= cou[j];
-	}
 	free(sign);
-	free(sign1);
-	free(sign2);
+	*IL = *IL * 2 / (L * (L-1) * trainl->idNum);
+}
+
+void set_NL_METRICS(int L, int *alltrianl_topL, BIP *trainl, BIP *trainr, double *NL) {
+	int i,j;
+	*NL = 0;
+	for (i = 0; i < trainl->maxId + 1; ++i) {
+		if (trainl->degree[i]) {
+			int *topL = alltrianl_topL + i*L;
+			for (j = 0; j < L; ++j) {
+				*NL += trainr->degree[topL[j]];
+			}
+		}
+	}
+	*NL /= L * trainl->idNum;
 }
