@@ -20,3 +20,5 @@
 * -K: K
 * -?: help information
 * ./bin-app-bnr-biprecmmd -m -u ../Dropbox/ml-1m/user_p3 -i ../Dropbox/ml-1m/ratings_p2
+
+valgrind --tool=memcheck --leak-check=full -v --track-origins=yes --log-file=./xx ./run -m -i ~/Downloads/movielens_2c.txt -d 0.1
