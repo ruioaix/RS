@@ -5,7 +5,7 @@ int loglevel = LOG_INFO;
 FILE *logstream;
 
 int main(int argc, char **argv) {
-	//dbgstream = fopen("/tmp/rdsm.log", "w");
+	//logstream = fopen("/tmp/rdsm.log", "w");
 	logstream = stdout;
 	struct OPTION *op = setOPTION(argc, argv);
 	struct TASKLIST *tl = createTL(op);
