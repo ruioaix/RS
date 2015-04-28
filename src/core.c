@@ -6,10 +6,8 @@ void freeCORE(struct CORE *core) {
 	if (!core) return;
 	int i=0;
 	for(i=0; i<core->maxId+1; ++i) {
-		if (core->degree[i]>0) {
-			free(core->rela[i]);
-			free(core->aler[i]);
-		}
+		if (core->rela) free(core->rela[i]);
+		if (core->aler) free(core->aler[i]);
 	}
 	free(core->degree);
 	free(core->rela);
@@ -24,5 +22,6 @@ void freeCORES(struct CORES *cores) {
 		freeCORE(cores->core[i]);
 	}
 	free(cores->core);
+	free(cores->sign);
 	free(cores);
 }

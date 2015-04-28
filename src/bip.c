@@ -1,6 +1,8 @@
 #include "bip.h"
 #include "log.h"
 #include "random.h"
+#include <limits.h>
+
 #include <string.h>
 
 /*********************************************************************/
@@ -18,11 +20,13 @@ static inline void set_maxId_minId_BIP(int *il, long edgesNum, int *maxId, int *
 
 static inline void set_degree_degreeMax_degreeMin_idNum_BIP(int *il, long edgesNum, int maxId, int *degree, int *degreeMax_retn, int *degreeMin_retn, int *idNum_retn) {
 	long i;
-	for(i=0; i<edgesNum; ++i) {
+	for(i = 0; i < edgesNum; ++i) {
 		++degree[il[i]];
 	}
-	int j, degreeMax, degreeMin, idNum = 0;
-	for(j=0; j<maxId+1; ++j) {
+	int j, idNum = 0;
+	int degreeMax = 0;
+	int degreeMin = INT_MAX;
+	for(j = 0; j < maxId + 1; ++j) {
 		degreeMax = degreeMax>degree[j]?degreeMax:degree[j];
 		degreeMin = degreeMin<degree[j]?degreeMin:degree[j];
 		if (degree[j]) ++idNum;
@@ -419,7 +423,9 @@ BIPS *createBIPS(const struct LineFile * const lf){
 		}
 	}
 
-	bips->num = j;
+	for (; j < bips->num; ++j) {
+		bips->core[j] = NULL;
+	}
 
 	free(ldegree);
 	free(rdegree);

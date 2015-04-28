@@ -118,6 +118,10 @@ static void init_OPTION(struct OPTION *op) {
 	op->seed_random = 1;
 }
 
+void freeOPTION(struct OPTION *op) {
+	free(op);
+}
+
 struct OPTION *setOPTION(int argc, char **argv) {
 	struct OPTION *op = smalloc(sizeof(struct OPTION));
 	init_OPTION(op);

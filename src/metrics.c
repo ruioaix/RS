@@ -10,7 +10,6 @@ struct METRICS *createMTC(void) {
 	lp->HL = 0;
 	lp->IL = 0;
 	lp->NL = 0;
-	lp->COV = 0;
 	return lp;
 }
 

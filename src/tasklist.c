@@ -1,17 +1,32 @@
 #include "tasklist.h"
 #include "bip.h"
+#include "log.h"
 #include "net.h"
 #include "linefile.h"
 #include "similarity.h"
 #include "alg_mass.h"
+#include <stdlib.h>
 
+
+void freeTL(struct TASKLIST *tl) {
+	if (!tl) return;
+	int i;
+	for (i = 0; i < tl->num; ++i) {
+		freeTASK(tl->core[i]);
+	}
+	free(tl->core);
+	free(tl);
+}
 
 struct TASKLIST *createTL(struct OPTION *op) {
 	struct TASKLIST *tl = smalloc(sizeof(struct TASKLIST));
-	int num = algnumOPTION(op); 
+	int num = 1;
 
 	if (!op->filename_full) {
 		tl->core = smalloc(num * sizeof(struct TASK *));
+		tl->num = num;
+
+		struct TASK *task = smalloc(sizeof(struct TASK));
 
 		struct LineFile *trainf = createLF(op->filename_train, 1, 1, -1);
 		struct LineFile *testf = createLF(op->filename_test, 1, 1, -1);
@@ -19,20 +34,26 @@ struct TASKLIST *createTL(struct OPTION *op) {
 		BIPS *test = createBIPS(testf);
 		struct LineFile *simf = cosineSM(train->core[1], train->core[0]);
 		NETS *trainr_cosin_similarity = createNETS(simf);
+		freeLF(simf);
 		freeLF(trainf);
 		freeLF(testf);
 
 		if (op->alg_mass) {
-			tl->core->alg = alg_mass;
-			tl->core->train = train;
-			tl->core->test = test;
-			tl->core->trainr_cosin_similarity = trainr_cosin_similarity;
-			tl->core->num_toprightused2cmptmetrics = op->num_toprightused2cmptmetrics;
+			task->alg = alg_mass;
+			task->train = train;
+			task->test = test;
+			task->trainr_cosin_similarity = trainr_cosin_similarity;
+			task->num_toprightused2cmptmetrics = op->num_toprightused2cmptmetrics;
+			tl->core[0] = task;
 		}
 
 	}
 	else {
 		tl->core = smalloc(num * sizeof(struct TASK *));
+		tl->num = num;
+
+		struct TASK *task = smalloc(sizeof(struct TASK));
+
 		struct LineFile *lf = createLF(op->filename_full, 1, 1, -1);
 		BIP *left = createBIP(lf, LEFT);
 		BIP *right = createBIP(lf, RIGHT);
@@ -47,15 +68,18 @@ struct TASKLIST *createTL(struct OPTION *op) {
 		freeLF(testf);
 		struct LineFile *simf = cosineSM(train->core[1], train->core[0]);
 		NETS *trainr_cosin_similarity = createNETS(simf);
+		freeLF(simf);
 
 		if (op->alg_mass) {
-			tl->core->alg = alg_mass;
-			tl->core->train = train;
-			tl->core->test = test;
-			tl->core->trainr_cosin_similarity = trainr_cosin_similarity;
-			tl->core->num_toprightused2cmptmetrics = op->num_toprightused2cmptmetrics;
+			task->alg = alg_mass;
+			task->train = train;
+			task->test = test;
+			task->trainr_cosin_similarity = trainr_cosin_similarity;
+			task->num_toprightused2cmptmetrics = op->num_toprightused2cmptmetrics;
+			tl->core[0] = task;
 		}
 
 	}
+	LOG(LOG_INFO, "tasklist created.");
 	return tl;
 }

@@ -22,5 +22,6 @@ struct OPTION {
 
 struct OPTION *setOPTION(int argc, char **argv);
 int algnumOPTION(struct OPTION *op);
+void freeOPTION(struct OPTION *op);
 
 #endif

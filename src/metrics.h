@@ -10,7 +10,6 @@ struct METRICS {
 	double HL;
 	double IL;
 	double NL;
-	double COV;
 };
 
 struct METRICS *createMTC(void);

@@ -16,6 +16,6 @@ struct TASK {
 	int *rank;
 };
 
-struct TASK *firstTASK(struct OPTION *op);
+void freeTASK(struct TASK *task);
 
 #endif

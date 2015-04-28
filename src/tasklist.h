@@ -6,9 +6,10 @@
 
 struct TASKLIST {
 	int num;
-	struct TASK *core;
+	struct TASK **core;
 };
 
+void freeTL(struct TASKLIST *tl);
 struct TASKLIST *createTL(struct OPTION *op);
 
 #endif

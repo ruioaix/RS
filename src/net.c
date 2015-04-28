@@ -3,6 +3,7 @@
 #include "random.h"
 #include "utils.h"
 #include <limits.h>
+#include <string.h>
 
 
 void freeNET(NET *net) {
@@ -134,7 +135,7 @@ static inline void set_rela_aler_more_NET(int *i1, int *i2, int *ii, double *dd,
 	for(i=0; i<maxId+1; ++i) {
 		if (degree[i] != 0) {
 			if (rela) rela[i] = smalloc(degree[i]*sizeof(int));
-			if (aler) aler[i] = malloc(degree[i]*sizeof(double));
+			if (aler) aler[i] = smalloc(degree[i]*sizeof(double));
 		}
 		else {
 			if (rela) rela[i] = NULL;
@@ -192,7 +193,9 @@ NETS *createNETS(const struct LineFile * const lf) {
 		int *ii = *(lf->ilist[i]);
 		if (ii) {
 			set_rela_aler_more_NET(i1, i2, ii, NULL, degree, maxId, linesNum, &rela, &aler);
-			nets->core[j] = assignNET(maxId, minId, linesNum, idNum, degreeMax, degreeMin, degree, rela, aler);
+			int *local_degree = smalloc((maxId+1)*sizeof(int));
+			memcpy(local_degree, degree, (maxId + 1) * sizeof(int));
+			nets->core[j] = assignNET(maxId, minId, linesNum, idNum, degreeMax, degreeMin, local_degree, rela, aler);
 			nets->sign[j] = INT;
 		}
 	}
@@ -200,7 +203,9 @@ NETS *createNETS(const struct LineFile * const lf) {
 		double *dd = *(lf->dlist[i]);
 		if (dd) {
 			set_rela_aler_more_NET(i1, i2, NULL, dd, degree, maxId, linesNum, &rela, &aler);
-			nets->core[j] = assignNET(maxId, minId, linesNum, idNum, degreeMax, degreeMin, degree, rela, aler);
+			int *local_degree = smalloc((maxId+1)*sizeof(int));
+			memcpy(local_degree, degree, (maxId + 1) * sizeof(int));
+			nets->core[j] = assignNET(maxId, minId, linesNum, idNum, degreeMax, degreeMin, local_degree, rela, aler);
 			//printNET(nets->core[j], "/tmp/xxx2");
 			nets->sign[j] = INT;
 		}
