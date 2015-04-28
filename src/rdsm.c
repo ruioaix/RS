@@ -1,7 +1,4 @@
 #include "log.h"
-#include "option.h"
-#include "random.h"
-#include "utils.h"
 #include "tasklist.h"
 
 int loglevel = LOG_INFO;
