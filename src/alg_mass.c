@@ -1,5 +1,6 @@
 #include "alg_mass.h"
 #include "sort.h"
+#include "log.h"
 #include <string.h>
 #include <stdlib.h>
 
@@ -85,6 +86,7 @@ static inline void Bip_core_common_part(int rmaxId, int *rdegree, double *rvlts,
 }
 
 struct METRICS *alg_mass(struct TASK *task) {
+	LOG(LOG_INFO, "alg_mass enter");
 	//param from args.
 	BIP *trainl = task->train->core[0];
 	BIP *trainr = task->train->core[1];
@@ -123,7 +125,7 @@ struct METRICS *alg_mass(struct TASK *task) {
 				rvlts[trainl->rela[i][j]] = -1;
 				//rvlts[uidId[i]] = 0;
 			}
-			Bip_core_common_part(rmaxId, rdegree, rvlts, ridts, topL, L, rank);
+			Bip_core_common_part(rmaxId, rdegree, rvlts, ridts, topL + i * L, L, rank);
 			set_R_RL_PL_METRICS(i, L, rank, trainl, trainr, testl, &R, &RL, &PL);
 		}
 	}
@@ -135,5 +137,16 @@ struct METRICS *alg_mass(struct TASK *task) {
 	free(lvlts); free(rvlts);
 	free(lidts); free(ridts);
 	free(rank);
+
+	R /= testl->edgesNum;
+	RL /= testl->idNum;
+	PL /= testl->idNum;
+
+	retn->R = R;
+	retn->IL = IL;
+	retn->NL = NL;
+	retn->HL = HL;
+	retn->PL = PL;
+	retn->RL = RL;
 	return retn;
 }

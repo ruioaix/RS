@@ -21,7 +21,7 @@
 
 #define LOG(level, ...) do {\
 	if (level <= loglevel) {\
-		fprintf(logstream, "[%s: %dline] =>> ", __FILE__, __LINE__);\
+		fprintf(logstream, "[%s: %d: %s] =>> ", __FILE__, __LINE__, __FUNCTION__);\
 		fprintf(logstream, __VA_ARGS__);\
 		fprintf(logstream, "\n");\
 		fflush(logstream);\

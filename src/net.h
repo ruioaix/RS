@@ -8,6 +8,7 @@ typedef struct CORE NET;
 void freeNET(NET *net);
 //no direction, no duplicate pairs even "1 2" and "2 1" is not allowed.
 NET *createNET(const struct LineFile * const lf);
+void printNET(NET *net, char *filename);
 
 
 typedef struct CORES NETS; 

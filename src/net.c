@@ -34,8 +34,8 @@ static inline void set_degree_degreeMax_degreeMin_idNum_NET(int *i1, int *i2, lo
 	int countMin = INT_MAX;
 	int idNum=0;
 	for(j=0; j<maxId+1; ++j) {
-		countMax = countMax > degree[i] ? countMax : degree[i];
-		countMin = countMin < degree[i] ? countMin : degree[i];
+		countMax = countMax > degree[j] ? countMax : degree[j];
+		countMin = countMin < degree[j] ? countMin : degree[j];
 		if (degree[j]>0) {
 			++idNum;
 		}
@@ -114,7 +114,7 @@ NET *createNET(const struct LineFile * const lf) {
    	double **aler;
 	set_rela_aler_NET(i1, i2, d1, degree, maxId, linesNum, &rela, &aler);
 
-	LOG(LOG_INFO, "NET created, Max: %d, Min: %d, idNum: %d, edgesNum: %ld, degreeMax: %d, degreeMin: %d\n", maxId, minId, idNum, linesNum, degreeMax, degreeMin);
+	LOG(LOG_INFO, "NET created, Max: %d, Min: %d, idNum: %d, edgesNum: %ld, degreeMax: %d, degreeMin: %d", maxId, minId, idNum, linesNum, degreeMax, degreeMin);
 	NET *net = assignNET(maxId, minId, linesNum, idNum, degreeMax, degreeMin, degree, rela, aler);
 	return net;
 }
@@ -184,6 +184,7 @@ NETS *createNETS(const struct LineFile * const lf) {
 
 	set_rela_aler_NET(i1, i2, NULL, degree, maxId, linesNum, &rela, &aler);
 	nets->core[0] = assignNET(maxId, minId, linesNum, idNum, degreeMax, degreeMin, degree, rela, aler);
+	//printNET(nets->core[0], "/tmp/xxx1");
 	nets->sign[0] = INT;
 
 	int i, j = 1;
@@ -200,10 +201,28 @@ NETS *createNETS(const struct LineFile * const lf) {
 		if (dd) {
 			set_rela_aler_more_NET(i1, i2, NULL, dd, degree, maxId, linesNum, &rela, &aler);
 			nets->core[j] = assignNET(maxId, minId, linesNum, idNum, degreeMax, degreeMin, degree, rela, aler);
+			//printNET(nets->core[j], "/tmp/xxx2");
 			nets->sign[j] = INT;
 		}
 	}
 
-	LOG(LOG_INFO, "NET created, Max: %d, Min: %d, idNum: %d, edgesNum: %ld, degreeMax: %d, degreeMin: %d\n", maxId, minId, idNum, linesNum, degreeMax, degreeMin);
+	LOG(LOG_INFO, "NET created, Max: %d, Min: %d, idNum: %d, edgesNum: %ld, degreeMax: %d, degreeMin: %d", maxId, minId, idNum, linesNum, degreeMax, degreeMin);
 	return nets;
+}
+
+void printNET(NET *net, char *filename) {
+	FILE *fp = sfopen(filename, "w");
+	int i;
+	int j;
+	for (i = 0; i < net->maxId + 1; ++i) {
+		for (j = 0; j < net->degree[i]; ++j) {
+			fprintf(fp, "%d\t", i);
+			if (net->rela) fprintf(fp, "\t%d", net->rela[i][j]);
+			if (net->aler) fprintf(fp, "\t%f", net->aler[i][j]);
+			
+			fprintf(fp, "\n");
+		}
+	}
+	fclose(fp);
+	LOG(LOG_INFO, "bip %s printed.", filename);
 }
