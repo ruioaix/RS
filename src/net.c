@@ -2,12 +2,8 @@
 #include "log.h"
 #include "random.h"
 #include "utils.h"
-#include <math.h>
-#include <stdlib.h>
-#include <assert.h>
-#include <string.h>
-#include <stdio.h>
 #include <limits.h>
+
 
 void freeNET(NET *net) {
 	freeCORE(net);

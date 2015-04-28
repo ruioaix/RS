@@ -1,13 +1,7 @@
 #include "bip.h"
 #include "log.h"
 #include "random.h"
-#include "utils.h"
-#include <math.h>
-#include <stdlib.h>
-#include <assert.h>
 #include <string.h>
-#include <stdio.h>
-#include <limits.h>
 
 /*********************************************************************/
 /***operation on struct Bip*******************************************/
@@ -371,19 +365,6 @@ void divideBIP(BIP *bl, BIP *br, double rate, struct LineFile **small, struct Li
 
 void freeBIPS(BIPS *bips) {
 	freeCORES(bips);
-}
-
-static BIP* oneNET(long linesNum, int *il, int *ii, double *dd) {
-	int maxId, minId;
-	set_maxId_minId_BIP(il, linesNum, &maxId, &minId);
-	int *degree = scalloc(maxId+1, sizeof(int));
-	int degreeMax, degreeMin, idNum;
-	set_degree_degreeMax_degreeMin_idNum_BIP(il, linesNum, maxId, degree, &degreeMax, &degreeMin, &idNum);
-
-	int **rela;
-	double **aler;
-	set_rela_aler_BIP(il, ii, dd, degree, maxId, linesNum, &rela, &aler);
-	return  assignBIP(maxId, minId, linesNum, idNum, degreeMax, degreeMin, degree, rela, aler);
 }
 
 BIPS *createBIPS(const struct LineFile * const lf){

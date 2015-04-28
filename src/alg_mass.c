@@ -1,8 +1,6 @@
 #include "alg_mass.h"
-#include "bip.h"
-#include "utils.h"
-#include <string.h>
 #include "sort.h"
+#include <string.h>
 #include <stdlib.h>
 
 static void mass_recommend_Bip(int lid, double *lts, double *rts, int lmaxId, int rmaxId, int *ldegree, int *rdegree, int **lrela, int **rrela) {
