@@ -9,7 +9,7 @@ FILE *logstream;
 int main(int argc, char **argv) {
 	//dbgstream = fopen("/tmp/rdsm.log", "w");
 	logstream = stdout;
-	struct OPTIONS *op = setOPTOINS(argc, argv);
+	struct OPTION *op = setOPTOIN(argc, argv);
 	return 0;
 }
 

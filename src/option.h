@@ -3,7 +3,7 @@
 
 #include <stdbool.h>
 
-struct OPTIONS {
+struct OPTION {
 	bool alg_mass;
 	bool alg_heats;
 	bool alg_hybrid;
@@ -20,6 +20,6 @@ struct OPTIONS {
 	unsigned long seed_random;
 };
 
-struct OPTIONS *setOPTOINS(int argc, char **argv);
+struct OPTION *setOPTOIN(int argc, char **argv);
 
 #endif

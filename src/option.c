@@ -7,15 +7,15 @@
 
 static void display_usage(void) {
 	puts("BNRS - Bipart Network Recommemder System 1.0 (Apr 2015)\n");
-	puts("usage: bnrs [OPTIONS]\n");
-	puts("OPTIONS:");
+	puts("usage: bnrs [OPTION]\n");
+	puts("OPTION:");
 	puts("  -h:  help");
 	puts("  -m:  Calculate the result of mass algorithm");
 	puts("  -e:  Calculate the result of heats algorithm");
 	puts("  -H:  Calculate the result of hybrid algorithm");
 	puts("  -N:  Calculate the result of HNBI algorithm");
 	puts("");
-	puts("OPTIONS with arguments:");
+	puts("OPTION with arguments:");
 	puts("  -i filename:");
 	puts("       File containing full dataset");
 	puts("       if -i is used, then -T and -t will be ignored.");
@@ -47,7 +47,7 @@ static void display_usage(void) {
 	exit(0);
 }
 
-static void verify_OPTIONS(struct OPTIONS *op) {
+static void verify_OPTION(struct OPTION *op) {
 	//algorithms
 	if (!( op->alg_mass || op->alg_heats || op->alg_hybrid || op->alg_HNBI )) {
 		LOG(LOG_FATAL, "no algorithms selected, what do you want to calculate?");
@@ -101,7 +101,7 @@ static void verify_OPTIONS(struct OPTIONS *op) {
 	LOG(LOG_INFO, "The seed of random number generater: %lu", op->seed_random);
 }
 
-static void init_OPTIONS(struct OPTIONS *op) {
+static void init_OPTION(struct OPTION *op) {
 	op->alg_mass = false;
 	op->alg_heats = false;
 	op->alg_hybrid = false;
@@ -118,9 +118,9 @@ static void init_OPTIONS(struct OPTIONS *op) {
 	op->seed_random = 1;
 }
 
-struct OPTIONS *setOPTOINS(int argc, char **argv) {
-	struct OPTIONS *op = smalloc(sizeof(struct OPTIONS));
-	init_OPTIONS(op);
+struct OPTION *setOPTOINS(int argc, char **argv) {
+	struct OPTION *op = smalloc(sizeof(struct OPTION));
+	init_OPTION(op);
 
 	static const char *optString = "hmeHNi:T:t:u:d:l:L:s:";
 	struct option longOpts[] = {
@@ -197,6 +197,6 @@ struct OPTIONS *setOPTOINS(int argc, char **argv) {
 		}
 	} while (1);
 
-	verify_OPTIONS(op);
+	verify_OPTION(op);
 	return op;
 }
