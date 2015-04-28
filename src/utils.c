@@ -1,4 +1,6 @@
 #include "utils.h"
+#include "log.h"
+#include <stdlib.h>
 
 char *trueorfalse(bool b) {
 	return b ? "true" : "false";
@@ -8,9 +10,6 @@ char *leftorright(enum SIDE s) {
 	return  s ? "RIGHT" : "LEFT";
 }
 
-#include "utils.h"
-#include "log.h"
-#include <stdlib.h>
 //memory 
 inline void *malloc_safe(size_t size, const char *filename, const int lineNum) {
 	if (size == 0) return NULL;
