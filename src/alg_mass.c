@@ -84,7 +84,7 @@ static inline void Bip_core_common_part(int rmaxId, int *rdegree, double *rvlts,
 	}
 }
 
-static struct METRICS *alg_mass(struct TASK *task) {
+struct METRICS *alg_mass(struct TASK *task) {
 	//param from args.
 	BIP *trainl = task->train->core[0];
 	BIP *trainr = task->train->core[1];

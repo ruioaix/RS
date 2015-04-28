@@ -41,7 +41,7 @@ $(bin_folder)/$(src_folder)/%.o : $(src_folder)/%.c
 
 ## x compiled from x.o and libs ##################################
 run : $(all_objects)
-	$(LINK.o) $^ $(LOADLIBES) $(LDLIBS) -o $@
+	$(LINK.o) $^ $(LOADLIBES) $(LDLIBS) -lm -o $@
 ##################################################################
 
 ## clean #########################################################

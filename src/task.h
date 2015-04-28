@@ -3,6 +3,7 @@
 #include "metrics.h"
 #include "bip.h"
 #include "net.h"
+#include "option.h"
 
 struct TASK {
 	struct METRICS * (*alg)(struct TASK *);
@@ -14,5 +15,7 @@ struct TASK {
 	//used to improve efficient
 	int *rank;
 };
+
+struct TASK *firstTASK(struct OPTION *op);
 
 #endif

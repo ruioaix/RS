@@ -118,7 +118,7 @@ static void init_OPTION(struct OPTION *op) {
 	op->seed_random = 1;
 }
 
-struct OPTION *setOPTOINS(int argc, char **argv) {
+struct OPTION *setOPTION(int argc, char **argv) {
 	struct OPTION *op = smalloc(sizeof(struct OPTION));
 	init_OPTION(op);
 
@@ -199,4 +199,11 @@ struct OPTION *setOPTOINS(int argc, char **argv) {
 
 	verify_OPTION(op);
 	return op;
+}
+
+int algnumOPTION(struct OPTION *op) {
+	return (int)(op->alg_mass) + \
+		(int)(op->alg_HNBI) + \
+		(int)(op->alg_heats) + \
+		(int)(op->alg_hybrid);
 }

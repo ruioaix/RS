@@ -4,6 +4,6 @@
 #include "metrics.h"
 #include "task.h"
 
-static struct METRICS *alg_mass(struct TASK *task);
+struct METRICS *alg_mass(struct TASK *task);
 
 #endif

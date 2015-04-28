@@ -20,6 +20,7 @@ struct OPTION {
 	unsigned long seed_random;
 };
 
-struct OPTION *setOPTOIN(int argc, char **argv);
+struct OPTION *setOPTION(int argc, char **argv);
+int algnumOPTION(struct OPTION *op);
 
 #endif
