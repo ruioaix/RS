@@ -3,7 +3,7 @@
 #include "log.h"
 #include "net.h"
 #include "linefile.h"
-#include "similarity.h"
+#include "similar.h"
 #include "alg_mass.h"
 #include <stdlib.h>
 

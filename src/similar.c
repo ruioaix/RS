@@ -1,4 +1,4 @@
-#include "similarity.h"
+#include "similar.h"
 #include "log.h"
 #include <string.h>
 #include <math.h>
