@@ -62,6 +62,6 @@ struct LineFile *cosineSM(BIP *left, BIP *right) {
 	simfile->i2 = i2;
 	simfile->d1 = d1;
 
-	LOG(LOG_INFO, "cosine similarity calculated, linesNum: %ld.", linesNum);
+	LOG(LOG_INFO, "Cosine similarity calculated based on a left&right BIP pair, return a LineFile, linesNum: %ld.", linesNum);
 	return simfile;
 }

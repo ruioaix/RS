@@ -115,8 +115,10 @@ NET *createNET(const struct LineFile * const lf) {
    	double **aler;
 	set_rela_aler_NET(i1, i2, d1, degree, maxId, linesNum, &rela, &aler);
 
-	LOG(LOG_INFO, "NET created, Max: %d, Min: %d, idNum: %d, edgesNum: %ld, degreeMax: %d, degreeMin: %d", maxId, minId, idNum, linesNum, degreeMax, degreeMin);
 	NET *net = assignNET(maxId, minId, linesNum, idNum, degreeMax, degreeMin, degree, rela, aler);
+
+	LOG(LOG_INFO, "NET created.");
+	LOG(LOG_INFO, "  Max: %5d, Min: %5d, Num: %5d, degreeMax: %5d, degreeMin: %5d, edgesNum: %5ld", maxId, minId, idNum, degreeMax, degreeMin, linesNum);
 	return net;
 }
 
@@ -211,7 +213,8 @@ NETS *createNETS(const struct LineFile * const lf) {
 		}
 	}
 
-	LOG(LOG_INFO, "NET created, Max: %d, Min: %d, idNum: %d, edgesNum: %ld, degreeMax: %d, degreeMin: %d", maxId, minId, idNum, linesNum, degreeMax, degreeMin);
+	LOG(LOG_INFO, "NETS created, contains [%3d] NETs.", nets->num);
+	LOG(LOG_INFO, "  Max: %5d, Min: %5d, Num: %5d, degreeMax: %5d, degreeMin: %5d, edgesNum: %5ld", maxId, minId, idNum, degreeMax, degreeMin, linesNum);
 	return nets;
 }
 
@@ -229,5 +232,5 @@ void printNET(NET *net, char *filename) {
 		}
 	}
 	fclose(fp);
-	LOG(LOG_INFO, "bip %s printed.", filename);
+	LOG(LOG_INFO, "NET printed into \"%s\".", filename);
 }
