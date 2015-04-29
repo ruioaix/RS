@@ -11,8 +11,8 @@
 
 /****************VERBOSE LEVEL*******************************************************************/
 #define LOG_FATAL    (1)
-#define LOG_ERR      (2)
-#define LOG_WARN     (3)
+#define LOG_WARN     (2)
+#define LOG_OP       (3)
 #define LOG_INFO     (4)
 #define LOG_DBG      (5)
 
@@ -21,7 +21,11 @@
 
 #define LOG(level, ...) do {\
 	if (level <= loglevel) {\
-		fprintf(logstream, "[\033[1;31m%s: \033[1;34m%d: \033[1;33m%s\033[0m] =>> ", __FILE__, __LINE__, __FUNCTION__);\
+		if (level==LOG_FATAL) fprintf(logstream, "[\033[7;31m%16s\033[1;37m:\033[1;34m%-4d \033[1;35m%15s()\033[0m] =>> ", __FILE__, __LINE__, __FUNCTION__);\
+		if (level==LOG_WARN)  fprintf(logstream, "[\033[1;33m%16s\033[1;37m:\033[1;34m%-4d \033[1;35m%15s()\033[0m] =>> ", __FILE__, __LINE__, __FUNCTION__);\
+		if (level==LOG_OP)    fprintf(logstream, "[\033[1;36m%16s\033[1;37m:\033[1;34m%-4d \033[1;35m%15s()\033[0m] =>> ", __FILE__, __LINE__, __FUNCTION__);\
+		if (level==LOG_INFO)  fprintf(logstream, "[\033[1;32m%16s\033[1;37m:\033[1;34m%-4d \033[1;35m%15s()\033[0m] =>> ", __FILE__, __LINE__, __FUNCTION__);\
+		if (level==LOG_DBG)   fprintf(logstream, "[\033[7;37m%16s\033[1;37m:\033[1;34m%-4d \033[1;35m%15s()\033[0m] =>> ", __FILE__, __LINE__, __FUNCTION__);\
 		fprintf(logstream, __VA_ARGS__);\
 		fprintf(logstream, "\n");\
 		fflush(logstream);\

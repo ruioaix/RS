@@ -52,11 +52,11 @@ static void verify_OPTION(struct OPTION *op) {
 	if (!( op->alg_mass || op->alg_heats || op->alg_hybrid || op->alg_HNBI )) {
 		LOG(LOG_FATAL, "no algorithms selected, what do you want to calculate?");
 	}
-	LOG(LOG_INFO, "Algorithm:");
-	LOG(LOG_INFO, "  mass:   %s", trueorfalse(op->alg_mass));
-	LOG(LOG_INFO, "  heats:  %s", trueorfalse(op->alg_heats));
-	LOG(LOG_INFO, "  hybrid: %s", trueorfalse(op->alg_hybrid));
-	LOG(LOG_INFO, "  HNBI:   %s", trueorfalse(op->alg_HNBI));
+	LOG(LOG_WARN, "Algorithm:");
+	LOG(LOG_WARN, "  mass:   %s", trueorfalse(op->alg_mass));
+	LOG(LOG_WARN, "  heats:  %s", trueorfalse(op->alg_heats));
+	LOG(LOG_WARN, "  hybrid: %s", trueorfalse(op->alg_hybrid));
+	LOG(LOG_WARN, "  HNBI:   %s", trueorfalse(op->alg_HNBI));
 
 	//dataset
 	if (op->filename_full == NULL && (op->filename_train == NULL || op->filename_test == NULL)) {

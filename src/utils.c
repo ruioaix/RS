@@ -29,7 +29,7 @@ inline void *calloc_safe(size_t num, size_t size, const char *filename, const in
 }
 inline void *realloc_safe(void *p, size_t size, const char *filename, const int lineNum) {
 	if (size == 0) {
-		LOG(LOG_ERR, "realloc size == 0, return the origin pointer");
+		LOG(LOG_WARN, "realloc size == 0, return the origin pointer");
 		return p;
 	}
 	void *tmp = realloc(p, size);
