@@ -19,9 +19,23 @@ void loginit(char *logfilename, enum LOGLEVEL ll) {
 	logfile = sfopen(logfilename, "w");
 	if (!logfile) {
 		logfile = stdout;
-		LOG(LOG_DBG, "log file is set to STDOUT, log level is %s", loglevelis(ll));
+		LOG(LOG_INFO, "log file is set to STDOUT, log level is %s", loglevelis(ll));
 	}
 	else {
-		LOG(LOG_DBG, "log file is set to %s, log level is %s", logfilename, loglevelis(ll));
+		LOG(LOG_INFO, "log file is set to %s, log level is %s", logfilename, loglevelis(ll));
+	}
+}
+
+void setloglevel(enum LOGLEVEL ll) {
+	loglevel = ll;
+}
+
+enum LOGLEVEL getloglevel(void) {
+	return loglevel;
+}
+
+void releaselog(void) {
+	if (!(logfile == stdout || logfile == stderr)) {
+		fclose(logfile);
 	}
 }

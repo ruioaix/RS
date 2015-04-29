@@ -18,6 +18,9 @@ struct OPTION {
 	int num_looptimes;
 	int num_toprightused2cmptmetrics;
 	unsigned long seed_random;
+
+	//
+	char *logfilename;
 };
 
 struct OPTION *setOPTION(int argc, char **argv);

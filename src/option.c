@@ -44,6 +44,10 @@ static void display_usage(void) {
 	puts("  -s unsignedlongValue: ");
 	puts("       Random seed");
 	puts("");
+	puts("OPTION addtional:");
+	puts("  -o logfilename:");
+	puts("       File the log system will output log to");
+	puts("");
 	exit(0);
 }
 
@@ -52,53 +56,39 @@ static void verify_OPTION(struct OPTION *op) {
 	if (!( op->alg_mass || op->alg_heats || op->alg_hybrid || op->alg_HNBI )) {
 		LOG(LOG_FATAL, "no algorithms selected, what do you want to calculate?");
 	}
-	LOG(LOG_WARN, "Algorithm:");
-	LOG(LOG_WARN, "  mass:   %s", trueorfalse(op->alg_mass));
-	LOG(LOG_WARN, "  heats:  %s", trueorfalse(op->alg_heats));
-	LOG(LOG_WARN, "  hybrid: %s", trueorfalse(op->alg_hybrid));
-	LOG(LOG_WARN, "  HNBI:   %s", trueorfalse(op->alg_HNBI));
 
 	//dataset
 	if (op->filename_full == NULL && (op->filename_train == NULL || op->filename_test == NULL)) {
 		LOG(LOG_FATAL, "Dataset not enough, what do you want to calculate?");
 	}
-	
+
 	//rate_dividefulldataset
 	if (op->filename_full) {
 		if (op->rate_dividefulldataset <= 0 || op->rate_dividefulldataset >= 1) {
 			LOG(LOG_FATAL, "We will use the whole dataset file: %s, but why the divide_rate is %f?", op->filename_full , op->rate_dividefulldataset);
 		}
 		else {
-		   op->filename_train = NULL;
-		   op->filename_test = NULL;
-		   LOG(LOG_INFO, "Full dataset: %s", op->filename_full);
-		   LOG(LOG_INFO, "Divide rate:  %f", op->rate_dividefulldataset);
+			op->filename_train = NULL;
+			op->filename_test = NULL;
 		}
 		//loopnum
 		if (op->num_looptimes < 1) {
 			LOG(LOG_FATAL, "Are you sure you want to set the loopNum to %d?", op->num_looptimes);
 		}
-		LOG(LOG_INFO, "The num of loop times for each algorithm: %d", op->num_looptimes);
 	}
 	else {
-		LOG(LOG_INFO, "Train dataset: %s", op->filename_train);
-		LOG(LOG_INFO, "Test dataset:  %s", op->filename_test);
 		//loopnum
 		if (op->num_looptimes != 1) {
-			LOG(LOG_FATAL, "Sorry, we can only loop for 1 time, not %d times, because you supply train and test dataset.", op->num_looptimes);
+			LOG(LOG_WARN, "Sorry, we can only loop for 1 time, not %d times, because you supply train and test dataset.", op->num_looptimes);
 		}
 		op->num_looptimes = 1;
-		LOG(LOG_INFO, "The num of loop times for each algorithm: %d", op->num_looptimes);
 	}
 
 	//L
 	if (op->num_toprightused2cmptmetrics < 1) {
 		LOG(LOG_FATAL, "Are you sure you want to set the num of the top right objects which will be used to computer metrics to %d?", op->num_toprightused2cmptmetrics);
 	}
-	LOG(LOG_INFO, "The num of top recommeded right objects: %d", op->num_toprightused2cmptmetrics);
 
-	//random seed
-	LOG(LOG_INFO, "The seed of random number generater: %lu", op->seed_random);
 }
 
 static void init_OPTION(struct OPTION *op) {
@@ -116,6 +106,8 @@ static void init_OPTION(struct OPTION *op) {
 	op->num_looptimes = 1;
 	op->num_toprightused2cmptmetrics = 50;
 	op->seed_random = 1;
+
+	op->logfilename = NULL;
 }
 
 void freeOPTION(struct OPTION *op) {
@@ -126,7 +118,7 @@ struct OPTION *setOPTION(int argc, char **argv) {
 	struct OPTION *op = smalloc(sizeof(struct OPTION));
 	init_OPTION(op);
 
-	static const char *optString = "hmeHNi:T:t:u:d:l:L:s:";
+	static const char *optString = "hmeHNi:T:t:u:d:l:L:s:o:";
 	struct option longOpts[] = {
 		{"help", no_argument, NULL, 'h'},
 
@@ -144,6 +136,8 @@ struct OPTION *setOPTION(int argc, char **argv) {
 		{"num_looptimes", required_argument, NULL, 'l'},
 		{"num_toprightused2cmptmetrics", required_argument, NULL, 'L'},
 		{"seed_random", required_argument, NULL, 's'},
+
+		{"log-file", required_argument, NULL, 'o'},
 		{0, 0, 0, 0},
 	};
 	int longIndex = 0;
@@ -194,6 +188,10 @@ struct OPTION *setOPTION(int argc, char **argv) {
 				op->seed_random = strtol(optarg, NULL, 10);
 				break;
 
+			case 'o':
+				op->logfilename = optarg;
+				break;
+
 			case '?':
 				break;
 			default:
@@ -201,7 +199,28 @@ struct OPTION *setOPTION(int argc, char **argv) {
 		}
 	} while (1);
 
+	loginit(op->logfilename, getloglevel());
+
 	verify_OPTION(op);
+
+	LOG(LOG_INFO, "Algorithm:");
+	LOG(LOG_INFO, "  mass:   %s", trueorfalse(op->alg_mass));
+	LOG(LOG_INFO, "  heats:  %s", trueorfalse(op->alg_heats));
+	LOG(LOG_INFO, "  hybrid: %s", trueorfalse(op->alg_hybrid));
+	LOG(LOG_INFO, "  HNBI:   %s", trueorfalse(op->alg_HNBI));
+	if (op->filename_full) {
+		LOG(LOG_INFO, "Full dataset: %s", op->filename_full);
+		LOG(LOG_INFO, "Divide rate:  %f", op->rate_dividefulldataset);
+		LOG(LOG_INFO, "The num of loop times for each algorithm: %d", op->num_looptimes);
+	}
+	else {
+		LOG(LOG_INFO, "Train dataset: %s", op->filename_train);
+		LOG(LOG_INFO, "Test dataset:  %s", op->filename_test);
+		LOG(LOG_INFO, "The num of loop times for each algorithm: %d", op->num_looptimes);
+	}
+	LOG(LOG_INFO, "The num of top recommeded right objects: %d", op->num_toprightused2cmptmetrics);
+	LOG(LOG_INFO, "The seed of random number generater: %lu", op->seed_random);
+
 	return op;
 }
 
