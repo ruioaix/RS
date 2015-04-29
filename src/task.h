@@ -9,11 +9,14 @@ struct TASK {
 	struct METRICS * (*alg)(struct TASK *);
 	BIPS* train;
 	BIPS* test;
-	NETS* trainr_cosin_similarity;
+	NETS* trainr_cosine_similarity;
 	int num_toprightused2cmptmetrics;
 
 	//used to improve efficient
 	int *rank;
+
+	//result;
+	struct METRICS *mtc;
 };
 
 void freeTASK(struct TASK *task);

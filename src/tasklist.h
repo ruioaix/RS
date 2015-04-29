@@ -4,12 +4,21 @@
 #include "task.h"
 #include "option.h"
 
+typedef struct TASK OTL;
+
 struct TASKLIST {
 	int num;
-	struct TASK **core;
+	OTL **core;
+
+	//private
+	//share
+	BIPS *train;
+	BIPS *test;
+	NETS *trainr_cosine_similarity;
 };
 
+void freeOTL(OTL *otl);
 void freeTL(struct TASKLIST *tl);
-struct TASKLIST *createTL(struct OPTION *op);
+struct TASKLIST *walkingTL(struct OPTION *op);
 
 #endif

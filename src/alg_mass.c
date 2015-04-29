@@ -132,7 +132,7 @@ struct METRICS *alg_mass(struct TASK *task) {
 	}
 
 	set_HL_METRICS(L, topL, trainl, trainr, &HL);
-	set_IL_METRICS(L, topL, trainl, trainr, task->trainr_cosin_similarity, &IL);
+	set_IL_METRICS(L, topL, trainl, trainr, task->trainr_cosine_similarity, &IL);
 	set_NL_METRICS(L, topL, trainl, trainr, &NL);
 
 	free(lvlts); free(rvlts);
