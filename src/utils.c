@@ -41,6 +41,7 @@ inline void *realloc_safe(void *p, size_t size, const char *filename, const int 
 
 //file
 FILE *fopen_safe(const char *openfilename, const char *mode, char *filename, const int lineNum) {
+	if (!openfilename) return NULL;
 	FILE *fp = fopen(openfilename, mode);
 	if (fp == NULL) {
 		LOG(LOG_FATAL, "fopen failed: \"%s\" file, %d line, can not open \"%s\"",  filename, lineNum, openfilename);

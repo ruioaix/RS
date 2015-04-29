@@ -1,12 +1,11 @@
 #include "log.h"
 #include "tasklist.h"
 
-int loglevel = LOG_DBG;
-FILE *logstream;
+
 
 int main(int argc, char **argv) {
-	//logstream = fopen("/tmp/rdsm.log", "w");
-	logstream = stdout;
+	loginit(NULL, LOG_DBG);
+
 	struct OPTION *op = setOPTION(argc, argv);
 	struct TASKLIST *tl = createTL(op);
 	freeOPTION(op);
