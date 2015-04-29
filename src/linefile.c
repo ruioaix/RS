@@ -254,13 +254,14 @@ struct LineFile *createLF(char *filename, ...) {
 		}
 	}
 	va_end(vl);
-	char linestyle[10*vn];
+	char *linestyle = scalloc(vn*20, sizeof(char));
 	int i;
 	for (i = 0; i < vn; ++i) {
 		strcat(linestyle, "  ");
 		strcat(linestyle, whichtype(typelist[i]));
 	}
 	LOG(LOG_INFO, "%s", linestyle);
+	free(linestyle);
 
 	if (0 == vn || type != -1) {
 		free(typelist);

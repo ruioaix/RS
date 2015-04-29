@@ -126,7 +126,6 @@ static BIP* halfBIP(long linesNum, int *il, int *ii, double *dd, int maxId_d, in
 BIP *createBIP(const struct LineFile * const lf, enum SIDE s) {
 	if (lf == NULL || lf->i1 == NULL || lf->linesNum < 1) 
 		LOG(LOG_FATAL, "create_Bip lf: %p, lf->i1: %p, lf->i2: %p, lf->linesNum: %ld", lf, lf->i1, lf->i2, lf->linesNum);
-	LOG(LOG_INFO, "create_Bip side: %s", leftorright(s));
 
 	int *i1 = lf->i1;
 	int *i2 = lf->i2;
@@ -140,8 +139,9 @@ BIP *createBIP(const struct LineFile * const lf, enum SIDE s) {
 		bip = halfBIP(edgesNum, i2, i1, d1, -1, -1, NULL, -1, -1, -1);
 	
 
-	LOG(LOG_INFO, "SIDE:%s, Max: %5d, Min: %5d, Num: %5d, degreeMax: %5d, degreeMin: %5d, edgesNum: %5ld",\
-		   	leftorright(s), bip->maxId, bip->minId, bip->idNum, bip->degreeMax, bip->degreeMin, bip->edgesNum);
+	LOG(LOG_INFO, "BIP %s create side.", leftorright(s));
+	LOG(LOG_INFO, "  Max: %5d, Min: %5d, Num: %5d, degreeMax: %5d, degreeMin: %5d, edgesNum: %5ld",\
+		   	bip->maxId, bip->minId, bip->idNum, bip->degreeMax, bip->degreeMin, bip->edgesNum);
 	return bip;
 }
 
@@ -161,7 +161,7 @@ void freeBIP(BIP *bip) {
 	free(bip->rela);
 	free(bip->aler);
 	free(bip);
-	LOG(LOG_INFO, "bip freed.");
+	LOG(LOG_DBG, "BIP freed.");
 }
 
 BIP* cloneBIP(BIP *bip) {
@@ -196,7 +196,7 @@ BIP* cloneBIP(BIP *bip) {
 		}
 	}
 
-	LOG(LOG_INFO, "bip cloned.");
+	LOG(LOG_DBG, "BIP cloned.");
 	return new;
 }
 
@@ -231,9 +231,9 @@ void verifyBIP(BIP *bl, BIP *br) {
 	fclose(fpd);
 	fclose(fpc);
 	if (sign) {
-		LOG(LOG_INFO, "the file has duplicate pairs, you can check data/duplicatePairsinNet.");
-		LOG(LOG_INFO, "we generate a net file named /tmp/NoDuplicatePairsNetFile which doesn't contain any duplicate pairs.");
-		LOG(LOG_INFO, "you should use this file instead the origin wrong one.");
+		LOG(LOG_WARN, "the file has duplicate pairs, you can check data/duplicatePairsinNet.");
+		LOG(LOG_WARN, "we generate a net file named /tmp/NoDuplicatePairsNetFile which doesn't contain any duplicate pairs.");
+		LOG(LOG_WARN, "you should use this file instead the origin wrong one.");
 	}
 	else {
 		LOG(LOG_INFO, "perfect network.");
@@ -257,7 +257,7 @@ void printBIP(BIP *bip, char *filename) {
 		}
 	}
 	fclose(fp);
-	LOG(LOG_INFO, "bip %s printed.", filename);
+	LOG(LOG_INFO, "BIP printed in %s.", filename);
 }
 
 //divide Bip into two parts.
@@ -364,7 +364,8 @@ void divideBIP(BIP *bl, BIP *br, double rate, struct LineFile **small, struct Li
 	(*small)->linesNum = line1;
 	(*big)->linesNum = line2;
 
-	LOG(LOG_INFO, "rate: %.3f, big file's linesNum: %ld, small file's linesNum: %ld.", rate, line2, line1);
+	LOG(LOG_INFO, "Divide left&right BIP into big&small LF:");
+	LOG(LOG_INFO, "  rate: %.3f, big file's linesNum: %ld, small file's linesNum: %ld.", rate, line2, line1);
 }
 
 void freeBIPS(BIPS *bips) {
@@ -423,13 +424,13 @@ BIPS *createBIPS(const struct LineFile * const lf){
 		}
 	}
 
-	for (; j < bips->num; ++j) {
-		bips->core[j] = NULL;
-	}
-
 	free(ldegree);
 	free(rdegree);
 
-	LOG(LOG_INFO, "BIPS created, BIPS length: %d", bips->num);
+	LOG(LOG_INFO, "BIPS created, has [%3d] left&right BIP pairs", bips->num/2);
+	LOG(LOG_INFO, "  left  = Max: %5d, Min: %5d, Num: %5d, degreeMax: %5d, degreeMin: %5d, edgesNum: %5ld",\
+		   	lmaxId, lminId, lidNum, ldegreeMax, ldegreeMin, edgesNum);
+	LOG(LOG_INFO, "  right = Max: %5d, Min: %5d, Num: %5d, degreeMax: %5d, degreeMin: %5d, edgesNum: %5ld",\
+		   	rmaxId, rminId, ridNum, rdegreeMax, rdegreeMin, edgesNum);
 	return bips;
 }
