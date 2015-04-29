@@ -4,10 +4,11 @@
 #include <stdbool.h>
 
 enum SIDE {LEFT, RIGHT};
-enum TYPE {INT, DOUBLE};
+enum TYPE {INT, DOUBLE, CSTRING};
 
 char *trueorfalse(bool b);
 char *leftorright(enum SIDE s);
+char *whichtype(enum TYPE t);
 
 void *malloc_safe(size_t size, const char *filename, const int lineNum);
 void *calloc_safe(size_t num, size_t size, const char *filename, const int lineNum);

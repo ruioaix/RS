@@ -10,6 +10,13 @@ char *leftorright(enum SIDE s) {
 	return  s ? "RIGHT" : "LEFT";
 }
 
+char *whichtype(enum TYPE t) {
+	if (t == INT) return "INT";
+	else if (t == DOUBLE) return "DOUBLE";
+	else if (t == CSTRING) return "CSTRING";
+	else return "NO-IDEA";
+}
+
 //memory 
 inline void *malloc_safe(size_t size, const char *filename, const int lineNum) {
 	if (size == 0) return NULL;

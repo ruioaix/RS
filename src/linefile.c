@@ -41,7 +41,6 @@ static void set_list_LineFile(struct LineFile *lf) {
 	lf->slist[6] = &(lf->s7);
 	lf->slist[7] = &(lf->s8);
 	lf->slist[8] = &(lf->s9);
-	LOG(LOG_DBG, "fill ilist&dlist&slist with the address of ix&dx&sx.");
 }
 
 //create an empty but completive LineFile.
@@ -69,12 +68,11 @@ static struct LineFile *init_LineFile(void) {
 	for (i = 0; i < lf->sNum; ++i) {
 		*(lf->slist[i]) = NULL;
 	}
-	LOG(LOG_DBG, "generate a empty free-valid LineFile struct and return.");
 	return lf;
 }
 
 //alloc memory according to typelist.
-static void init_memory_LineFile(struct LineFile *lf, int vn, int *typelist) {
+static void initmemoryLF(struct LineFile *lf, int vn, int *typelist) {
 	int ii = 0;
 	int di = 0;
 	int si = 0;
@@ -85,7 +83,7 @@ static void init_memory_LineFile(struct LineFile *lf, int vn, int *typelist) {
 	for (i = 0; i < vn; ++i) {
 		int type = typelist[i];
 		switch(type) {
-			case 1:
+			case INT:
 				if (ii < lf->iNum) {
 					*(ilist[ii++]) = smalloc(LINES_STEP * sizeof(int));
 				}
@@ -93,7 +91,7 @@ static void init_memory_LineFile(struct LineFile *lf, int vn, int *typelist) {
 					LOG(LOG_FATAL, "ilimit too small.");
 				}
 				break;
-			case 2:
+			case DOUBLE:
 				if (di < lf->dNum) {
 					*(dlist[di++]) = smalloc(LINES_STEP * sizeof(double));
 				}
@@ -101,7 +99,7 @@ static void init_memory_LineFile(struct LineFile *lf, int vn, int *typelist) {
 					LOG(LOG_FATAL, "dlimit too small.");
 				}
 				break;
-			case 3:
+			case CSTRING:
 				if (si < lf->sNum) {
 					*(slist[si++]) = smalloc(LINES_STEP * sizeof(char *));
 				}
@@ -180,7 +178,7 @@ static void set_lf_LineFile(struct LineFile *lf, char **allparts, int *typelist,
 		int type = typelist[i];
 		char **p = allparts + i*LINES_READIN;
 		switch(type) {
-			case 1:
+			case INT:
 				ip = *(ilist[IL++]);
 				for (j = 0; j < lread; ++j) {
 					if (p[j] != NULL) {
@@ -195,7 +193,7 @@ static void set_lf_LineFile(struct LineFile *lf, char **allparts, int *typelist,
 					}
 				}
 				break;
-			case 2:
+			case DOUBLE:
 				dp = *(dlist[DL++]);
 				for (j = 0; j < lread; ++j) {
 					if (p[j] != NULL) {
@@ -210,7 +208,7 @@ static void set_lf_LineFile(struct LineFile *lf, char **allparts, int *typelist,
 					}
 				}
 				break;
-			case 3:
+			case CSTRING:
 				sp = *(slist[SL++]);
 				for (j = 0; j < lread; ++j) {
 					if (p[j] != NULL) {
@@ -236,7 +234,7 @@ struct LineFile *createLF(char *filename, ...) {
 	struct LineFile *lf = init_LineFile();
 
 	if (NULL == filename) {
-		LOG(LOG_INFO, "filename == NULL, return an empty free-valid linefile.");
+		LOG(LOG_DBG, "filename == NULL, return an empty free-valid linefile.");
 		return lf;
 	}
 
@@ -246,32 +244,35 @@ struct LineFile *createLF(char *filename, ...) {
 	va_list vl;
 	va_start(vl, filename);
 	int vn = 0, type = -2;
-	LOG(LOG_INFO, "detected line style: ");
-	char *typetype[] = {"int", "double", "c-string"};
-	while (1 == (type = va_arg(vl, int)) || 2 == type || 3 == type) {
+	LOG(LOG_INFO, "Prepare to read \"%s\" with following style: ", filename);
+	while (INT == (type = va_arg(vl, int)) || DOUBLE == type || CSTRING == type) {
 		if (vn < argMax) {
 			typelist[vn++] = type;
-			LOG(LOG_INFO, "\ttype of column%d is \"%s\"", vn, typetype[type - 1]);
 		}
 		else {
 			LOG(LOG_FATAL, "%s =>> too much args.", __func__);
 		}
 	}
 	va_end(vl);
+	char linestyle[10*vn];
+	int i;
+	for (i = 0; i < vn; ++i) {
+		strcat(linestyle, "  ");
+		strcat(linestyle, whichtype(typelist[i]));
+	}
+	LOG(LOG_INFO, "%s", linestyle);
 
 	if (0 == vn || type != -1) {
 		free(typelist);
-		LOG(LOG_INFO, "not valid types, return an empty free-valid linefile.");
+		LOG(LOG_DBG, "not valid types, return an empty free-valid linefile.");
 		return lf;
 	}
 
 	//check filename.
 	FILE *fp = sfopen(filename, "r");
 
-	LOG(LOG_INFO, "open \"%s\" successfully.", filename);
-
 	//set lf memory with typelist.
-	init_memory_LineFile(lf, vn, typelist);
+	initmemoryLF(lf, vn, typelist);
 
 	//buffer used to read file.
 	char isok = 1;
@@ -286,21 +287,21 @@ struct LineFile *createLF(char *filename, ...) {
 		}
 		set_lf_LineFile(lf, allparts, typelist, lread, vn, &isok);
 	}
-	LOG(LOG_INFO, "totally read in %ld lines.", lf->linesNum);
 	free(typelist);
 	fclose(fp);
 	free(buffer);
 	free(allparts);
 
-	if (isok == 0 ) {
-		LOG(LOG_FATAL, "file \"%s\" has some non-valid lines.", filename);
+	if (!isok) {
+		LOG(LOG_FATAL, "but file \"%s\" has some non-valid lines.", filename);
 	} 
+	LOG(LOG_INFO, "successfully readin %ld lines, all lines in \"%s\" is valid.", lf->linesNum, filename);
 
 	return lf;
 }
 
 void freeLF(struct LineFile *lf) {
-	LOG(LOG_INFO, "free a struct LineFile.");
+	LOG(LOG_DBG, "free a struct LineFile.");
 	int i;
 	long j;
 	for (i = 0; i < lf->iNum; ++i) {
@@ -345,7 +346,7 @@ int columnsNumLF(const struct LineFile * const lf) {
 
 void printLF(struct LineFile *lf, char *filename) {
 	if (NULL == lf) {
-		LOG(LOG_INFO, "lf == NULL, print nothing.\n");
+		LOG(LOG_DBG, "lf == NULL, print nothing.\n");
 		return;
 	}
 	FILE *fp = sfopen(filename, "w");
@@ -373,7 +374,7 @@ void printLF(struct LineFile *lf, char *filename) {
 		fprintf(fp, "\n");
 	}
 	fclose(fp);
-	LOG(LOG_INFO, "LineFile printed");
+	LOG(LOG_INFO, "LineFile printed in \"%s\"", filename);
 }
 
 struct LineFile *sumLF(struct LineFile *lf1, struct LineFile *lf2) {
@@ -452,8 +453,7 @@ struct LineFile *sumLF(struct LineFile *lf1, struct LineFile *lf2) {
 	}
 
 	lf->memNum = lf->linesNum;
-	LOG(LOG_INFO, "two LineFile sumed");
-	LOG(LOG_INFO, "linesNum of sumed LF is %ld and linesNum of old LFs is %ld and %ld", lf1->linesNum, lf2->linesNum, lf->linesNum);
+	LOG(LOG_INFO, "Sum two LF: linesNum of sumed LF is %ld and linesNum of old LFs is %ld and %ld", lf1->linesNum, lf2->linesNum, lf->linesNum);
 	return lf;
 }
 

@@ -28,8 +28,8 @@ struct TASKLIST *createTL(struct OPTION *op) {
 
 		struct TASK *task = smalloc(sizeof(struct TASK));
 
-		struct LineFile *trainf = createLF(op->filename_train, 1, 1, -1);
-		struct LineFile *testf = createLF(op->filename_test, 1, 1, -1);
+		struct LineFile *trainf = createLF(op->filename_train, INT, INT, -1);
+		struct LineFile *testf = createLF(op->filename_test, INT, INT, -1);
 		BIPS *train = createBIPS(trainf);
 		BIPS *test = createBIPS(testf);
 		struct LineFile *simf = cosineSM(train->core[1], train->core[0]);
@@ -54,7 +54,7 @@ struct TASKLIST *createTL(struct OPTION *op) {
 
 		struct TASK *task = smalloc(sizeof(struct TASK));
 
-		struct LineFile *lf = createLF(op->filename_full, 1, 1, -1);
+		struct LineFile *lf = createLF(op->filename_full, INT, INT, -1);
 		BIP *left = createBIP(lf, LEFT);
 		BIP *right = createBIP(lf, RIGHT);
 		freeLF(lf);
