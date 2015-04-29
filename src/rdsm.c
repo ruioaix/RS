@@ -11,8 +11,7 @@ int main(int argc, char **argv) {
 	struct TASKLIST *tl = createTL(op);
 	freeOPTION(op);
 
-	struct TASK *task = tl->core[0];
-	struct METRICS *result = task->alg(task);
+	struct METRICS *result = tl->core[0]->alg(tl->core[0]);
 	LOG(LOG_INFO, "METRICS: R: %f, RL: %f, PL: %f, HL: %f, IL: %f, NL: %f.", result->R, result->RL, result->PL, result->HL, result->IL, result->NL);
 	freeMTC(result);
 	freeTL(tl);

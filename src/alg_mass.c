@@ -109,7 +109,7 @@ struct METRICS *alg_mass(struct TASK *task) {
 	struct METRICS *retn = createMTC();
 	int *topL = scalloc(L*(trainl->maxId + 1), sizeof(int));
 	double R, RL, PL, HL, IL, NL;
-	R=PL=HL=IL=NL=0;
+	R=RL=PL=HL=IL=NL=0;
 
 	//only use in this function.
 	int *rank = smalloc((trainr->maxId + 1)*sizeof(int));

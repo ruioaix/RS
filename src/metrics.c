@@ -23,7 +23,7 @@ void freeMTC(struct METRICS *lp) {
 //	but I believe in linyuan's paper, she use the bipii->maxId. 
 //	I think bipii->idNum make more sence.
 void set_R_RL_PL_METRICS(int lid, int L, int *rank, BIP *trainl, BIP *trainr, BIP *testl, double *R, double *RL, double *PL) {
-	if (lid<testl->maxId + 1 &&  testl->degree[lid]) {
+	if (lid < testl->maxId + 1 &&  testl->degree[lid]) {
 		int unselected_list_length = trainr->maxId - trainl->degree[lid];
 		int sum_objintest_rank_in_all = 0;
 		int num_objintest_in_topL = 0;
