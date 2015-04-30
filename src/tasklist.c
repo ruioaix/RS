@@ -32,6 +32,7 @@ static void massTL(struct OPTION *op, struct TASKLIST *tl) {
 	otl->trainr_cosine_similarity = tl->trainr_cosine_similarity;
 	otl->num_toprightused2cmptmetrics = op->num_toprightused2cmptmetrics;
 	tl->core[tl->num++] = otl;
+
 	otl->mtc = otl->alg(otl);
 }
 
@@ -64,6 +65,7 @@ static void fullTL(struct OPTION *op, struct TASKLIST *tl) {
 	freeBIPS(tl->train);
 	freeBIPS(tl->test);
 	freeNETS(tl->trainr_cosine_similarity);
+
 	freeBIP(left);
 	freeBIP(right);
 }
@@ -83,14 +85,17 @@ static void ttTL(struct OPTION *op, struct TASKLIST *tl) {
 	if (op->alg_mass) massTL(op, tl);
 }
 
+static int numTL(struct OPTION *op) {
+	return algnumOPTION(op) * op->num_looptimes;	
+}
+
 struct TASKLIST *walkingTL(struct OPTION *op) {
 	struct TASKLIST *tl = smalloc(sizeof(struct TASKLIST));
-	tl->num = algnumOPTION(op) * op->num_looptimes;	
-	tl->core = smalloc(tl->num * sizeof(OTL*));
+	tl->core = smalloc(numTL(op) * sizeof(OTL*));
+	//init
 	tl->train = NULL;
 	tl->test = NULL;
 	tl->trainr_cosine_similarity = NULL;
-
 	tl->num = 0;
 
 	if (op->filename_full) fullTL(op, tl);

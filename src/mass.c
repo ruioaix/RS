@@ -87,13 +87,13 @@ static inline void Bip_core_common_part(int rmaxId, int *rdegree, double *rvlts,
 
 struct METRICS *mass(struct TASK *task) {
 	LOG(LOG_INFO, "alg_mass enter");
-	//param from args.
+	//1 level, from task
 	BIP *trainl = task->train->core[0];
 	BIP *trainr = task->train->core[1];
 	BIP *testl = task->test->core[0];
-	
 	int L = task->num_toprightused2cmptmetrics;
 
+	//2 level, from 1 level
 	int lmaxId = trainl->maxId;
 	int rmaxId = trainr->maxId;
 	int *ldegree = trainl->degree;
@@ -101,19 +101,17 @@ struct METRICS *mass(struct TASK *task) {
 	int **lrela = trainl->rela;
 	int **rrela = trainr->rela;
 
-	//param from here, will be given to args.
-	double *lvlts = smalloc((trainl->maxId + 1)*sizeof(double));
-	double *rvlts = smalloc((trainr->maxId + 1)*sizeof(double));
-	int *lidts= smalloc((trainl->maxId + 1)*sizeof(int));
-	int *ridts = smalloc((trainr->maxId + 1)*sizeof(int));
+	//3 level, from 2 level
+	double *lvlts = smalloc((lmaxId + 1)*sizeof(double));
+	double *rvlts = smalloc((rmaxId + 1)*sizeof(double));
+	int *lidts= smalloc((lmaxId + 1)*sizeof(int));
+	int *ridts = smalloc((rmaxId + 1)*sizeof(int));
+	int *rank = smalloc((rmaxId + 1)*sizeof(int));
+	int *topL = scalloc(L*(lmaxId + 1), sizeof(int));
 
 	struct METRICS *retn = createMTC();
-	int *topL = scalloc(L*(trainl->maxId + 1), sizeof(int));
 	double R, RL, PL, HL, IL, NL;
 	R=RL=PL=HL=IL=NL=0;
-
-	//only use in this function.
-	int *rank = smalloc((trainr->maxId + 1)*sizeof(int));
 
 	int i;
 	for (i = 0; i<trainl->maxId + 1; ++i) {
