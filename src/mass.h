@@ -1,5 +1,5 @@
-#ifndef ALG_MASS_H
-#define ALG_MASS_H 
+#ifndef MASS_H
+#define MASS_H 
 
 #include "metrics.h"
 #include "task.h"

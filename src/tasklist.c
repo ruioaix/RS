@@ -6,6 +6,7 @@
 #include "linefile.h"
 #include "similar.h"
 #include "mass.h"
+#include "heats.h"
 #include <stdlib.h>
 
 
@@ -24,9 +25,21 @@ void freeTL(struct TASKLIST *tl) {
 	free(tl);
 }
 
-static void massTL(struct OPTION *op, struct TASKLIST *tl) {
+static void massT(struct OPTION *op, struct TASKLIST *tl) {
 	OTL *otl = smalloc(sizeof(OTL));
 	otl->alg = mass;
+	otl->train = tl->train;
+	otl->test = tl->test;
+	otl->trainr_cosine_similarity = tl->trainr_cosine_similarity;
+	otl->num_toprightused2cmptmetrics = op->num_toprightused2cmptmetrics;
+	tl->core[tl->num++] = otl;
+
+	otl->mtc = otl->alg(otl);
+}
+
+static void heatsT(struct OPTION *op, struct TASKLIST *tl) {
+	OTL *otl = smalloc(sizeof(OTL));
+	otl->alg = heats;
 	otl->train = tl->train;
 	otl->test = tl->test;
 	otl->trainr_cosine_similarity = tl->trainr_cosine_similarity;
@@ -58,8 +71,8 @@ static void fullTL(struct OPTION *op, struct TASKLIST *tl) {
 		tl->trainr_cosine_similarity = createNETS(simf);
 		freeLF(simf);
 
-		if (op->alg_mass) massTL(op, tl);
-		//heatsTL(op, tl);
+		if (op->alg_mass) massT(op, tl);
+		if (op->alg_heats) heatsT(op, tl);
 	}
 
 	freeBIPS(tl->train);
@@ -82,7 +95,7 @@ static void ttTL(struct OPTION *op, struct TASKLIST *tl) {
 	tl->trainr_cosine_similarity = createNETS(simf);
 	freeLF(simf);
 
-	if (op->alg_mass) massTL(op, tl);
+	if (op->alg_mass) massT(op, tl);
 }
 
 static int numTL(struct OPTION *op) {
