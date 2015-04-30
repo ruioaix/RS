@@ -1,4 +1,4 @@
-#include "alg_mass.h"
+#include "mass.h"
 #include "sort.h"
 #include "log.h"
 #include <string.h>
@@ -85,7 +85,7 @@ static inline void Bip_core_common_part(int rmaxId, int *rdegree, double *rvlts,
 	}
 }
 
-struct METRICS *alg_mass(struct TASK *task) {
+struct METRICS *mass(struct TASK *task) {
 	LOG(LOG_INFO, "alg_mass enter");
 	//param from args.
 	BIP *trainl = task->train->core[0];
@@ -100,6 +100,7 @@ struct METRICS *alg_mass(struct TASK *task) {
 	int *rdegree = trainr->degree;
 	int **lrela = trainl->rela;
 	int **rrela = trainr->rela;
+
 	//param from here, will be given to args.
 	double *lvlts = smalloc((trainl->maxId + 1)*sizeof(double));
 	double *rvlts = smalloc((trainr->maxId + 1)*sizeof(double));

@@ -5,7 +5,7 @@
 #include "net.h"
 #include "linefile.h"
 #include "similar.h"
-#include "alg_mass.h"
+#include "mass.h"
 #include <stdlib.h>
 
 
@@ -26,7 +26,7 @@ void freeTL(struct TASKLIST *tl) {
 
 static void massTL(struct OPTION *op, struct TASKLIST *tl) {
 	OTL *otl = smalloc(sizeof(OTL));
-	otl->alg = alg_mass;
+	otl->alg = mass;
 	otl->train = tl->train;
 	otl->test = tl->test;
 	otl->trainr_cosine_similarity = tl->trainr_cosine_similarity;

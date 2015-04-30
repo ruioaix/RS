@@ -14,11 +14,14 @@ struct TASK {
 
 	//used to improve efficient
 	int *rank;
+	
+	double *lvlts = smalloc((trainl->maxId + 1)*sizeof(double));
+	double *rvlts = smalloc((trainr->maxId + 1)*sizeof(double));
+	int *lidts= smalloc((trainl->maxId + 1)*sizeof(int));
+	int *ridts = smalloc((trainr->maxId + 1)*sizeof(int));
 
 	//result;
 	struct METRICS *mtc;
 };
-
-void freeTASK(struct TASK *task);
 
 #endif
