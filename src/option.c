@@ -89,12 +89,18 @@ static void verify_OPTION(struct OPTION *op) {
 		LOG(LOG_FATAL, "Are you sure you want to set the num of the top right objects which will be used to computer metrics to %d?", op->num_toprightused2cmptmetrics);
 	}
 
+	//hybrid
+	if (op->alg_heats && (op->rate_hybridparam < 1E-7 || op->rate_hybridparam > 1.0 - 1E-7) ) {
+		LOG(LOG_FATAL, "Are you sure you want to set the hybrid rate to %f?", op->rate_hybridparam);
+	}
+
 }
 
 static void init_OPTION(struct OPTION *op) {
 	op->alg_mass = false;
 	op->alg_heats = false;
 	op->alg_hybrid = false;
+	op->rate_hybridparam = 0.2;
 	op->alg_HNBI = false;
 
 	op->filename_leftobjectattr = NULL;
@@ -125,6 +131,7 @@ struct OPTION *setOPTION(int argc, char **argv) {
 		{"alg_mass", no_argument, NULL, 'm'},
 		{"alg_heat", no_argument, NULL, 'e'},
 		{"alg_hybrid", no_argument, NULL, 'H'},
+		{"hybrid-rate", required_argument, NULL, 300},
 		{"alg_HNBI", no_argument, NULL, 'N'},
 
 		{"filename_full", required_argument, NULL, 'i'},
@@ -158,6 +165,9 @@ struct OPTION *setOPTION(int argc, char **argv) {
 				break;
 			case 'H':
 				op->alg_hybrid = true;
+				break;
+			case 300:
+				op->rate_hybridparam = strtod(optarg, NULL);
 				break;
 			case 'N':
 				op->alg_HNBI = true;
@@ -220,6 +230,9 @@ struct OPTION *setOPTION(int argc, char **argv) {
 	}
 	LOG(LOG_INFO, "The num of top recommeded right objects: %d", op->num_toprightused2cmptmetrics);
 	LOG(LOG_INFO, "The seed of random number generater: %lu", op->seed_random);
+	if (op->alg_hybrid) {
+		LOG(LOG_INFO, "hybrid rate:  %f", op->rate_hybridparam);
+	}
 
 	return op;
 }

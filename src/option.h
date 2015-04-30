@@ -7,6 +7,7 @@ struct OPTION {
 	bool alg_mass;
 	bool alg_heats;
 	bool alg_hybrid;
+	double rate_hybridparam;
 	bool alg_HNBI;
 
 	char *filename_full;

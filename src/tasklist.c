@@ -7,6 +7,7 @@
 #include "similar.h"
 #include "mass.h"
 #include "heats.h"
+#include "hybrid.h"
 #include <stdlib.h>
 
 
@@ -49,6 +50,19 @@ static void heatsT(struct OPTION *op, struct TASKLIST *tl) {
 	otl->mtc = otl->alg(otl);
 }
 
+static void hybridT(struct OPTION *op, struct TASKLIST *tl) {
+	OTL *otl = smalloc(sizeof(OTL));
+	otl->alg = hybrid;
+	otl->train = tl->train;
+	otl->test = tl->test;
+	otl->trainr_cosine_similarity = tl->trainr_cosine_similarity;
+	otl->num_toprightused2cmptmetrics = op->num_toprightused2cmptmetrics;
+	otl->rate_hybridparam = op->rate_hybridparam;
+	tl->core[tl->num++] = otl;
+
+	otl->mtc = otl->alg(otl);
+}
+
 static void fullTL(struct OPTION *op, struct TASKLIST *tl) {
 	struct LineFile *lf = createLF(op->filename_full, INT, INT, -1);
 	BIP *left = createBIP(lf, LEFT);
@@ -73,6 +87,7 @@ static void fullTL(struct OPTION *op, struct TASKLIST *tl) {
 
 		if (op->alg_mass) massT(op, tl);
 		if (op->alg_heats) heatsT(op, tl);
+		if (op->alg_hybrid) hybridT(op, tl);
 	}
 
 	freeBIPS(tl->train);
@@ -111,9 +126,9 @@ struct TASKLIST *walkingTL(struct OPTION *op) {
 	tl->trainr_cosine_similarity = NULL;
 	tl->num = 0;
 
+	LOG(LOG_INFO, "start walking TASKLIST...");
 	if (op->filename_full) fullTL(op, tl);
 	else ttTL(op, tl);
 
-	LOG(LOG_INFO, "tasklist created.");
 	return tl;
 }

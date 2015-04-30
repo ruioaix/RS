@@ -6,11 +6,15 @@
 #include "option.h"
 
 struct TASK {
+	//common
 	struct METRICS * (*alg)(struct TASK *);
 	BIPS* train;
 	BIPS* test;
 	NETS* trainr_cosine_similarity;
 	int num_toprightused2cmptmetrics;
+
+	//special
+	double rate_hybridparam;
 
 	//result;
 	struct METRICS *mtc;

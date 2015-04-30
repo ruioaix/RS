@@ -49,7 +49,7 @@ static void mass_core(int lid, int lmaxId, int rmaxId, int *ldegree, int *rdegre
 }
 
 struct METRICS *mass(struct TASK *task) {
-	LOG(LOG_INFO, "alg_mass enter");
+	LOG(LOG_INFO, "mass enter");
 	//1 level, from task
 	BIP *trainl = task->train->core[0];
 	BIP *trainr = task->train->core[1];
