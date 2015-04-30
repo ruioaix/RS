@@ -109,3 +109,15 @@ struct METRICS *heats(struct TASK *task) {
 	retn->RL = RL;
 	return retn;
 }
+
+struct TASK *heatsT(struct OPTION *op) {
+	struct TASK *otl = smalloc(sizeof(struct TASK));
+	otl->train = NULL;
+	otl->test = NULL;
+	otl->trainr_cosine_similarity = NULL;
+
+	otl->alg = heats;
+	otl->num_toprightused2cmptmetrics = op->num_toprightused2cmptmetrics;
+
+	return otl;
+}

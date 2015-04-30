@@ -5,5 +5,6 @@
 #include "task.h"
 
 struct METRICS *hnbi(struct TASK *task);
+struct TASK *hnbiT(struct OPTION *op);
 
 #endif

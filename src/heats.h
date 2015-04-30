@@ -5,5 +5,6 @@
 #include "task.h"
 
 struct METRICS *heats(struct TASK *task);
+struct TASK *heatsT(struct OPTION *op);
 
 #endif

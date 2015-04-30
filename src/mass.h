@@ -5,5 +5,6 @@
 #include "task.h"
 
 struct METRICS *mass(struct TASK *task);
+struct TASK *massT(struct OPTION *op);
 
 #endif

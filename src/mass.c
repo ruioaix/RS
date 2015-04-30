@@ -113,3 +113,15 @@ struct METRICS *mass(struct TASK *task) {
 	retn->RL = RL;
 	return retn;
 }
+
+struct TASK *massT(struct OPTION *op) {
+	struct TASK *otl = smalloc(sizeof(struct TASK));
+	otl->train = NULL;
+	otl->test = NULL;
+	otl->trainr_cosine_similarity = NULL;
+
+	otl->alg = mass;
+	otl->num_toprightused2cmptmetrics = op->num_toprightused2cmptmetrics;
+
+	return otl;
+}

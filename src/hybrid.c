@@ -111,3 +111,16 @@ struct METRICS *hybrid(struct TASK *task) {
 	retn->RL = RL;
 	return retn;
 }
+
+struct TASK *hybridT(struct OPTION *op) {
+	struct TASK *otl = smalloc(sizeof(struct TASK));
+	otl->train = NULL;
+	otl->test = NULL;
+	otl->trainr_cosine_similarity = NULL;
+
+	otl->alg = hybrid;
+	otl->num_toprightused2cmptmetrics = op->num_toprightused2cmptmetrics;
+	otl->rate_hybridparam = op->rate_hybridparam;
+
+	return otl;
+}

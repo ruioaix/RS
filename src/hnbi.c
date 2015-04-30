@@ -110,3 +110,16 @@ struct METRICS *hnbi(struct TASK *task) {
 	retn->RL = RL;
 	return retn;
 }
+
+struct TASK *hnbiT(struct OPTION *op) {
+	struct TASK *otl = smalloc(sizeof(struct TASK));
+	otl->train = NULL;
+	otl->test = NULL;
+	otl->trainr_cosine_similarity = NULL;
+
+	otl->alg = hnbi;
+	otl->num_toprightused2cmptmetrics = op->num_toprightused2cmptmetrics;
+	otl->rate_hnbiparam = op->rate_hnbiparam;
+
+	return otl;
+}
