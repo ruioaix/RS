@@ -34,6 +34,16 @@ static void display_usage(void) {
 	puts("       Rate used to divide full dataset to train and test dataset");
 	puts("       only valid when -i option is used");
 	puts("");
+	puts("  --hybrid-rate doubleValue:  ");
+	puts("       Rate used in hybrid algorithm.");
+	puts("       only valid when -H option is used, otherwize this arg will be ignored.");
+	puts("       default: 0.2");
+	puts("");
+	puts("  --HNBI-rate doubleValue:  ");
+	puts("       Rate used in HNBI algorithm.");
+	puts("       only valid when -N option is used, otherwize this arg will be ignored.");
+	puts("       default: -0.8");
+	puts("");
 	puts("  -l intValue:  ");
 	puts("       Number of times which the algorthim calculation need to be performed");
 	puts("       in order to get reasonable average result");
@@ -102,6 +112,7 @@ static void init_OPTION(struct OPTION *op) {
 	op->alg_hybrid = false;
 	op->rate_hybridparam = 0.2;
 	op->alg_HNBI = false;
+	op->rate_hnbiparam = -0.8;
 
 	op->filename_leftobjectattr = NULL;
 	op->filename_full = NULL;
@@ -133,6 +144,7 @@ struct OPTION *setOPTION(int argc, char **argv) {
 		{"alg_hybrid", no_argument, NULL, 'H'},
 		{"hybrid-rate", required_argument, NULL, 300},
 		{"alg_HNBI", no_argument, NULL, 'N'},
+		{"HNBI-rate", required_argument, NULL, 301},
 
 		{"filename_full", required_argument, NULL, 'i'},
 		{"filename_train", required_argument, NULL, 'T'},
@@ -171,6 +183,9 @@ struct OPTION *setOPTION(int argc, char **argv) {
 				break;
 			case 'N':
 				op->alg_HNBI = true;
+				break;
+			case 301:
+				op->rate_hnbiparam = strtod(optarg, NULL);
 				break;
 			case 'i':
 				op->filename_full = optarg;
@@ -232,6 +247,9 @@ struct OPTION *setOPTION(int argc, char **argv) {
 	LOG(LOG_INFO, "The seed of random number generater: %lu", op->seed_random);
 	if (op->alg_hybrid) {
 		LOG(LOG_INFO, "hybrid rate:  %f", op->rate_hybridparam);
+	}
+	if (op->alg_HNBI) {
+		LOG(LOG_INFO, "HNBI rate:  %f", op->rate_hnbiparam);
 	}
 
 	return op;

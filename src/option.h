@@ -9,6 +9,7 @@ struct OPTION {
 	bool alg_hybrid;
 	double rate_hybridparam;
 	bool alg_HNBI;
+	double rate_hnbiparam;
 
 	char *filename_full;
 	char *filename_train;

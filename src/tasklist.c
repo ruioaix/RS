@@ -8,8 +8,8 @@
 #include "mass.h"
 #include "heats.h"
 #include "hybrid.h"
+#include "hnbi.h"
 #include <stdlib.h>
-
 
 void freeOTL(OTL *otl) {
 	freeMTC(otl->mtc);
@@ -63,6 +63,19 @@ static void hybridT(struct OPTION *op, struct TASKLIST *tl) {
 	otl->mtc = otl->alg(otl);
 }
 
+static void hnbiT(struct OPTION *op, struct TASKLIST *tl) {
+	OTL *otl = smalloc(sizeof(OTL));
+	otl->alg = hnbi;
+	otl->train = tl->train;
+	otl->test = tl->test;
+	otl->trainr_cosine_similarity = tl->trainr_cosine_similarity;
+	otl->num_toprightused2cmptmetrics = op->num_toprightused2cmptmetrics;
+	otl->rate_hnbiparam = op->rate_hnbiparam;
+	tl->core[tl->num++] = otl;
+
+	otl->mtc = otl->alg(otl);
+}
+
 static void fullTL(struct OPTION *op, struct TASKLIST *tl) {
 	struct LineFile *lf = createLF(op->filename_full, INT, INT, -1);
 	BIP *left = createBIP(lf, LEFT);
@@ -88,6 +101,7 @@ static void fullTL(struct OPTION *op, struct TASKLIST *tl) {
 		if (op->alg_mass) massT(op, tl);
 		if (op->alg_heats) heatsT(op, tl);
 		if (op->alg_hybrid) hybridT(op, tl);
+		if (op->alg_HNBI) hnbiT(op, tl);
 	}
 
 	freeBIPS(tl->train);

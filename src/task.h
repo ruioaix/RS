@@ -15,6 +15,7 @@ struct TASK {
 
 	//special
 	double rate_hybridparam;
+	double rate_hnbiparam;
 
 	//result;
 	struct METRICS *mtc;
