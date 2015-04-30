@@ -90,7 +90,7 @@ static void verify_OPTION(struct OPTION *op) {
 	}
 
 	//hybrid
-	if (op->alg_heats && (op->rate_hybridparam < 1E-7 || op->rate_hybridparam > 1.0 - 1E-7) ) {
+	if (op->alg_heats && (op->rate_hybridparam < 1E-7 || op->rate_hybridparam > 1.0 + 1E-10) ) {
 		LOG(LOG_FATAL, "Are you sure you want to set the hybrid rate to %f?", op->rate_hybridparam);
 	}
 
