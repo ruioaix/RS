@@ -4,72 +4,61 @@
 #include "alg.h"
 #include <string.h>
 #include <stdlib.h>
+#include <math.h>
 
-static void masssc_core(int lid, int lmaxId, int rmaxId, int *ldegree, int *rdegree, int **lrela, int **rrela, double *lvltr, double *rvltr) {
+static void masssc_core(int lid, int lmaxId, int rmaxId, int *ldegree, int *rdegree, int **lrela, int **rrela, int **lscore, int maxscore, double rate, double *lvltr, double *rvltr, double *lsctr, int *rsctr) {
 
-	int maxscore = args->maxscore;
-	double theta = args->mass_score;
-
-	double *i1sourceA = args->i1sourceA;
-	double *i2sourceA = args->i2sourceA;
-
-	int **i1score = args->traini1->score;
-	int **i2score = args->traini2->score;
-
-	if (i1score == NULL || i2source == NULL) isError("mass_score_recommend_Bip");
-	int *i2id = args->i2id;
-	int i, j, neigh;
-	long degree;
-	double source;
-	double totalsource = 0;
+	int i, j, neigh, degree;
+	double source, totalsource = 0;
 	//one 
-	memset(i2id, 0, (i2maxId +1)*sizeof(int));
-	memset(i2source, 0, (i2maxId+1)*sizeof(double));
-	for (j=0; j<i1count[i1]; ++j) {
-		neigh = i1ids[i1][j];
-		i2id[neigh] = i1score[i1][j];
-		i2source[neigh] = pow(i1score[i1][j], theta);
-		totalsource += i2source[neigh];	
+	memset(rsctr, 0, (rmaxId + 1) * sizeof(int));
+	memset(rvltr, 0, (rmaxId + 1) * sizeof(double));
+	for (j = 0; j < ldegree[lid]; ++j) {
+		neigh = lrela[lid][j];
+		rsctr[neigh] = lscore[lid][j];
+		rvltr[neigh] = pow(lscore[lid][j], rate);
+		totalsource += rvltr[neigh];	
 	}
-	for (j=0; j<i1count[i1]; ++j) {
-		i2source[neigh] = i2source[neigh]*i1count[i1]/totalsource;
+	for (j = 0; j < ldegree[lid]; ++j) {
+		neigh = lrela[lid][j];
+		rvltr[neigh] = rvltr[neigh] * ldegree[lid] / totalsource;
 	}
+
 	//two
-	memset(i1source, 0, (i1maxId+1)*sizeof(double));
-	for (i=0; i<i2maxId + 1; ++i) {
-		if (i2source[i]) {
-			degree = i2count[i];
-			source = i2source[i];
+	memset(lvltr, 0, (lmaxId + 1) * sizeof(double));
+	for (i = 0; i < rmaxId + 1; ++i) {
+		if (rvltr[i]) {
+			degree = rdegree[i];
+			source = rvltr[i];
 			totalsource = 0;
-			for (j=0; j<degree; ++j) {
-				neigh = i2ids[i][j];
-				//i1sourceA[neigh] = pow(maxscore - fabs(0-i2id[i]), theta); 
-				i1sourceA[neigh] = pow(maxscore - fabs(i2score[i][j]-i2id[i]), theta); 
-				totalsource += i1sourceA[neigh];
+			for (j = 0; j < degree; ++j) {
+				neigh = rrela[i][j];
+				lsctr[neigh] = pow(maxscore - abs(lscore[i][j] - rsctr[i]), rate); 
+				totalsource += lsctr[neigh];
 			}
-			for (j=0; j<degree; ++j) {
-				neigh = i2ids[i][j];
-				i1source[neigh] += source*i1sourceA[neigh]/totalsource;
+			for (j = 0; j < degree; ++j) {
+				neigh = rrela[i][j];
+				lvltr[neigh] += source*lsctr[neigh]/totalsource;
 			}
 		}
 	}
 	//printf("xxxo\n");fflush(stdout);
 
 	//three
-	memset(i2source, 0, (i2maxId+1)*sizeof(double));
-	for (i=0; i<i1maxId + 1; ++i) {
-		if (i1source[i]) {
+	memset(rvltr, 0, (rmaxId + 1) * sizeof(double));
+	for (i = 0; i < lmaxId + 1; ++i) {
+		if (lvltr[i]) {
 			totalsource = 0;
-			degree = i1count[i];
-			source = i1source[i];
-			for (j=0; j<degree; ++j) {
-				neigh = i1ids[i][j];
-				i2sourceA[neigh] = pow((double)i1score[i][j]/(double)i2count[neigh], theta);
-				totalsource += i2sourceA[neigh];
+			degree = ldegree[i];
+			source = lvltr[i];
+			for (j = 0; j < degree; ++j) {
+				neigh = lrela[i][j];
+				lsctr[neigh] = pow((double)lscore[i][j] / (double)rdegree[neigh], rate);
+				totalsource += rsctr[neigh];
 			}
-			for (j=0; j<degree; ++j) {
-				neigh = i1ids[i][j];
-				i2source[neigh] += source*i2sourceA[neigh]/totalsource;
+			for (j = 0; j < degree; ++j) {
+				neigh = lrela[i][j];
+				rvltr[neigh] += source * rsctr[neigh] / totalsource;
 			}
 		}
 	}
@@ -82,6 +71,8 @@ struct METRICS *masssc(struct TASK *task) {
 	BIP *trainr = task->train->core[1];
 	BIP *testl = task->test->core[0];
 	int L = task->num_toprightused2cmptmetrics;
+	int maxscore = task->masssc_maxscore;
+	double rate = task->rate_massscparam;
 
 	//2 level, from 1 level
 	int lmaxId = trainl->maxId;
@@ -90,10 +81,14 @@ struct METRICS *masssc(struct TASK *task) {
 	int *rdegree = trainr->degree;
 	int **lrela = trainl->rela;
 	int **rrela = trainr->rela;
+	int **lscore = task->train->core[2]->rela;
+
 
 	//3 level, from 2 level
 	double *lvltr = smalloc((lmaxId + 1)*sizeof(double));
 	double *rvltr = smalloc((rmaxId + 1)*sizeof(double));
+	double *lsctr = smalloc((lmaxId + 1)*sizeof(double));
+	int *rsctr = smalloc((rmaxId + 1)*sizeof(int));
 	int *lidtr = smalloc((lmaxId + 1)*sizeof(int));
 	int *ridtr = smalloc((rmaxId + 1)*sizeof(int));
 	int *rank = smalloc((rmaxId + 1)*sizeof(int));
@@ -107,7 +102,7 @@ struct METRICS *masssc(struct TASK *task) {
 	for (i = 0; i<trainl->maxId + 1; ++i) {
 		if (trainl->degree[i]) {//each valid user in trainset.
 			//get rvlts
-			masssc_core(i, lmaxId, rmaxId, ldegree, rdegree, lrela, rrela, lvltr, rvltr);
+			masssc_core(i, lmaxId, rmaxId, ldegree, rdegree, lrela, rrela, lscore, maxscore, rate, lvltr, rvltr, lsctr, rsctr);
 			//use rvlts, get ridts & rank & topL
 			int j;
 			//set selected item's source to -1

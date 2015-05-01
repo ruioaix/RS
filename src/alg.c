@@ -2,7 +2,7 @@
 #include "sort.h"
 #include <string.h>
 
-inline void settopLrank(int L, int rmaxId, int *rdegree, double *rvlts, int *ridts, int *topL, int *rank) {
+void settopLrank(int L, int rmaxId, int *rdegree, double *rvlts, int *ridts, int *topL, int *rank) {
 	
 	//set ridts and rank.
 	int j=0, i;
