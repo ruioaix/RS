@@ -434,3 +434,124 @@ BIPS *createBIPS(const struct LineFile * const lf){
 		   	rmaxId, rminId, ridNum, rdegreeMax, rdegreeMin, edgesNum);
 	return bips;
 }
+
+static void i3d1more(BIPS *bs, struct LineFile *lf, long linenum, int i, int j) {
+	int k, ii = 2, di = 0;
+	for (k = 2; k < bs->num; k += 2) {
+		if (bs->core[k]->rela) {
+			(*(lf->ilist[ii++]))[linenum] = bs->core[k]->rela[i][j];
+		}
+		else if (bs->core[k]->aler) {
+			(*(lf->dlist[di++]))[linenum] = bs->core[k]->aler[i][j];
+		}
+		else {
+			LOG(LOG_FATAL, "BIPS is broken.");
+		}
+	}
+}
+
+void divideBIPS(BIPS *bs, double rate, struct LineFile **small, struct LineFile **big) {
+	if (rate <= 0 || rate >= 1) {
+		LOG(LOG_FATAL, "divide_Bip error: wrong rate.");
+	}
+	if (bs->num < 2) LOG(LOG_FATAL, "wrong BIPS");
+	rate = rate > 0.5 ? 1-rate : rate;
+
+	BIP *bl = bs->core[0];
+	BIP *br = bs->core[1];
+
+	long l1, l2;
+	if (bl->edgesNum > 100000) {
+		l1 = (long)(bl->edgesNum * (rate+0.1));
+		l2 = (long)(bl->edgesNum * (1-rate+0.1));
+	}
+	else {
+		l2 = l1 = bl->edgesNum;
+	}
+
+	*small = createLF(NULL);
+	*big = createLF(NULL);
+
+	(*small)->i1 = smalloc(l1 * sizeof(int));
+	(*big)->i1 = smalloc(l2 * sizeof(int));
+	
+	(*small)->i2 = smalloc(l1 * sizeof(int));
+	(*big)->i2 = smalloc(l2 * sizeof(int));
+
+
+	int i;
+	for (i = 2; i < bs->num; i += 2) {
+		if (bs->core[i]->rela) {
+			*(nextiLF(*small)) = smalloc(l1 * sizeof(int));
+			*(nextiLF(*big)) = smalloc(l2 * sizeof(int));
+		}
+		else if (bs->core[i]->aler) {
+			*(nextdLF(*small)) = smalloc(l1 * sizeof(double));
+			*(nextdLF(*big)) = smalloc(l2 * sizeof(double));
+		}
+		else {
+			LOG(LOG_FATAL, "BIPS is broken.");
+		}
+	}
+
+	long line1=0, line2=0;
+
+	int *lsign = scalloc(bl->maxId + 1, sizeof(int));
+	int *ldegree = smalloc((bl->maxId + 1)*sizeof(int));
+	memcpy(ldegree, bl->degree, (bl->maxId + 1)*sizeof(int));
+
+	int *rsign = scalloc(br->maxId + 1, sizeof(int));
+	int *rdegree = smalloc((br->maxId + 1)*sizeof(int));
+	memcpy(rdegree, br->degree, (br->maxId + 1)*sizeof(int));
+
+	int j, neigh;
+	for (i=0; i<bl->maxId + 1; ++i) {
+		for (j=0; j<bl->degree[i]; ++j) {
+			neigh = bl->rela[i][j];
+
+			if (randomd01() < rate) {
+				if ((ldegree[i] == 1 && lsign[i] == 0) || (rdegree[neigh] == 1 && rsign[neigh] == 0)) {
+					(*big)->i1[line2] = i;
+					(*big)->i2[line2] = neigh;
+					i3d1more(bs, *big, line2, i, j);
+					--ldegree[i];
+					--rdegree[neigh];
+					lsign[i] = 1;
+					rsign[neigh] = 1;
+					++line2;
+					continue;
+				}
+				(*small)->i1[line1] = i;	
+				(*small)->i2[line1] = neigh;	
+				i3d1more(bs, *small, line1, i, j);
+				--ldegree[i];
+				--rdegree[neigh];
+				++line1;
+				continue;
+			}
+
+			(*big)->i1[line2] = i;	
+			(*big)->i2[line2] = neigh;	
+			i3d1more(bs, *big, line2, i, j);
+			lsign[i] = 1;
+			rsign[neigh] = 1;
+			--ldegree[i];
+			--rdegree[neigh];
+			++line2;
+		}
+	}
+	if ((line1 > l1) || (line2 > l2)) {
+		LOG(LOG_FATAL, "l1 and l2 two small.");
+	}
+
+	free(lsign);
+	free(rsign);
+	free(ldegree);
+	free(rdegree);
+
+	(*small)->linesNum = line1;
+	(*big)->linesNum = line2;
+
+	LOG(LOG_INFO, "Divide left&right BIP into big&small LF:");
+	LOG(LOG_INFO, "  rate: %.3f, big file's linesNum: %ld, small file's linesNum: %ld.", rate, line2, line1);
+}

@@ -41,5 +41,6 @@ void divideBIP(BIP *left, BIP *right, double rate, struct LineFile **small_part,
 typedef struct CORES BIPS;
 void freeBIPS(BIPS *bips);
 BIPS *createBIPS(const struct LineFile * const file);
+void divideBIPS(BIPS *bs, double rate, struct LineFile **small, struct LineFile **big);
 
 #endif
