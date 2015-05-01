@@ -66,6 +66,10 @@ struct LineFile {
  * non-int type arguments are ignored.
  *
  */
+int **nextiLF(struct LineFile *lf);
+double **nextdLF(struct LineFile *lf);
+char ***nextsLF(struct LineFile *lf);
+
 struct LineFile *createLF(char * filename, ...);
 /// free;
 void freeLF(struct LineFile *lf);

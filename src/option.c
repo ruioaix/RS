@@ -15,6 +15,7 @@ static void display_usage(void) {
 	puts("  -H:  Calculate the result of hybrid algorithm");
 	puts("  -N:  Calculate the result of HNBI algorithm");
 	puts("  -S:  Calculate the result of mass score algorithm");
+	puts("  -w:  Calculate the result of mass score (only the third step) algorithm");
 	puts("");
 	puts("OPTION with arguments:");
 	puts("  -i filename:");
@@ -47,7 +48,12 @@ static void display_usage(void) {
 	puts("");
 	puts("  --mass-score-rate doubleValue:  ");
 	puts("       Rate used in mass score algorithm.");
-	puts("       only valid when -s option is used, otherwize this arg will be ignored.");
+	puts("       only valid when -S option is used, otherwize this arg will be ignored.");
+	puts("       default: -0.8");
+	puts("");
+	puts("  --mass-score-third-rate doubleValue:  ");
+	puts("       Rate used in mass score (only the third step algorithm.");
+	puts("       only valid when -w option is used, otherwize this arg will be ignored.");
 	puts("       default: -0.8");
 	puts("");
 	puts("  -l intValue:  ");
@@ -69,7 +75,7 @@ static void display_usage(void) {
 
 static void verify_OPTION(struct OPTION *op) {
 	//algorithms
-	if (!( op->alg_mass || op->alg_heats || op->alg_hybrid || op->alg_HNBI )) {
+	if (!( op->alg_mass || op->alg_heats || op->alg_hybrid || op->alg_HNBI || op->alg_masssc || op->alg_masssct)) {
 		LOG(LOG_FATAL, "no algorithms selected, what do you want to calculate?");
 	}
 
@@ -121,6 +127,8 @@ static void init_OPTION(struct OPTION *op) {
 	op->rate_hnbiparam = -0.8;
 	op->alg_masssc = false;
 	op->rate_massscparam = 0.14;
+	op->alg_masssct = false;
+	op->rate_masssctparam = 0.14;
 
 	op->filename_leftobjectattr = NULL;
 	op->filename_full = NULL;
@@ -143,7 +151,7 @@ struct OPTION *setOPTION(int argc, char **argv) {
 	struct OPTION *op = smalloc(sizeof(struct OPTION));
 	init_OPTION(op);
 
-	static const char *optString = "hmeHNSi:T:t:u:d:l:L:s:o:";
+	static const char *optString = "hmeHNSwi:T:t:u:d:l:L:s:o:";
 	struct option longOpts[] = {
 		{"help", no_argument, NULL, 'h'},
 
@@ -155,6 +163,8 @@ struct OPTION *setOPTION(int argc, char **argv) {
 		{"HNBI-rate", required_argument, NULL, 301},
 		{"alg_masssc", no_argument, NULL, 'S'},
 		{"mass-score-rate", required_argument, NULL, 302},
+		{"alg_masssct", no_argument, NULL, 'w'},
+		{"mass-score-third-rate", required_argument, NULL, 303},
 
 		{"filename_full", required_argument, NULL, 'i'},
 		{"filename_train", required_argument, NULL, 'T'},
@@ -203,6 +213,12 @@ struct OPTION *setOPTION(int argc, char **argv) {
 			case 302:
 				op->rate_massscparam = strtod(optarg, NULL);
 				break;
+			case 'w':
+				op->alg_masssct = true;
+				break;
+			case 303:
+				op->rate_masssctparam = strtod(optarg, NULL);
+				break;
 			case 'i':
 				op->filename_full = optarg;
 				break;
@@ -245,11 +261,12 @@ struct OPTION *setOPTION(int argc, char **argv) {
 	verify_OPTION(op);
 
 	LOG(LOG_INFO, "Algorithm:");
-	LOG(LOG_INFO, "  mass:   %s", trueorfalse(op->alg_mass));
-	LOG(LOG_INFO, "  heats:  %s", trueorfalse(op->alg_heats));
-	LOG(LOG_INFO, "  hybrid: %s", trueorfalse(op->alg_hybrid));
-	LOG(LOG_INFO, "  HNBI:   %s", trueorfalse(op->alg_HNBI));
-	LOG(LOG_INFO, "  masssc: %s", trueorfalse(op->alg_masssc));
+	LOG(LOG_INFO, "  mass:    %s", trueorfalse(op->alg_mass));
+	LOG(LOG_INFO, "  heats:   %s", trueorfalse(op->alg_heats));
+	LOG(LOG_INFO, "  hybrid:  %s", trueorfalse(op->alg_hybrid));
+	LOG(LOG_INFO, "  HNBI:    %s", trueorfalse(op->alg_HNBI));
+	LOG(LOG_INFO, "  masssc:  %s", trueorfalse(op->alg_masssc));
+	LOG(LOG_INFO, "  masssct: %s", trueorfalse(op->alg_masssct));
 	if (op->filename_full) {
 		LOG(LOG_INFO, "Full dataset: %s", op->filename_full);
 		LOG(LOG_INFO, "Divide rate:  %f", op->rate_dividefulldataset);
@@ -271,6 +288,9 @@ struct OPTION *setOPTION(int argc, char **argv) {
 	if (op->alg_masssc) {
 		LOG(LOG_INFO, "masssc rate:  %f", op->rate_massscparam);
 	}
+	if (op->alg_masssct) {
+		LOG(LOG_INFO, "masssct rate:  %f", op->rate_masssctparam);
+	}
 
 	return op;
 }
@@ -279,5 +299,7 @@ int algnumOPTION(struct OPTION *op) {
 	return (int)(op->alg_mass) + \
 		(int)(op->alg_HNBI) + \
 		(int)(op->alg_heats) + \
-		(int)(op->alg_hybrid);
+		(int)(op->alg_hybrid) + \
+		(int)(op->alg_masssc) + \
+		(int)(op->alg_masssct);
 }

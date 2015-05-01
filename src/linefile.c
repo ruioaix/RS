@@ -43,6 +43,30 @@ static void set_list_LineFile(struct LineFile *lf) {
 	lf->slist[8] = &(lf->s9);
 }
 
+int **nextiLF(struct LineFile *lf) {
+	int i;
+	for (i = 0; i < lf->iNum; ++i) {
+		if (!(*(lf->ilist[i]))) return lf->ilist[i];
+	} 
+	return NULL;
+}
+
+double **nextdLF(struct LineFile *lf) {
+	int i;
+	for (i = 0; i < lf->dNum; ++i) {
+		if (!(*(lf->dlist[i]))) return lf->dlist[i];
+	} 
+	return NULL;
+}
+
+char ***nextsLF(struct LineFile *lf) {
+	int i;
+	for (i = 0; i < lf->sNum; ++i) {
+		if (!(*(lf->slist[i]))) return lf->slist[i];
+	} 
+	return NULL;
+}
+
 //create an empty but completive LineFile.
 static struct LineFile *init_LineFile(void) {
 	struct LineFile *lf = smalloc(sizeof(struct LineFile));
@@ -508,3 +532,5 @@ struct LineFile *cloneLF(struct LineFile *lf) {
 	LOG(LOG_INFO, "LF cloned, new LF linesNum is %ld, old LF linesNum is %ld.", lf->linesNum, newlf->linesNum);
 	return newlf;
 }
+
+

@@ -12,6 +12,8 @@ struct OPTION {
 	double rate_hnbiparam;
 	bool alg_masssc;
 	double rate_massscparam;
+	bool alg_masssct;
+	double rate_masssctparam;
 
 	char *filename_full;
 	char *filename_train;

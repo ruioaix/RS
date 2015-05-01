@@ -9,6 +9,8 @@
 #include "heats.h"
 #include "hybrid.h"
 #include "hnbi.h"
+#include "masssc.h"
+#include "masssct.h"
 #include <stdlib.h>
 
 void freeOTL(OTL *otl) {
@@ -36,15 +38,14 @@ static void tread(struct TASK* otl, struct TASKLIST *tl) {
 }
 
 static void fullTL(struct OPTION *op, struct TASKLIST *tl) {
-	struct LineFile *lf = createLF(op->filename_full, INT, INT, -1);
-	BIP *left = createBIP(lf, LEFT);
-	BIP *right = createBIP(lf, RIGHT);
+	struct LineFile *lf = createLF(op->filename_full, INT, INT, INT, -1);
+	BIPS *full = createBIPS(lf);
 	freeLF(lf);
 
 	int i;
 	for (i = 0; i < op->num_looptimes; ++i) {
 		struct LineFile *testf, *trainf;
-		divideBIP(left, right, op->rate_dividefulldataset, &testf, &trainf);
+		divideBIPS(full, op->rate_dividefulldataset, &testf, &trainf);
 		freeBIPS(tl->train);
 		tl->train = createBIPS(trainf);
 		freeLF(trainf);
@@ -61,14 +62,15 @@ static void fullTL(struct OPTION *op, struct TASKLIST *tl) {
 		if (op->alg_heats) tread(heatsT(op), tl);
 		if (op->alg_hybrid) tread(hybridT(op), tl);
 		if (op->alg_HNBI) tread(hnbiT(op), tl);
+		if (op->alg_masssc) tread(massscT(op), tl);
+		if (op->alg_masssct) tread(masssctT(op), tl);
 	}
 
 	freeBIPS(tl->train);
 	freeBIPS(tl->test);
 	freeNETS(tl->trainr_cosine_similarity);
 
-	freeBIP(left);
-	freeBIP(right);
+	freeBIPS(full);
 }
 
 static void ttTL(struct OPTION *op, struct TASKLIST *tl) {
