@@ -9,6 +9,7 @@
 #include "heats.h"
 #include "hybrid.h"
 #include "hnbi.h"
+#include "massd.h"
 #include "masssc.h"
 #include "masssct.h"
 #include <stdlib.h>
@@ -62,6 +63,7 @@ static void fullTL(struct OPTION *op, struct TASKLIST *tl) {
 		if (op->alg_heats) tread(heatsT(op), tl);
 		if (op->alg_hybrid) tread(hybridT(op), tl);
 		if (op->alg_HNBI) tread(hnbiT(op), tl);
+		if (op->alg_massd) tread(massdT(op), tl);
 		if (op->alg_masssc) tread(massscT(op), tl);
 		if (op->alg_masssct) tread(masssctT(op), tl);
 	}

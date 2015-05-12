@@ -19,6 +19,7 @@ struct TASK {
 	double rate_massscparam;
 	double rate_masssctparam;
 	int masssc_maxscore;
+	double rate_massdparam;
 
 	//result;
 	struct METRICS *mtc;

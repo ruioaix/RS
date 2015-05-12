@@ -14,6 +14,7 @@ static void display_usage(void) {
 	puts("  -e:  Calculate the result of heats algorithm");
 	puts("  -H:  Calculate the result of hybrid algorithm");
 	puts("  -N:  Calculate the result of HNBI algorithm");
+	puts("  -D:  Calculate the result of mass degree algorithm");
 	puts("  -S:  Calculate the result of mass score algorithm");
 	puts("  -w:  Calculate the result of mass score (only the third step) algorithm");
 	puts("");
@@ -44,6 +45,11 @@ static void display_usage(void) {
 	puts("  --HNBI-rate doubleValue:  ");
 	puts("       Rate used in HNBI algorithm.");
 	puts("       only valid when -N option is used, otherwize this arg will be ignored.");
+	puts("       default: -0.8");
+	puts("");
+	puts("  --mass-degree-rate doubleValue:  ");
+	puts("       Rate used in mass score algorithm.");
+	puts("       only valid when -D option is used, otherwize this arg will be ignored.");
 	puts("       default: -0.8");
 	puts("");
 	puts("  --mass-score-rate doubleValue:  ");
@@ -125,6 +131,8 @@ static void init_OPTION(struct OPTION *op) {
 	op->rate_hybridparam = 0.2;
 	op->alg_HNBI = false;
 	op->rate_hnbiparam = -0.8;
+	op->alg_massd = false;
+	op->rate_massdparam = 0.14;
 	op->alg_masssc = false;
 	op->rate_massscparam = 0.14;
 	op->alg_masssct = false;
@@ -151,7 +159,7 @@ struct OPTION *setOPTION(int argc, char **argv) {
 	struct OPTION *op = smalloc(sizeof(struct OPTION));
 	init_OPTION(op);
 
-	static const char *optString = "hmeHNSwi:T:t:u:d:l:L:s:o:";
+	static const char *optString = "hmeHNDSwi:T:t:u:d:l:L:s:o:";
 	struct option longOpts[] = {
 		{"help", no_argument, NULL, 'h'},
 
@@ -161,6 +169,8 @@ struct OPTION *setOPTION(int argc, char **argv) {
 		{"hybrid-rate", required_argument, NULL, 300},
 		{"alg_HNBI", no_argument, NULL, 'N'},
 		{"HNBI-rate", required_argument, NULL, 301},
+		{"alg_massd", no_argument, NULL, 'S'},
+		{"mass-degree-rate", required_argument, NULL, 304},
 		{"alg_masssc", no_argument, NULL, 'S'},
 		{"mass-score-rate", required_argument, NULL, 302},
 		{"alg_masssct", no_argument, NULL, 'w'},
@@ -206,6 +216,12 @@ struct OPTION *setOPTION(int argc, char **argv) {
 				break;
 			case 301:
 				op->rate_hnbiparam = strtod(optarg, NULL);
+				break;
+			case 'D':
+				op->alg_massd = true;
+				break;
+			case 304:
+				op->rate_massdparam = strtod(optarg, NULL);
 				break;
 			case 'S':
 				op->alg_masssc = true;
@@ -265,6 +281,7 @@ struct OPTION *setOPTION(int argc, char **argv) {
 	LOG(LOG_INFO, "  heats:   %s", trueorfalse(op->alg_heats));
 	LOG(LOG_INFO, "  hybrid:  %s", trueorfalse(op->alg_hybrid));
 	LOG(LOG_INFO, "  HNBI:    %s", trueorfalse(op->alg_HNBI));
+	LOG(LOG_INFO, "  massd:  %s", trueorfalse(op->alg_massd));
 	LOG(LOG_INFO, "  masssc:  %s", trueorfalse(op->alg_masssc));
 	LOG(LOG_INFO, "  masssct: %s", trueorfalse(op->alg_masssct));
 	if (op->filename_full) {
@@ -285,6 +302,9 @@ struct OPTION *setOPTION(int argc, char **argv) {
 	if (op->alg_HNBI) {
 		LOG(LOG_INFO, "HNBI rate:  %f", op->rate_hnbiparam);
 	}
+	if (op->alg_massd) {
+		LOG(LOG_INFO, "massd rate:  %f", op->rate_massdparam);
+	}
 	if (op->alg_masssc) {
 		LOG(LOG_INFO, "masssc rate:  %f", op->rate_massscparam);
 	}
@@ -300,6 +320,7 @@ int algnumOPTION(struct OPTION *op) {
 		(int)(op->alg_HNBI) + \
 		(int)(op->alg_heats) + \
 		(int)(op->alg_hybrid) + \
+		(int)(op->alg_massd) + \
 		(int)(op->alg_masssc) + \
 		(int)(op->alg_masssct);
 }

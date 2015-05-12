@@ -10,6 +10,8 @@ struct OPTION {
 	double rate_hybridparam;
 	bool alg_HNBI;
 	double rate_hnbiparam;
+	bool alg_massd;
+	double rate_massdparam;
 	bool alg_masssc;
 	double rate_massscparam;
 	bool alg_masssct;
