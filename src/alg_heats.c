@@ -1,15 +1,12 @@
-#include "mass.h"
+#include "alg_heats.h"
 #include "sort.h"
 #include "log.h"
 #include "alg.h"
 #include <string.h>
 #include <stdlib.h>
 
-static void mass_core(int lid, int lmaxId, int rmaxId, int *ldegree, int *rdegree, int **lrela, int **rrela, double *lvltr, double *rvltr) {
-
+static void heats_core(int lid, int lmaxId, int rmaxId, int *ldegree, int *rdegree, int **lrela, int **rrela, double *lvltr, double *rvltr) {
 	int i, j, neigh;
-	int degree;
-	double source;
 
 	//one 
 	memset(rvltr, 0, (rmaxId + 1) * sizeof(double));
@@ -20,36 +17,35 @@ static void mass_core(int lid, int lmaxId, int rmaxId, int *ldegree, int *rdegre
 
 	//two
 	memset(lvltr, 0, (lmaxId + 1) * sizeof(double));
-	for (i = 0; i < rmaxId + 1; ++i) {
-		if (rvltr[i]) {
-			degree = rdegree[i];
-			source = rvltr[i]/(double)degree;
-			for (j=0; j<degree; ++j) {
-				neigh = rrela[i][j];
-				lvltr[neigh] += source;
+	for (i = 0; i < lmaxId + 1; ++i) {
+		if (ldegree[i]) {
+			for (j = 0; j < ldegree[i]; ++j) {
+				neigh = lrela[i][j];
+				lvltr[i] += rvltr[neigh];
 			}
+			lvltr[i] /= ldegree[i];
 		}
 	}
-	
+
 	//three
 	for (j = 0; j < ldegree[lid]; ++j) {
 		neigh = lrela[lid][j];
 		rvltr[neigh] = 0.0;
 	}
-	for (i = 0; i < lmaxId + 1; ++i) {
-		if (lvltr[i]) {
-			degree = ldegree[i];
-			source = (double)lvltr[i]/(double)degree;
-			for (j=0; j<degree; ++j) {
-				neigh = lrela[i][j];
-				rvltr[neigh] += source;
+	for (i = 0; i < rmaxId + 1; ++i) {
+		if (rdegree[i]) {
+			for (j = 0; j < rdegree[i]; ++j) {
+				neigh = rrela[i][j];
+				rvltr[i] += lvltr[neigh];
 			}
+			rvltr[i] /= rdegree[i];
 		}
 	}
+
 }
 
-struct METRICS *mass(struct TASK *task) {
-	LOG(LOG_INFO, "mass enter");
+struct METRICS *heats(struct TASK *task) {
+	LOG(LOG_INFO, "heats enter");
 	//1 level, from task
 	BIP *trainl = task->train->core[0];
 	BIP *trainr = task->train->core[1];
@@ -80,7 +76,7 @@ struct METRICS *mass(struct TASK *task) {
 	for (i = 0; i<trainl->maxId + 1; ++i) {
 		if (trainl->degree[i]) {//each valid user in trainset.
 			//get rvlts
-			mass_core(i, lmaxId, rmaxId, ldegree, rdegree, lrela, rrela, lvltr, rvltr);
+			heats_core(i, lmaxId, rmaxId, ldegree, rdegree, lrela, rrela, lvltr, rvltr);
 			//use rvlts, get ridts & rank & topL
 			int j;
 			//set selected item's source to -1
@@ -114,13 +110,13 @@ struct METRICS *mass(struct TASK *task) {
 	return retn;
 }
 
-struct TASK *massT(struct OPTION *op) {
+struct TASK *heatsT(struct OPTION *op) {
 	struct TASK *otl = smalloc(sizeof(struct TASK));
 	otl->train = NULL;
 	otl->test = NULL;
 	otl->trainr_cosine_similarity = NULL;
 
-	otl->alg = mass;
+	otl->alg = heats;
 	otl->num_toprightused2cmptmetrics = op->num_toprightused2cmptmetrics;
 
 	return otl;

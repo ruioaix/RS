@@ -1,4 +1,4 @@
-#include "hybrid.h"
+#include "alg_hnbi.h"
 #include "sort.h"
 #include "log.h"
 #include "alg.h"
@@ -6,53 +6,52 @@
 #include <stdlib.h>
 #include <math.h>
 
-static void hybrid_core(int lid, int lmaxId, int rmaxId, int *ldegree, int *rdegree, int **lrela, int **rrela, double rate, double *lvltr, double *rvltr) {
-	int i, j, neigh;
+static void hnbi_core(int lid, int lmaxId, int rmaxId, int *ldegree, int *rdegree, int **lrela, int **rrela, double rate, double *lvltr, double *rvltr) {
+	int i, j, neigh, degree;
+	double source;
 
-	//one
 	memset(rvltr, 0, (rmaxId + 1) * sizeof(double));
 	for (j = 0; j < ldegree[lid]; ++j) {
 		neigh = lrela[lid][j];
-		rvltr[neigh] = 1;
+		rvltr[neigh] = 1.0 * pow(rdegree[neigh], rate);
 	}
 
-	//two
 	memset(lvltr, 0, (lmaxId + 1) * sizeof(double));
 	for (i = 0; i < rmaxId + 1; ++i) {
 		if (rvltr[i]) {
-			double powl = pow(rdegree[i], rate);
-			for (j=0; j<rdegree[i]; ++j) {
+			degree = rdegree[i];
+			source = rvltr[i]/(double)degree;
+			for (j=0; j<degree; ++j) {
 				neigh = rrela[i][j];
-				lvltr[neigh] += rvltr[i]/powl;
+				lvltr[neigh] += source;
 			}
 		}
 	}
 
-	//three
 	for (j = 0; j < ldegree[lid]; ++j) {
 		neigh = lrela[lid][j];
 		rvltr[neigh] = 0;
 	}
-	for ( i= 0; i < rmaxId + 1; ++i) {
-		if (rdegree[i]) {
-			double powl = pow(rdegree[i], 1-rate);
-			for (j = 0; j < rdegree[i]; ++j) {
-				neigh = rrela[i][j];
-				rvltr[i] += lvltr[neigh]/ldegree[neigh];
+	for (i = 0; i < lmaxId + 1; ++i) {
+		if (lvltr[i]) {
+			degree = ldegree[i];
+			source = (double)lvltr[i]/(double)degree;
+			for (j = 0; j < degree; ++j) {
+				neigh = lrela[i][j];
+				rvltr[neigh] += source;
 			}
-			rvltr[i] /= powl;
 		}
 	}
 }
 
-struct METRICS *hybrid(struct TASK *task) {
-	LOG(LOG_INFO, "hybrid enter");
+struct METRICS *hnbi(struct TASK *task) {
+	LOG(LOG_INFO, "HNBI enter");
 	//1 level, from task
 	BIP *trainl = task->train->core[0];
 	BIP *trainr = task->train->core[1];
 	BIP *testl = task->test->core[0];
 	int L = task->num_toprightused2cmptmetrics;
-	double rate = task->rate_hybridparam;
+	double rate = task->rate_hnbiparam;
 
 	//2 level, from 1 level
 	int lmaxId = trainl->maxId;
@@ -78,7 +77,7 @@ struct METRICS *hybrid(struct TASK *task) {
 	for (i = 0; i<trainl->maxId + 1; ++i) {
 		if (trainl->degree[i]) {//each valid user in trainset.
 			//get rvlts
-			hybrid_core(i, lmaxId, rmaxId, ldegree, rdegree, lrela, rrela, rate, lvltr, rvltr);
+			hnbi_core(i, lmaxId, rmaxId, ldegree, rdegree, lrela, rrela, rate, lvltr, rvltr);
 			//use rvlts, get ridts & rank & topL
 			int j;
 			//set selected item's source to -1
@@ -112,15 +111,15 @@ struct METRICS *hybrid(struct TASK *task) {
 	return retn;
 }
 
-struct TASK *hybridT(struct OPTION *op) {
+struct TASK *hnbiT(struct OPTION *op) {
 	struct TASK *otl = smalloc(sizeof(struct TASK));
 	otl->train = NULL;
 	otl->test = NULL;
 	otl->trainr_cosine_similarity = NULL;
 
-	otl->alg = hybrid;
+	otl->alg = hnbi;
 	otl->num_toprightused2cmptmetrics = op->num_toprightused2cmptmetrics;
-	otl->rate_hybridparam = op->rate_hybridparam;
+	otl->rate_hnbiparam = op->rate_hnbiparam;
 
 	return otl;
 }

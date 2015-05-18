@@ -5,13 +5,13 @@
 #include "net.h"
 #include "linefile.h"
 #include "similar.h"
-#include "mass.h"
-#include "heats.h"
-#include "hybrid.h"
-#include "hnbi.h"
-#include "massd.h"
-#include "masssc.h"
-#include "masssct.h"
+#include "alg_mass.h"
+#include "alg_heats.h"
+#include "alg_hybrid.h"
+#include "alg_hnbi.h"
+#include "alg_massd.h"
+#include "alg_masssc.h"
+#include "alg_masssct.h"
 #include <stdlib.h>
 
 void freeOTL(OTL *otl) {
