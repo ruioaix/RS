@@ -6,42 +6,46 @@
 #include <string.h>
 #include <stdlib.h>
 
-static void massd_core(int lid, int lmaxId, int rmaxId, int *ldegree, int *rdegree, int **lrela, int **rrela, double *lvltr, double *rvltr, double *rvltr2, double rate) {
+static void massd_core(int tid, int lmaxId, int rmaxId, int *ldegree, int *rdegree, int **lrela, int **rrela, double *lsource, double *rsource, double *rdt, double rate) {
 
-	int i, j, neigh, degree;
+	int i, j, rid, lid, degree;
 	double source, totalsource = 0;
 
 	//one 
 
 	//two
-	memset(lvltr, 0, (lmaxId + 1) * sizeof(double));
-	for (j = 0; j < ldegree[lid]; ++j) {
-		i = lrela[lid][j];
-		degree = rdegree[i];
+	memset(lsource, 0, (lmaxId + 1) * sizeof(double));
+	for (j = 0; j < ldegree[tid]; ++j) {
+		rid = lrela[tid][j];
+		degree = rdegree[rid];
 		source = 1.0 / degree;
-		for (j = 0; j < degree; ++j) {
-			neigh = rrela[i][j];
-			lvltr[neigh] += source;
+		for (i = 0; i < degree; ++i) {
+			lid = rrela[rid][i];
+			lsource[lid] += source;
 		}
 	}
 
 	//three
-	memset(rvltr, 0, (rmaxId + 1) * sizeof(double));
+	memset(rsource, 0, (rmaxId + 1) * sizeof(double));
 	for (i = 0; i < lmaxId + 1; ++i) {
-		if (lvltr[i]) {
+		if (lsource[i]) {
 			totalsource = 0;
 			degree = ldegree[i];
-			source = lvltr[i];
+			source = lsource[i];
 			for (j = 0; j < degree; ++j) {
-				neigh = rrela[i][j];
-				rvltr2[neigh] = pow(1.0 / rdegree[neigh], rate);
-				totalsource += rvltr2[neigh];
+				rid = lrela[i][j];
+				rdt[rid] = pow(1.0 / rdegree[rid], rate);
+				totalsource += rdt[rid];
 			}
 			for (j = 0; j < degree; ++j) {
-				neigh = lrela[i][j];
-				rvltr[neigh] += source * rvltr2[neigh] / totalsource;
+				rid = lrela[i][j];
+				rsource[rid] += source * rdt[rid] / totalsource;
 			}
 		}
+	}
+
+	for (j = 0; j < ldegree[tid]; ++j) {
+		rsource[lrela[tid][j]] = -1;
 	}
 }
 
@@ -64,9 +68,9 @@ struct METRICS *massd(struct TASK *task) {
 	int **rrela = trainr->rela;
 
 	//3 level, from 2 level
-	double *lvltr = smalloc((lmaxId + 1)*sizeof(double));
-	double *rvltr = smalloc((rmaxId + 1)*sizeof(double));
-	double *rvltr2 = smalloc((rmaxId + 1)*sizeof(double));
+	double *lsource = smalloc((lmaxId + 1)*sizeof(double));
+	double *rsource = smalloc((rmaxId + 1)*sizeof(double));
+	double *rdt = smalloc((rmaxId + 1)*sizeof(double));
 	int *lidtr = smalloc((lmaxId + 1)*sizeof(int));
 	int *ridtr = smalloc((rmaxId + 1)*sizeof(int));
 	int *rank = smalloc((rmaxId + 1)*sizeof(int));
@@ -80,21 +84,15 @@ struct METRICS *massd(struct TASK *task) {
 	for (i = 0; i<trainl->maxId + 1; ++i) {
 		if (trainl->degree[i]) {//each valid user in trainset.
 			//get rvlts
-			massd_core(i, lmaxId, rmaxId, ldegree, rdegree, lrela, rrela, lvltr, rvltr, rvltr2, rate);
+			massd_core(i, lmaxId, rmaxId, ldegree, rdegree, lrela, rrela, lsource, rsource, rdt, rate);
 			//use rvlts, get ridts & rank & topL
-			int j;
-			//set selected item's source to -1
-			for (j = 0; j < trainl->degree[i]; ++j) {
-				rvltr[trainl->rela[i][j]] = -1;
-				//rvlts[uidId[i]] = 0;
-			}
-			settopLrank(L, rmaxId, rdegree, rvltr, ridtr, topL + i * L, rank);
+			settopLrank(L, rmaxId, rdegree, rsource, ridtr, topL + i * L, rank);
 			set_R_RL_PL_METRICS(i, L, rank, trainl, trainr, testl, &R, &RL, &PL);
 		}
 	}
-	free(lvltr); free(rvltr);
+	free(lsource); free(rsource);
 	free(lidtr); free(ridtr);
-	free(rank);
+	free(rank); free(rdt);
 
 	set_HL_METRICS(L, topL, trainl, trainr, &HL);
 	set_IL_METRICS(L, topL, trainl, trainr, task->trainr_cosine_similarity, &IL);

@@ -5,7 +5,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-static void mass_core(int tid, int lmaxId, int rmaxId, int *ldegree, int *rdegree, int **lrela, int **rrela, double *lsource, double *rsource, int *lids) {
+static void mass_core(int tid, int lmaxId, int rmaxId, int *ldegree, int *rdegree, int **lrela, int **rrela, double *lsource, double *rsource) {
 
 	int i, j, lid, rid;
 	int degree;
@@ -14,28 +14,27 @@ static void mass_core(int tid, int lmaxId, int rmaxId, int *ldegree, int *rdegre
 	//one 
 
 	//two
-	int lidsLen = 0;
 	memset(lsource, 0, (lmaxId + 1) * sizeof(double));
 	for (i = 0; i < ldegree[tid]; ++i) {
 		rid = lrela[tid][i];
 		degree = rdegree[rid];
-		source = 1.0/(double)degree;
+		source = 1.0 / degree;
 		for (j = 0; j < degree; ++j) {
-			lid = rrela[i][j];
-			lids[lidsLen++] = lid;
+			lid = rrela[rid][j];
 			lsource[lid] += source;
 		}
 	}
 	
 	//three
 	memset(rsource, 0, (rmaxId + 1) * sizeof(double));
-	for (i = 0; i < lidsLen; ++i) {
-		lid = lids[i];
-		degree = ldegree[lid];
-		source = lsource[lid] / degree;
-		for (j = 0; j < degree; ++j) {
-			rid = lrela[lid][j];
-			rsource[rid] += source;
+	for (i = 0; i < lmaxId + 1; ++i) {
+		if (lsource[i]) {
+			degree = ldegree[i];
+			source = lsource[i] / degree;
+			for (j = 0; j < degree; ++j) {
+				rid = lrela[i][j];
+				rsource[rid] += source;
+			}
 		}
 	}
 
@@ -63,7 +62,6 @@ struct METRICS *mass(struct TASK *task) {
 	//3 level, from 2 level
 	double *lsource = smalloc((lmaxId + 1)*sizeof(double));
 	double *rsource = smalloc((rmaxId + 1)*sizeof(double));
-	int *lids = smalloc((lmaxId + 1)*sizeof(int));
 	int *rids = smalloc((rmaxId + 1)*sizeof(int));
 	int *rank = smalloc((rmaxId + 1)*sizeof(int));
 	int *topL = scalloc(L*(lmaxId + 1), sizeof(int));
@@ -76,14 +74,14 @@ struct METRICS *mass(struct TASK *task) {
 	for (i = 0; i<trainl->maxId + 1; ++i) {
 		if (trainl->degree[i]) {//each valid user in trainset.
 			//get rsource
-			mass_core(i, lmaxId, rmaxId, ldegree, rdegree, lrela, rrela, lsource, rsource, lids);
+			mass_core(i, lmaxId, rmaxId, ldegree, rdegree, lrela, rrela, lsource, rsource);
 			//use rsource, get ridts & rank & topL
 			settopLrank(L, rmaxId, rdegree, rsource, rids, topL + i * L, rank);
 			set_R_RL_PL_METRICS(i, L, rank, trainl, trainr, testl, &R, &RL, &PL);
 		}
 	}
 	free(lsource); free(rsource);
-	free(lids); free(rids);
+	free(rids);
 	free(rank);
 
 	set_HL_METRICS(L, topL, trainl, trainr, &HL);

@@ -36,7 +36,7 @@ enum LOGLEVEL {
 			if (level==LOG_DBG)   fprintf(logfile, "[\033[7;37m%14s\033[1;37m:\033[1;34m%-4d \033[1;35m%12s()\033[0m] =>> ", __FILE__, __LINE__, __FUNCTION__);\
 		} \
 		else { \
-			fprintf(logfile, "[%14s:%-4d %12s() =>> ", __FILE__, __LINE__, __FUNCTION__);\
+			fprintf(logfile, "[%14s:%-4d %12s()] =>> ", __FILE__, __LINE__, __FUNCTION__);\
 		} \
 		fprintf(logfile, __VA_ARGS__);\
 		fprintf(logfile, "\n");\

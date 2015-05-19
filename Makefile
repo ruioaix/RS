@@ -52,7 +52,9 @@ clean:
 
 ## run #########################################################
 test: run
-	./run -m -i ~/Downloads/movielens_2c.txt -d 0.1
+	./run -i ../DATA/movielens/movielens_2c.txt -m 
+val: run
+	valgrind --tool=memcheck --leak-check=full -v --track-origins=yes --log-file=./xx ./run -i ../DATA/movielens/movielens_3c.txt -m
 ##################################################################
 
 all: run

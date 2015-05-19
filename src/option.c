@@ -81,7 +81,7 @@ static void display_usage(void) {
 
 static void verify_OPTION(struct OPTION *op) {
 	//algorithms
-	if (!( op->alg_mass || op->alg_heats || op->alg_hybrid || op->alg_HNBI || op->alg_masssc || op->alg_masssct)) {
+	if (!( op->alg_mass || op->alg_heats || op->alg_hybrid || op->alg_HNBI || op->alg_masssc || op->alg_masssct || op->alg_massd)) {
 		LOG(LOG_FATAL, "no algorithms selected, what do you want to calculate?");
 	}
 
@@ -169,7 +169,7 @@ struct OPTION *setOPTION(int argc, char **argv) {
 		{"hybrid-rate", required_argument, NULL, 300},
 		{"alg_HNBI", no_argument, NULL, 'N'},
 		{"HNBI-rate", required_argument, NULL, 301},
-		{"alg_massd", no_argument, NULL, 'S'},
+		{"alg_massd", no_argument, NULL, 'D'},
 		{"mass-degree-rate", required_argument, NULL, 304},
 		{"alg_masssc", no_argument, NULL, 'S'},
 		{"mass-score-rate", required_argument, NULL, 302},
