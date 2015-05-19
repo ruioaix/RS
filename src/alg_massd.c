@@ -8,8 +8,8 @@
 
 static void massd_core(int tid, int lmaxId, int rmaxId, int *ldegree, int *rdegree, int **lrela, int **rrela, double *lsource, double *rsource, double *rdt, double rate) {
 
-	int i, j, rid, lid, degree;
-	double source, totalsource = 0;
+	int i, j, lid, rid, degree;
+	double source, totalsource;
 
 	//one 
 
@@ -51,7 +51,7 @@ static void massd_core(int tid, int lmaxId, int rmaxId, int *ldegree, int *rdegr
 
 
 struct METRICS *massd(struct TASK *task) {
-	LOG(LOG_INFO, "mass enter");
+	LOG(LOG_INFO, "massd enter");
 	//1 level, from task
 	BIP *trainl = task->train->core[0];
 	BIP *trainr = task->train->core[1];

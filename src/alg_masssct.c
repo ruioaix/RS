@@ -2,57 +2,53 @@
 #include "sort.h"
 #include "log.h"
 #include "alg.h"
+#include <math.h>
 #include <string.h>
 #include <stdlib.h>
-#include <math.h>
 
-static void masssct_core(int lid, int lmaxId, int rmaxId, int *ldegree, int *rdegree, int **lrela, int **rrela, int **lscore, double rate, double *lvltr, double *rvltr, double *rsctr) {
+static void masssct_core(int tid, int lmaxId, int rmaxId, int *ldegree, int *rdegree, int **lrela, int **rrela, double *lsource, double *rsource, double *rdt, double rate, int **lscore) {
 
-	int i, j, neigh, degree;
-	double source, totalsource = 0;
+	int i, j, lid, rid, degree;
+	double source, totalsource;
 
 	//one 
-	memset(rvltr, 0, (rmaxId + 1) * sizeof(double));
-	for (j = 0; j < ldegree[lid]; ++j) {
-		neigh = lrela[lid][j];
-		rvltr[neigh] = 1.0;
-	}
 
 	//two
-	memset(lvltr, 0, (lmaxId + 1) * sizeof(double));
-	for (i = 0; i < rmaxId + 1; ++i) {
-		if (rvltr[i]) {
-			degree = rdegree[i];
-			source = rvltr[i] / degree;
-			for (j = 0; j < degree; ++j) {
-				neigh = rrela[i][j];
-				lvltr[neigh] += source;
-			}
+	memset(lsource, 0, (lmaxId + 1) * sizeof(double));
+	for (j = 0; j < ldegree[tid]; ++j) {
+		rid = lrela[tid][j];
+		degree = rdegree[rid];
+		source = 1.0 / degree;
+		for (i = 0; i < degree; ++i) {
+			lid = rrela[rid][i];
+			lsource[lid] += source;
 		}
 	}
 
 	//three
-	for (j = 0; j < ldegree[lid]; ++j) {
-		neigh = lrela[lid][j];
-		rvltr[neigh] = 0.0;
-	}
+	memset(rsource, 0, (rmaxId + 1) * sizeof(double));
 	for (i = 0; i < lmaxId + 1; ++i) {
-		if (lvltr[i]) {
+		if (lsource[i]) {
 			totalsource = 0;
 			degree = ldegree[i];
-			source = lvltr[i];
+			source = lsource[i];
 			for (j = 0; j < degree; ++j) {
-				neigh = lrela[i][j];
-				rsctr[neigh] = pow((double)lscore[i][j] / (double)rdegree[neigh], rate);
-				totalsource += rsctr[neigh];
+				rid = lrela[i][j];
+				rdt[rid] = pow((double)lscore[i][j] / (double)rdegree[rid], rate);
+				totalsource += rdt[rid];
 			}
 			for (j = 0; j < degree; ++j) {
-				neigh = lrela[i][j];
-				rvltr[neigh] += source * rsctr[neigh] / totalsource;
+				rid = lrela[i][j];
+				rsource[rid] += source * rdt[rid] / totalsource;
 			}
 		}
 	}
+
+	for (j = 0; j < ldegree[tid]; ++j) {
+		rsource[lrela[tid][j]] = -1;
+	}
 }
+
 
 struct METRICS *masssct(struct TASK *task) {
 	LOG(LOG_INFO, "masssct enter");
@@ -74,10 +70,9 @@ struct METRICS *masssct(struct TASK *task) {
 	int **lscore = trainscorel->rela;
 
 	//3 level, from 2 level
-	double *lvltr = smalloc((lmaxId + 1)*sizeof(double));
-	double *rvltr = smalloc((rmaxId + 1)*sizeof(double));
-	double *lsctr = smalloc((lmaxId + 1)*sizeof(double));
-	double *rsctr = smalloc((rmaxId + 1)*sizeof(double));
+	double *lsource = smalloc((lmaxId + 1)*sizeof(double));
+	double *rsource = smalloc((rmaxId + 1)*sizeof(double));
+	double *rdt = smalloc((rmaxId + 1)*sizeof(double));
 	int *lidtr = smalloc((lmaxId + 1)*sizeof(int));
 	int *ridtr = smalloc((rmaxId + 1)*sizeof(int));
 	int *rank = smalloc((rmaxId + 1)*sizeof(int));
@@ -91,22 +86,15 @@ struct METRICS *masssct(struct TASK *task) {
 	for (i = 0; i<trainl->maxId + 1; ++i) {
 		if (trainl->degree[i]) {//each valid user in trainset.
 			//get rvlts
-			masssct_core(i, lmaxId, rmaxId, ldegree, rdegree, lrela, rrela, lscore, rate, lvltr, rvltr, rsctr);
+			masssct_core(i, lmaxId, rmaxId, ldegree, rdegree, lrela, rrela, lsource, rsource, rdt, rate, lscore);
 			//use rvlts, get ridts & rank & topL
-			int j;
-			//set selected item's source to -1
-			for (j = 0; j < trainl->degree[i]; ++j) {
-				rvltr[trainl->rela[i][j]] = -1;
-				//rvlts[uidId[i]] = 0;
-			}
-			settopLrank(L, rmaxId, rdegree, rvltr, ridtr, topL + i * L, rank);
+			settopLrank(L, rmaxId, rdegree, rsource, ridtr, topL + i * L, rank);
 			set_R_RL_PL_METRICS(i, L, rank, trainl, trainr, testl, &R, &RL, &PL);
 		}
 	}
-	free(lvltr); free(rvltr);
+	free(lsource); free(rsource);
 	free(lidtr); free(ridtr);
-	free(lsctr); free(rsctr);
-	free(rank);
+	free(rank); free(rdt);
 
 	set_HL_METRICS(L, topL, trainl, trainr, &HL);
 	set_IL_METRICS(L, topL, trainl, trainr, task->trainr_cosine_similarity, &IL);
