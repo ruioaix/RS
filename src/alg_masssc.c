@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-static void masssc_core(int tid, int lmaxId, int rmaxId, int *ldegree, int *rdegree, int **lrela, int **rrela, double *lsource, double *rsource, double rate, double *rdt, int **lscore, int **rscore, int maxscore) {
+static void masssc_core(int tid, int lmaxId, int rmaxId, int *ldegree, int *rdegree, int **lrela, int **rrela, double *lsource, double *rsource, double rate, double *ldt, double *rdt, int **lscore, int **rscore, int maxscore) {
 
 	int i, j, lid, rid, degree;
 	double source, total1source, total2source;
@@ -18,7 +18,7 @@ static void masssc_core(int tid, int lmaxId, int rmaxId, int *ldegree, int *rdeg
 		rid = lrela[tid][j];
 		rsource[rid] = pow(lscore[tid][j], rate);
 		total1source += rsource[rid];	
-		rsource[rid] = rsource[rid] * degree;
+		rsource[rid] *= degree;
 		rdt[rid] = lscore[tid][j];
 	}
 
@@ -34,11 +34,11 @@ static void masssc_core(int tid, int lmaxId, int rmaxId, int *ldegree, int *rdeg
 			lid = rrela[rid][j];
 			double score_similarity = pow(maxscore - fabs(rscore[rid][j] - tidscore), rate); 
 			total2source += score_similarity;
-			lsource[lid] += source * score_similarity;
+			ldt[lid] = score_similarity;
 		}
 		for (j = 0; j < degree; ++j) {
 			lid = rrela[rid][j];
-			lsource[lid] +=  lsource[lid] / total2source;
+			lsource[lid] += source * ldt[lid] / total2source;
 		}
 	}
 
@@ -51,7 +51,7 @@ static void masssc_core(int tid, int lmaxId, int rmaxId, int *ldegree, int *rdeg
 			source = lsource[i];
 			for (j = 0; j < degree; ++j) {
 				rid = lrela[i][j];
-				rdt[rid] = pow(lscore[i][j] / rdegree[rid], rate);
+				rdt[rid] = pow((double)lscore[i][j] / rdegree[rid], rate);
 				total2source += rdt[rid];
 			}
 			for (j = 0; j < degree; ++j) {
@@ -92,6 +92,7 @@ struct METRICS *masssc(struct TASK *task) {
 	//3 level, from 2 level
 	double *lsource = smalloc((lmaxId + 1)*sizeof(double));
 	double *rsource = smalloc((rmaxId + 1)*sizeof(double));
+	double *ldt = smalloc((lmaxId + 1)*sizeof(double));
 	double *rdt = smalloc((rmaxId + 1)*sizeof(double));
 	int *ridtr = smalloc((rmaxId + 1)*sizeof(int));
 	int *rank = smalloc((rmaxId + 1)*sizeof(int));
@@ -105,7 +106,7 @@ struct METRICS *masssc(struct TASK *task) {
 	for (i = 0; i<trainl->maxId + 1; ++i) {
 		if (trainl->degree[i]) {//each valid user in trainset.
 			//get rvlts
-			masssc_core(i, lmaxId, rmaxId, ldegree, rdegree, lrela, rrela, lsource, rsource, rate, rdt, lscore, rscore, maxscore);
+			masssc_core(i, lmaxId, rmaxId, ldegree, rdegree, lrela, rrela, lsource, rsource, rate, ldt, rdt, lscore, rscore, maxscore);
 			//use rvlts, get ridts & rank & topL
 			settopLrank(L, rmaxId, rdegree, rsource, ridtr, topL + i * L, rank);
 			set_R_RL_PL_METRICS(i, L, rank, trainl, trainr, testl, &R, &RL, &PL);
@@ -113,7 +114,7 @@ struct METRICS *masssc(struct TASK *task) {
 	}
 	free(lsource); free(rsource);
 	free(ridtr);
-	free(rdt); free(rank);
+	free(ldt); free(rdt); free(rank);
 
 	set_HL_METRICS(L, topL, trainl, trainr, &HL);
 	set_IL_METRICS(L, topL, trainl, trainr, task->trainr_cosine_similarity, &IL);
@@ -131,7 +132,7 @@ struct METRICS *masssc(struct TASK *task) {
 	retn->PL = PL;
 	retn->RL = RL;
 	return retn;
-}
+} 
 
 struct TASK *massscT(struct OPTION *op) {
 	struct TASK *otl = smalloc(sizeof(struct TASK));
@@ -142,7 +143,7 @@ struct TASK *massscT(struct OPTION *op) {
 	otl->alg = masssc;
 	otl->num_toprightused2cmptmetrics = op->num_toprightused2cmptmetrics;
 	otl->masssc_maxscore = 5;
-	otl->rate_massscparam = 0.1;
+	otl->rate_massscparam = 0.5;
 
 	return otl;
 }

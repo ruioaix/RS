@@ -34,7 +34,7 @@ static void masssct_core(int tid, int lmaxId, int rmaxId, int *ldegree, int *rde
 			source = lsource[i];
 			for (j = 0; j < degree; ++j) {
 				rid = lrela[i][j];
-				rdt[rid] = pow((double)lscore[i][j] / (double)rdegree[rid], rate);
+				rdt[rid] = pow((double)lscore[i][j] / rdegree[rid], rate);
 				totalsource += rdt[rid];
 			}
 			for (j = 0; j < degree; ++j) {
