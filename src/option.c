@@ -144,6 +144,7 @@ void freeOPTION(struct OPTION *op) {
 }
 
 struct OPTION *setOPTION(int argc, char **argv) {
+	if (argc == 1) display_usage();
 	struct OPTION *op = smalloc(sizeof(struct OPTION));
 	init_OPTION(op);
 
