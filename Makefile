@@ -51,10 +51,10 @@ clean:
 ##################################################################
 
 ## run #########################################################
-test: run
-	./run -i ../DATA/movielens/movielens_2c.txt -mD
+r: run
+	./run -i ../DATA/movielens/movielens_3c.txt -mDS
 val: run
-	valgrind --tool=memcheck --leak-check=full -v --track-origins=yes --log-file=./xx ./run -i ../DATA/movielens/movielens_3c.txt -m
+	valgrind --tool=memcheck --leak-check=full -v --track-origins=yes ./run -i ../DATA/movielens/movielens_3c.txt -SmD
 ##################################################################
 
 all: run

@@ -6,7 +6,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-static void masssct_core(int tid, int lmaxId, int rmaxId, int *ldegree, int *rdegree, int **lrela, int **rrela, double *lsource, double *rsource, double *rdt, double rate, int **lscore) {
+static void masssct_core(int tid, int lmaxId, int rmaxId, int *ldegree, int *rdegree, int **lrela, int **rrela, double *lsource, double *rsource, double rate, double *rdt, int **lscore) {
 
 	int i, j, lid, rid, degree;
 	double source, totalsource;
@@ -28,7 +28,7 @@ static void masssct_core(int tid, int lmaxId, int rmaxId, int *ldegree, int *rde
 	//three
 	memset(rsource, 0, (rmaxId + 1) * sizeof(double));
 	for (i = 0; i < lmaxId + 1; ++i) {
-		if (lsource[i]) {
+		if (lsource[i] > 1E-17) {
 			totalsource = 0;
 			degree = ldegree[i];
 			source = lsource[i];
@@ -86,7 +86,7 @@ struct METRICS *masssct(struct TASK *task) {
 	for (i = 0; i<trainl->maxId + 1; ++i) {
 		if (trainl->degree[i]) {//each valid user in trainset.
 			//get rvlts
-			masssct_core(i, lmaxId, rmaxId, ldegree, rdegree, lrela, rrela, lsource, rsource, rdt, rate, lscore);
+			masssct_core(i, lmaxId, rmaxId, ldegree, rdegree, lrela, rrela, lsource, rsource, rate, rdt, lscore);
 			//use rvlts, get ridts & rank & topL
 			settopLrank(L, rmaxId, rdegree, rsource, ridtr, topL + i * L, rank);
 			set_R_RL_PL_METRICS(i, L, rank, trainl, trainr, testl, &R, &RL, &PL);
