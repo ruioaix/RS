@@ -1,0 +1,79 @@
+#!/bin/bash
+# usage: ./run -i ../DATA/movielens_3c.txt -DSw --rate-mass-degree 0.1 --rate-mass-score 0.1 --rate-mass-score-third 0.1 -s 1320
+# this script is used to submit tasks to the cluster's queue. 
+# the file should include all the paper wants.
+
+#######################################################check usage.
+
+########################################################clear cluster environment.
+#qdel -u xiaor
+#currentTask=$(qstat -cb | grep xiaor | wc -l)
+#while [ $currentTask -ne 0 ]
+#do
+#	echo "current running task Num: $currentTask"
+#	echo "wait 2s.."
+#	sleep 2s
+#	currentTask=$(qstat -cb | grep xiaor | wc -l)
+#done
+
+cluster_output_dir="./cluster_output"
+if [ -d $cluster_output_dir ]; then
+	rm -r $cluster_output_dir
+	mkdir -p $cluster_output_dir
+else
+	mkdir -p $cluster_output_dir
+fi
+
+###################################################default value
+#limitN=5
+#theta=1.0
+#lambda=0
+
+#####################################################rate
+rate=
+for param in {0..30}
+do
+	tmp=$(awk "BEGIN{print $param / 10}")
+	rate="$rate $tmp"
+done
+
+#####################################################clean environment
+script_dir="./scrpit"
+if [ -d $script_dir ]; then
+	rm -r $script_dir
+	mkdir -p $script_dir
+else
+	mkdir -p $script_dir
+fi
+
+result_dir="./result"
+if [ -d $result_dir ]; then
+	rm -r $result_dir
+	mkdir -p $result_dir
+else
+	mkdir -p $result_dir
+fi
+
+
+for seed in  {1..100}
+do
+	for param in $rate
+	do
+		currentTask=$(qstat -cb | grep xiaor | wc -l)
+		echo "current running task Num: $currentTask"
+		while [ $currentTask -ge 70 ]
+		do
+			echo "wait 20s.."
+			sleep 20s
+			currentTask=$(qstat -cb | grep xiaor | wc -l)
+			echo "current running task Num: $currentTask"
+		done
+
+		script_result_filename="${param}_$seed"
+		exec_script=$script_dir/$script_result_filename
+		result_file=$result_dir/$script_result_filename
+		echo "./run -i ../DATA/movielens_3c.txt -DSw --rate-mass-degree $param --rate-mass-score $param --rate-mass-score-third $param -s $seed |tee  $result_file" > $exec_script
+		qsub -cwd -o $cluster_output_dir -e $cluster_output_dir $exec_script 
+		sleep 1s
+	done
+done
