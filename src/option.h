@@ -25,7 +25,7 @@ struct OPTION {
 	double rate_dividefulldataset;
 	int num_looptimes;
 	int num_toprightused2cmptmetrics;
-	unsigned long seed_random;
+	unsigned long num_randomseed;
 
 	//
 	char *logfilename;
