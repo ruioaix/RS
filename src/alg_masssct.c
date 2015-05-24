@@ -116,13 +116,15 @@ struct METRICS *masssct(struct TASK *task) {
 
 struct TASK *masssctT(struct OPTION *op) {
 	struct TASK *otl = smalloc(sizeof(struct TASK));
+	//default
 	otl->train = NULL;
 	otl->test = NULL;
 	otl->trainr_cosine_similarity = NULL;
-
-	otl->alg = masssct;
 	otl->num_toprightused2cmptmetrics = op->num_toprightused2cmptmetrics;
-	otl->rate_masssctparam = 0.1;
+	
+	//algorithm specialize
+	otl->alg = masssct;
+	otl->rate_masssctparam = op->rate_masssctparam;
 
 	return otl;
 }
