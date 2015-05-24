@@ -38,7 +38,7 @@ do
 done
 
 #####################################################clean environment
-script_dir="./scrpit"
+script_dir="./script"
 if [ -d $script_dir ]; then
 	rm -r $script_dir
 	mkdir -p $script_dir
@@ -69,7 +69,7 @@ do
 			echo "current running task Num: $currentTask"
 		done
 
-		script_result_filename="${param}_$seed"
+		script_result_filename="output_${seed}_$param"
 		exec_script=$script_dir/$script_result_filename
 		result_file=$result_dir/$script_result_filename
 		echo "./run -i ../DATA/movielens_3c.txt -DSw --rate-mass-degree $param --rate-mass-score $param --rate-mass-score-third $param -s $seed |tee  $result_file" > $exec_script

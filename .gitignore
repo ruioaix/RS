@@ -4,3 +4,7 @@ a.out
 1
 bin/
 *.log
+cluster_output/
+result/
+script/
+core_cluster_submit_script
