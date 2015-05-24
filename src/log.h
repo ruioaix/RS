@@ -29,14 +29,14 @@ enum LOGLEVEL {
 #define LOG(level, ...) do {\
 	if (level <= loglevel) {\
 		if (logfile == stdout || logfile == stderr) { \
-			if (level==LOG_FATAL) fprintf(logfile, "[\033[7;31m%14s\033[1;37m:\033[1;34m%-4d \033[1;35m%12s()\033[0m] =>> ", __FILE__, __LINE__, __FUNCTION__);\
-			if (level==LOG_WARN)  fprintf(logfile, "[\033[1;33m%14s\033[1;37m:\033[1;34m%-4d \033[1;35m%12s()\033[0m] =>> ", __FILE__, __LINE__, __FUNCTION__);\
-			if (level==LOG_OP)    fprintf(logfile, "[\033[7;36m%14s\033[1;37m:\033[1;34m%-4d \033[1;35m%12s()\033[0m] =>> ", __FILE__, __LINE__, __FUNCTION__);\
-			if (level==LOG_INFO)  fprintf(logfile, "[\033[1;32m%14s\033[1;37m:\033[1;34m%-4d \033[1;35m%12s()\033[0m] =>> ", __FILE__, __LINE__, __FUNCTION__);\
-			if (level==LOG_DBG)   fprintf(logfile, "[\033[7;37m%14s\033[1;37m:\033[1;34m%-4d \033[1;35m%12s()\033[0m] =>> ", __FILE__, __LINE__, __FUNCTION__);\
+			if (level==LOG_FATAL) fprintf(logfile, "[\033[7;31m%17s\033[1;37m:\033[1;34m%-4d \033[1;35m%12s()\033[0m] =>> ", __FILE__, __LINE__, __FUNCTION__);\
+			if (level==LOG_WARN)  fprintf(logfile, "[\033[1;33m%17s\033[1;37m:\033[1;34m%-4d \033[1;35m%12s()\033[0m] =>> ", __FILE__, __LINE__, __FUNCTION__);\
+			if (level==LOG_OP)    fprintf(logfile, "[\033[7;36m%17s\033[1;37m:\033[1;34m%-4d \033[1;35m%12s()\033[0m] =>> ", __FILE__, __LINE__, __FUNCTION__);\
+			if (level==LOG_INFO)  fprintf(logfile, "[\033[1;32m%17s\033[1;37m:\033[1;34m%-4d \033[1;35m%12s()\033[0m] =>> ", __FILE__, __LINE__, __FUNCTION__);\
+			if (level==LOG_DBG)   fprintf(logfile, "[\033[7;37m%17s\033[1;37m:\033[1;34m%-4d \033[1;35m%12s()\033[0m] =>> ", __FILE__, __LINE__, __FUNCTION__);\
 		} \
 		else { \
-			fprintf(logfile, "[%14s:%-4d %12s()] =>> ", __FILE__, __LINE__, __FUNCTION__);\
+			fprintf(logfile, "[%17s:%-4d %12s()] =>> ", __FILE__, __LINE__, __FUNCTION__);\
 		} \
 		fprintf(logfile, __VA_ARGS__);\
 		fprintf(logfile, "\n");\

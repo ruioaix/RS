@@ -76,7 +76,6 @@ struct METRICS *masssc(struct TASK *task) {
 	BIP *trainscorer = task->train->core[3];
 	BIP *testl = task->test->core[0];
 	int L = task->num_toprightused2cmptmetrics;
-	int maxscore = task->masssc_maxscore;
 	double rate = task->rate_massscparam;
 
 	//2 level, from 1 level
@@ -88,6 +87,7 @@ struct METRICS *masssc(struct TASK *task) {
 	int **rrela = trainr->rela;
 	int **lscore = trainscorel->rela;
 	int **rscore = trainscorer->rela;
+	int maxscore = trainscorel->relaMax;
 
 	//3 level, from 2 level
 	double *lsource = smalloc((lmaxId + 1)*sizeof(double));
@@ -142,8 +142,7 @@ struct TASK *massscT(struct OPTION *op) {
 
 	otl->alg = masssc;
 	otl->num_toprightused2cmptmetrics = op->num_toprightused2cmptmetrics;
-	otl->masssc_maxscore = 5;
-	otl->rate_massscparam = 0.5;
+	otl->rate_massscparam = op->rate_massscparam;
 
 	return otl;
 }

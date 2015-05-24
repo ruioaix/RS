@@ -36,12 +36,12 @@ static inline void set_degree_degreeMax_degreeMin_idNum_BIP(int *il, long edgesN
 	*idNum_retn = idNum;
 }
 
-static inline void set_rela_aler_BIP(int *il, int *ii, double *dd, int *degree, int maxId, long edgesNum, int ***rela_retn, double ***aler_retn) {
+static inline void set_rela_aler_BIP(int *il, int *ii, double *dd, int *degree, int maxId, long edgesNum, int ***rela_retn, int *relaMax_retn, int *relaMin_retn, double ***aler_retn, double *alerMax_retn, double *alerMin_retn) {
 	if (!ii && !dd) LOG(LOG_FATAL, "ii and dd can not be both NULL");
 	if (ii == il) LOG(LOG_FATAL, "il == ii, make noscence");
 
-	int **rela = NULL;
-	double **aler = NULL;
+	int **rela = NULL, relaMax = -1, relaMin = -1;
+	double **aler = NULL, alerMax = -1.0, alerMin = -1.0;
 	
 	if (ii) rela = smalloc((maxId + 1) * sizeof(int *));
 	if (dd) aler = smalloc((maxId + 1) * sizeof(double *));
@@ -61,17 +61,23 @@ static inline void set_rela_aler_BIP(int *il, int *ii, double *dd, int *degree, 
 	long i;
 	int *temp = scalloc(maxId+1, sizeof(int));
 	if (ii) {
+		relaMax = relaMin = ii[0];
 		for(i=0; i<edgesNum; ++i) {
 			int ii1 =il[i];
 			rela[ii1][temp[ii1]]=ii[i];
+			relaMax = relaMax > ii[i] ? relaMax : ii[i];
+			relaMin = relaMin < ii[i] ? relaMin : ii[i];
 			++temp[ii1];
 		}
 	}
 	memset(temp, 0, (maxId+1)*sizeof(int));
 	if (dd) {
+		alerMax = alerMin = dd[0];
 		for(i=0; i<edgesNum; ++i) {
 			int ii1 =il[i];
 			aler[ii1][temp[ii1]] = dd[i];
+			alerMax = alerMax > dd[i] ? alerMax : dd[i];
+			alerMin = alerMin < dd[i] ? alerMin : dd[i];
 			++temp[ii1];
 		}
 	}
@@ -79,9 +85,13 @@ static inline void set_rela_aler_BIP(int *il, int *ii, double *dd, int *degree, 
 
 	*rela_retn = rela;
 	*aler_retn = aler;
+	*relaMax_retn = relaMax;
+	*relaMin_retn = relaMin;
+	*alerMax_retn = alerMax;
+	*alerMin_retn = alerMin;
 }
 
-static inline BIP *assignBIP(int maxId, int minId, long edgesNum, int idNum, int degreeMax, int degreeMin, int *degree, int **rela, double **aler) {
+static inline BIP *assignBIP(int maxId, int minId, long edgesNum, int idNum, int degreeMax, int degreeMin, int *degree, int **rela, int relaMax, int relaMin, double **aler, double alerMax, double alerMin) {
 	BIP *bip = smalloc(sizeof(BIP));
 	bip->maxId=maxId;
 	bip->minId=minId;
@@ -91,7 +101,11 @@ static inline BIP *assignBIP(int maxId, int minId, long edgesNum, int idNum, int
 	bip->degreeMin = degreeMin;
 	bip->degree = degree;
 	bip->rela = rela;
+	bip->relaMax = relaMax;
+	bip->relaMin = relaMin;
 	bip->aler = aler;
+	bip->alerMax = alerMax;
+	bip->alerMin = alerMin;
 	return bip;
 }
 
@@ -117,10 +131,11 @@ static BIP* halfBIP(long linesNum, int *il, int *ii, double *dd, int maxId_d, in
 		set_degree_degreeMax_degreeMin_idNum_BIP(il, linesNum, maxId, degree, &degreeMax, &degreeMin, &idNum);
 	}
 
-	int **rela; double **aler;
-	set_rela_aler_BIP(il, ii, dd, degree, maxId, linesNum, &rela, &aler);
+	int **rela, relaMax, relaMin;
+	double **aler, alerMax, alerMin;
+	set_rela_aler_BIP(il, ii, dd, degree, maxId, linesNum, &rela, &relaMax, &relaMin, &aler, &alerMax, &alerMin);
 
-	return  assignBIP(maxId, minId, linesNum, idNum, degreeMax, degreeMin, degree, rela, aler);
+	return  assignBIP(maxId, minId, linesNum, idNum, degreeMax, degreeMin, degree, rela, relaMax, relaMin, aler, alerMax, alerMin);
 }
 
 BIP *createBIP(const struct LineFile * const lf, enum SIDE s) {

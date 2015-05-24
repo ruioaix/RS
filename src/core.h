@@ -12,6 +12,12 @@ struct CORE {
 	int *degree;
 	int **rela;
 	double **aler;
+
+	//
+	int relaMax;
+	int relaMin;
+	double alerMax;
+	double alerMin;
 };
 
 struct CORES {

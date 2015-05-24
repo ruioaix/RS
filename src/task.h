@@ -18,7 +18,6 @@ struct TASK {
 	double rate_hnbiparam;
 	double rate_massscparam;
 	double rate_masssctparam;
-	int masssc_maxscore;
 	double rate_massdparam;
 
 	//result;

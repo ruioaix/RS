@@ -39,23 +39,33 @@ static void tread(struct TASK* otl, struct TASKLIST *tl) {
 }
 
 static void fullTL(struct OPTION *op, struct TASKLIST *tl) {
-	struct LineFile *lf = createLF(op->filename_full, INT, INT, INT, -1);
-	BIPS *full = createBIPS(lf);
-	freeLF(lf);
+	BIPS *full;
+	if (op->alg_masssc || op->alg_masssct) {
+		struct LineFile *lf = createLF(op->filename_full, INT, INT, INT, -1);
+		full = createBIPS(lf);
+		freeLF(lf);
+	}
+	else {
+		struct LineFile *lf = createLF(op->filename_full, INT, INT, -1);
+		full = createBIPS(lf);
+		freeLF(lf);
+	}
 
 	int i;
 	for (i = 0; i < op->num_looptimes; ++i) {
 		struct LineFile *testf, *trainf;
 		divideBIPS(full, op->rate_dividefulldataset, &testf, &trainf);
+		//train
 		freeBIPS(tl->train);
 		tl->train = createBIPS(trainf);
 		freeLF(trainf);
+		//test
 		freeBIPS(tl->test);
 		tl->test = createBIPS(testf);
 		freeLF(testf);
-
-		struct LineFile *simf = cosineSM(tl->train->core[1], tl->train->core[0]);
+		//similarity
 		freeNETS(tl->trainr_cosine_similarity);
+		struct LineFile *simf = cosineSM(tl->train->core[1], tl->train->core[0]);
 		tl->trainr_cosine_similarity = createNETS(simf);
 		freeLF(simf);
 
