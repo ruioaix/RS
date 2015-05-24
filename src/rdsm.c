@@ -9,7 +9,7 @@ int main(int argc, char **argv) {
 	freeOPTION(op);
 
 	int i;
-	for (i = 0; i < tl->num; ++i) {
+	for (i = 0; i < tl->listNum; ++i) {
 		struct METRICS *result = tl->core[i]->mtc;
 		LOG(LOG_OP, "METRICS: R: %f, RL: %f, PL: %f, HL: %f, IL: %f, NL: %f.", result->R, result->RL, result->PL, result->HL, result->IL, result->NL);
 	}

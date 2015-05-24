@@ -22,18 +22,44 @@ void freeOTL(OTL *otl) {
 void freeTL(struct TASKLIST *tl) {
 	if (!tl) return;
 	int i;
-	for (i = 0; i < tl->num; ++i) {
+	for (i = 0; i < tl->listNum; ++i) {
 		freeOTL(tl->core[i]);
 	}
 	free(tl->core);
+	free(tl->algs);
 	free(tl);
 }
 
-static void tread(struct TASK* otl, struct TASKLIST *tl) {
+static struct TASKLIST *initTL(struct OPTION *op) {
+	struct TASKLIST *tl = smalloc(sizeof(struct TASKLIST));
+
+	tl->algsNum = algnumOPTION(op);
+	tl->algs = smalloc(tl->algsNum * sizeof(ALGS));
+	int i = 0;
+	if (op->alg_mass) tl->algs[i++] = massT;
+	if (op->alg_heats) tl->algs[i++] = heatsT;
+	if (op->alg_hybrid) tl->algs[i++] = hybridT;
+	if (op->alg_HNBI) tl->algs[i++] = hnbiT;
+	if (op->alg_massd) tl->algs[i++] = massdT;
+	if (op->alg_masssc) tl->algs[i++] = massscT;
+	if (op->alg_masssct) tl->algs[i++] = masssctT;
+
+	tl->listNum = tl->algsNum * op->num_looptimes;
+	tl->core = smalloc(tl->listNum * sizeof(OTL*));
+	tl->currNum = 0;
+	
+	tl->train = NULL;
+	tl->test = NULL;
+	tl->trainr_cosine_similarity = NULL;
+
+	return tl;
+}
+
+static void shoot(struct TASK* otl, struct TASKLIST *tl) {
 	otl->train = tl->train;
 	otl->test = tl->test;
 	otl->trainr_cosine_similarity = tl->trainr_cosine_similarity;
-	tl->core[tl->num++] = otl;
+	tl->core[tl->currNum++] = otl;
 
 	otl->mtc = otl->alg(otl);
 }
@@ -51,7 +77,7 @@ static void fullTL(struct OPTION *op, struct TASKLIST *tl) {
 		freeLF(lf);
 	}
 
-	int i;
+	int i, j;
 	for (i = 0; i < op->num_looptimes; ++i) {
 		struct LineFile *testf, *trainf;
 		divideBIPS(full, op->rate_dividefulldataset, &testf, &trainf);
@@ -69,13 +95,9 @@ static void fullTL(struct OPTION *op, struct TASKLIST *tl) {
 		tl->trainr_cosine_similarity = createNETS(simf);
 		freeLF(simf);
 
-		if (op->alg_mass) tread(massT(op), tl);
-		if (op->alg_heats) tread(heatsT(op), tl);
-		if (op->alg_hybrid) tread(hybridT(op), tl);
-		if (op->alg_HNBI) tread(hnbiT(op), tl);
-		if (op->alg_massd) tread(massdT(op), tl);
-		if (op->alg_masssc) tread(massscT(op), tl);
-		if (op->alg_masssct) tread(masssctT(op), tl);
+		for (j = 0; j < tl->algsNum; ++j) {
+			shoot(tl->algs[j](op), tl);	
+		}
 	}
 
 	freeBIPS(tl->train);
@@ -97,25 +119,17 @@ static void ttTL(struct OPTION *op, struct TASKLIST *tl) {
 	tl->trainr_cosine_similarity = createNETS(simf);
 	freeLF(simf);
 
-	if (op->alg_mass) tread(massT(op), tl);
-}
-
-static int numTL(struct OPTION *op) {
-	return algnumOPTION(op) * op->num_looptimes;	
+	if (op->alg_mass) shoot(massT(op), tl);
 }
 
 struct TASKLIST *walkingTL(struct OPTION *op) {
-	struct TASKLIST *tl = smalloc(sizeof(struct TASKLIST));
-	tl->core = smalloc(numTL(op) * sizeof(OTL*));
-	//init
-	tl->train = NULL;
-	tl->test = NULL;
-	tl->trainr_cosine_similarity = NULL;
-	tl->num = 0;
+	struct TASKLIST *tl = initTL(op);
 
 	LOG(LOG_INFO, "start walking TASKLIST...");
-	if (op->filename_full) fullTL(op, tl);
-	else ttTL(op, tl);
+	if (op->filename_full) 
+		fullTL(op, tl);
+	else 
+		ttTL(op, tl);
 
 	return tl;
 }

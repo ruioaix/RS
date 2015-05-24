@@ -5,16 +5,21 @@
 #include "option.h"
 
 typedef struct TASK OTL;
+typedef struct TASK *(*ALGS)(struct OPTION *);
 
 struct TASKLIST {
-	int num;
+	int listNum;
+	int currNum;
 	OTL **core;
 
-	//private
 	//share
 	BIPS *train;
 	BIPS *test;
 	NETS *trainr_cosine_similarity;
+
+	//private
+	ALGS *algs;
+	int algsNum;
 
 };
 

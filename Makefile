@@ -55,6 +55,8 @@ r: run
 	./run -i ../DATA/movielens/movielens_3c.txt -mDS
 val: run
 	valgrind --tool=memcheck --leak-check=full -v --track-origins=yes ./run -i ../DATA/movielens/movielens_3c.txt -SmD
+gdb: run
+	gdb --args ./run -i ../DATA/movielens/movielens_3c.txt -S
 ##################################################################
 
 all: run
