@@ -275,6 +275,19 @@ void printBIP(BIP *bip, char *filename) {
 	LOG(LOG_INFO, "BIP printed in %s.", filename);
 }
 
+double *averageBIP(BIP *bip) {
+	double *ave = smalloc((bip->maxId + 1) * sizeof(double));
+	int i, j;
+	for (i = 0; i < bip->maxId + 1; ++i) {
+		ave[i] = 0;
+		for (j = 0; j < bip->degree[i]; ++j) {
+			ave[i] += bip->rela[i][j];	
+		}
+		ave[i] /= bip->degree[i];
+	}
+	return ave;	
+}
+
 //divide Bip into two parts.
 //return two struct LineFile. 
 //the first one is always the small one.

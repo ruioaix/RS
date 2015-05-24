@@ -10,6 +10,7 @@ struct METRICS *createMTC(void) {
 	lp->HL = 0;
 	lp->IL = 0;
 	lp->NL = 0;
+	lp->SL = 0;
 	return lp;
 }
 
@@ -115,4 +116,18 @@ void set_NL_METRICS(int L, int *alltrianl_topL, BIP *trainl, BIP *trainr, double
 		}
 	}
 	*NL /= L * trainl->idNum;
+}
+
+void set_SL_METRICS(int L, int *alltrianl_topL, BIP *trainl, double *score, double *SL) {
+	int i, j;
+	*SL = 0;
+	for (i = 0; i < trainl->maxId + 1; ++i) {
+		if (trainl->degree[i]) {
+			int *topL = alltrianl_topL + i*L;
+			for (j = 0; j < L; ++j) {
+				*SL += score[topL[j]];
+			}
+		}
+	}
+	*SL /= L * trainl->idNum;
 }

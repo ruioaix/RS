@@ -52,7 +52,7 @@ clean:
 
 ## run #########################################################
 r: run
-	./run -i ../DATA/movielens/movielens_3c.txt -mDS
+	./run -i ../DATA/movielens/movielens_3c.txt -wDS
 val: run
 	valgrind --tool=memcheck --leak-check=full -v --track-origins=yes ./run -i ../DATA/movielens/movielens_3c.txt -SmD
 gdb: run

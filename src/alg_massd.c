@@ -58,6 +58,7 @@ struct METRICS *massd(struct TASK *task) {
 	BIP *testl = task->test->core[0];
 	int L = task->num_toprightused2cmptmetrics;
 	double rate = task->rate_massdparam;
+	double *avescore = task->dt;
 
 	//2 level, from 1 level
 	int lmaxId = trainl->maxId;
@@ -77,8 +78,8 @@ struct METRICS *massd(struct TASK *task) {
 	int *topL = scalloc(L*(lmaxId + 1), sizeof(int));
 
 	struct METRICS *retn = createMTC();
-	double R, RL, PL, HL, IL, NL;
-	R=RL=PL=HL=IL=NL=0;
+	double R, RL, PL, HL, IL, NL, SL;
+	R=RL=PL=HL=IL=NL=SL=0;
 
 	int i;
 	for (i = 0; i<trainl->maxId + 1; ++i) {
@@ -97,6 +98,7 @@ struct METRICS *massd(struct TASK *task) {
 	set_HL_METRICS(L, topL, trainl, trainr, &HL);
 	set_IL_METRICS(L, topL, trainl, trainr, task->trainr_cosine_similarity, &IL);
 	set_NL_METRICS(L, topL, trainl, trainr, &NL);
+	set_SL_METRICS(L, topL, trainl, avescore, &SL);
 	free(topL);
 
 	R /= testl->edgesNum;
@@ -109,6 +111,7 @@ struct METRICS *massd(struct TASK *task) {
 	retn->HL = HL;
 	retn->PL = PL;
 	retn->RL = RL;
+	retn->SL = SL;
 	return retn;
 }
 
@@ -117,10 +120,11 @@ struct TASK *massdT(struct OPTION *op) {
 	otl->train = NULL;
 	otl->test = NULL;
 	otl->trainr_cosine_similarity = NULL;
+	otl->dt = NULL;
 
 	otl->alg = massd;
 	otl->num_toprightused2cmptmetrics = op->num_toprightused2cmptmetrics;
-	otl->rate_massdparam = 0.1;
+	otl->rate_massdparam = op->rate_massdparam;
 
 	return otl;
 }

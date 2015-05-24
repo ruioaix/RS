@@ -25,8 +25,14 @@ void freeTL(struct TASKLIST *tl) {
 	for (i = 0; i < tl->listNum; ++i) {
 		freeOTL(tl->core[i]);
 	}
+
 	free(tl->core);
+	freeBIPS(tl->train);
+	freeBIPS(tl->test);
+	freeNETS(tl->trainr_cosine_similarity);
+	free(tl->dt);
 	free(tl->algs);
+
 	free(tl);
 }
 
@@ -51,6 +57,7 @@ static struct TASKLIST *initTL(struct OPTION *op) {
 	tl->train = NULL;
 	tl->test = NULL;
 	tl->trainr_cosine_similarity = NULL;
+	tl->dt = NULL;
 
 	return tl;
 }
@@ -60,13 +67,14 @@ static void shoot(struct TASK* otl, struct TASKLIST *tl) {
 	otl->test = tl->test;
 	otl->trainr_cosine_similarity = tl->trainr_cosine_similarity;
 	tl->core[tl->currNum++] = otl;
+	otl->dt = tl->dt;
 
 	otl->mtc = otl->alg(otl);
 }
 
 static void fullTL(struct OPTION *op, struct TASKLIST *tl) {
 	BIPS *full;
-	if (op->alg_masssc || op->alg_masssct) {
+	if (op->alg_massd || op->alg_masssc || op->alg_masssct) {
 		struct LineFile *lf = createLF(op->filename_full, INT, INT, INT, -1);
 		full = createBIPS(lf);
 		freeLF(lf);
@@ -94,15 +102,15 @@ static void fullTL(struct OPTION *op, struct TASKLIST *tl) {
 		struct LineFile *simf = cosineSM(tl->train->core[1], tl->train->core[0]);
 		tl->trainr_cosine_similarity = createNETS(simf);
 		freeLF(simf);
+		if (op->alg_massd || op->alg_masssc || op->alg_masssct) {
+			tl->dt = averageBIP(tl->train->core[3]);
+		}
 
 		for (j = 0; j < tl->algsNum; ++j) {
 			shoot(tl->algs[j](op), tl);	
 		}
 	}
 
-	freeBIPS(tl->train);
-	freeBIPS(tl->test);
-	freeNETS(tl->trainr_cosine_similarity);
 
 	freeBIPS(full);
 }

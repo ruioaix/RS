@@ -11,6 +11,7 @@ struct TASK {
 	BIPS* train;
 	BIPS* test;
 	NETS* trainr_cosine_similarity;
+	double *dt;
 	int num_toprightused2cmptmetrics;
 
 	//special

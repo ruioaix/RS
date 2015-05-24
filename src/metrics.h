@@ -10,6 +10,7 @@ struct METRICS {
 	double HL;
 	double IL;
 	double NL;
+	double SL;
 };
 
 struct METRICS *createMTC(void);
@@ -19,4 +20,5 @@ void set_R_RL_PL_METRICS(int lid, int L, int *rank, BIP *trainl, BIP *trainr, BI
 void set_HL_METRICS(int L, int *alltrianl_topL, BIP *trainl, BIP *trainr, double *HL);
 void set_IL_METRICS(int L, int *alltrianl_topL, BIP *trainl, BIP *trainr, NETS *cosin_similarity, double *IL);
 void set_NL_METRICS(int L, int *alltrianl_topL, BIP *trainl, BIP *trainr, double *NL);
+void set_SL_METRICS(int L, int *alltrianl_topL, BIP *trainl, double *score, double *SL);
 #endif

@@ -30,6 +30,7 @@ void freeBIP(BIP *bip);
 BIP * cloneBIP(BIP *bip);
 void verifyBIP(BIP *left, BIP *right);
 void printBIP(BIP *bip, char *filename);
+double *averageBIP(BIP *bip);
 
 //the dividation will guarantee that: 
 //	for each available user(degree of this user is at least one), at least there will be an edge related this user in big part.

@@ -16,6 +16,7 @@ struct TASKLIST {
 	BIPS *train;
 	BIPS *test;
 	NETS *trainr_cosine_similarity;
+	double *dt;
 
 	//private
 	ALGS *algs;
