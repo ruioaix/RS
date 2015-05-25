@@ -1,5 +1,6 @@
 #include "option.h"
 #include "log.h"
+#include "random.h"
 #include "utils.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -218,6 +219,7 @@ struct OPTION *setOPTION(int argc, char **argv) {
 	} while (1);
 
 	loginit(op->logfilename, getloglevel());
+	setRGseed(op->num_randomseed);
 
 	verify_OPTION(op);
 	info_OPTION(op);
