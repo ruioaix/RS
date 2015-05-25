@@ -55,7 +55,7 @@ else
 fi
 
 
-for seed in  {1..100}
+for seed in  {1..1000}
 do
 	for param in $rate
 	do
