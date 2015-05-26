@@ -8,3 +8,4 @@ cluster_output/
 result/
 script/
 core_cluster_submit_script
+.DS_store
