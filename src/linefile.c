@@ -208,7 +208,7 @@ static void set_lf_LineFile(struct LineFile *lf, char **allparts, int *typelist,
 					if (p[j] != NULL) {
 						ip[j+lf->linesNum] = strtol(p[j], &pend, 10);
 						if (pend[0]!='\0') {
-							LOG(LOG_WARN, "wrong line: line: %ld, i%d part.\n", j+lf->linesNum, IL);
+							LOG(LOG_WARN, "wrong line: line: %ld, i%d part. [%d].\n", j+lf->linesNum, IL, pend[0]);
 							*isok = 0;
 						}
 					}
