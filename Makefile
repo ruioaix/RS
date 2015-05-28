@@ -52,14 +52,16 @@ clean:
 
 ## run #########################################################
 r: run
-	./run -i ../DATA/movielens/movielens_3c.txt -x
+#./run -i ../DATA/movielens/movielens_3c.txt -x
 #./run -i ../DATA/movielens/movielens_3c.txt -wDS
 #./run -i ../DATA/rym/rym_3c.txt -wDS
+	./run -i ../DATA/rym/rym_3c.txt -x
 val: run
 	valgrind --tool=memcheck --leak-check=full -v --track-origins=yes ./run -i ../DATA/movielens/movielens_3c.txt -x
 #valgrind --tool=memcheck --leak-check=full -v --track-origins=yes ./run -i ../DATA/movielens/movielens_3c.txt -DSw
 gdb: run
-	gdb --args ./run -i ../DATA/movielens/movielens_3c.txt -S
+	gdb --args ./run -i ../DATA/rym/rym_3c.txt -x
+#gdb --args ./run -i ../DATA/movielens/movielens_3c.txt -S
 ##################################################################
 
 all: run

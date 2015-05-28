@@ -280,10 +280,12 @@ double *averageBIP(BIP *bip) {
 	int i, j;
 	for (i = 0; i < bip->maxId + 1; ++i) {
 		ave[i] = 0;
-		for (j = 0; j < bip->degree[i]; ++j) {
-			ave[i] += bip->rela[i][j];	
+		if (bip->degree[i]) {
+			for (j = 0; j < bip->degree[i]; ++j) {
+				ave[i] += bip->rela[i][j];	
+			}
+			ave[i] /= bip->degree[i];
 		}
-		ave[i] /= bip->degree[i];
 	}
 	return ave;	
 }
