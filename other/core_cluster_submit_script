@@ -30,11 +30,13 @@ fi
 #lambda=0
 
 #####################################################rate
-rate=
+srate=
+drate=
 for param in {0..30}
 do
 	tmp=$(awk "BEGIN{print $param / 10}")
-	rate="$rate $tmp"
+	srate="$srate $tmp"
+	drate="$drate $tmp"
 done
 
 #####################################################clean environment
@@ -55,25 +57,29 @@ else
 fi
 
 
-for seed in  {1..30}
+for seed in  {1..10}
 do
-	for param in $rate
+	for param in $srate
 	do
-		currentTask=$(qstat -cb | grep xiaor | wc -l)
-		echo "current running task Num: $currentTask"
-		while [ $currentTask -ge 40 ]
+		for dparam in $drate
 		do
-			echo "wait 20s.."
-			sleep 20s
 			currentTask=$(qstat -cb | grep xiaor | wc -l)
 			echo "current running task Num: $currentTask"
-		done
+			while [ $currentTask -ge 40 ]
+			do
+				echo "wait 20s.."
+				sleep 20s
+				currentTask=$(qstat -cb | grep xiaor | wc -l)
+				echo "current running task Num: $currentTask"
+			done
 
-		script_result_filename="output_${seed}_$param"
-		exec_script=$script_dir/$script_result_filename
-		result_file=$result_dir/$script_result_filename
-		echo "./run -i ../DATA/rym/rym_3c.txt -DSw --rate-mass-degree $param --rate-mass-score $param --rate-mass-score-third $param -s $seed |tee  $result_file" > $exec_script
-		qsub -cwd -o $cluster_output_dir -e $cluster_output_dir $exec_script 
-		sleep 1s
+			script_result_filename="output_${seed}_${param}_${dparam}"
+			exec_script=$script_dir/$script_result_filename
+			result_file=$result_dir/$script_result_filename
+			echo "./run -i ../DATA/movielens/movielens_3c.txt -x --rate-mass-score-third-score $param --rate-mass-score-third-degree $dparam -s $seed |tee  $result_file" > $exec_script
+			#echo "./run -i ../DATA/rym/rym_3c.txt -DSw --rate-mass-degree $param --rate-mass-score $param --rate-mass-score-third $param -s $seed |tee  $result_file" > $exec_script
+			qsub -cwd -o $cluster_output_dir -e $cluster_output_dir $exec_script 
+			sleep 1s
+		done
 	done
 done
