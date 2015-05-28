@@ -199,6 +199,7 @@ NETS *createNETS(const struct LineFile * const lf) {
 			memcpy(local_degree, degree, (maxId + 1) * sizeof(int));
 			nets->core[j] = assignNET(maxId, minId, linesNum, idNum, degreeMax, degreeMin, local_degree, rela, aler);
 			nets->sign[j] = INT;
+			++j;
 		}
 	}
 	for (i = 0; i < lf->dNum; ++i) {
@@ -210,6 +211,7 @@ NETS *createNETS(const struct LineFile * const lf) {
 			nets->core[j] = assignNET(maxId, minId, linesNum, idNum, degreeMax, degreeMin, local_degree, rela, aler);
 			//printNET(nets->core[j], "/tmp/xxx2");
 			nets->sign[j] = INT;
+			++j;
 		}
 	}
 
