@@ -12,6 +12,7 @@
 #include "alg_massd.h"
 #include "alg_masssc.h"
 #include "alg_masssct.h"
+#include "alg_masssctt.h"
 #include <stdlib.h>
 
 void freeOTL(OTL *otl) {
@@ -49,6 +50,7 @@ static struct TASKLIST *initTL(struct OPTION *op) {
 	if (op->alg_massd) tl->algs[i++] = massdT;
 	if (op->alg_masssc) tl->algs[i++] = massscT;
 	if (op->alg_masssct) tl->algs[i++] = masssctT;
+	if (op->alg_masssctt) tl->algs[i++] = massscttT;
 
 	tl->listNum = tl->algsNum * op->num_looptimes;
 	tl->core = smalloc(tl->listNum * sizeof(OTL*));
@@ -74,7 +76,7 @@ static void shoot(struct TASK* otl, struct TASKLIST *tl) {
 
 static void fullTL(struct OPTION *op, struct TASKLIST *tl) {
 	BIPS *full;
-	if (op->alg_massd || op->alg_masssc || op->alg_masssct) {
+	if (op->alg_massd || op->alg_masssc || op->alg_masssct || op->alg_masssctt) {
 		struct LineFile *lf = createLF(op->filename_full, INT, INT, INT, -1);
 		full = createBIPS(lf);
 		freeLF(lf);
@@ -102,7 +104,7 @@ static void fullTL(struct OPTION *op, struct TASKLIST *tl) {
 		struct LineFile *simf = cosineSM(tl->train->core[1], tl->train->core[0]);
 		tl->trainr_cosine_similarity = createNETS(simf);
 		freeLF(simf);
-		if (op->alg_massd || op->alg_masssc || op->alg_masssct) {
+		if (op->alg_massd || op->alg_masssc || op->alg_masssct || op->alg_masssctt) {
 			tl->dt = averageBIP(tl->train->core[3]);
 		}
 
