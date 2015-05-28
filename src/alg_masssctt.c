@@ -1,4 +1,4 @@
-#include "alg_masssct.h"
+#include "alg_masssctt.h"
 #include "sort.h"
 #include "log.h"
 #include "alg.h"
@@ -6,7 +6,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-static void masssct_core(int tid, int lmaxId, int rmaxId, int *ldegree, int *rdegree, int **lrela, int **rrela, double *lsource, double *rsource, double rate, double *rdt, int **lscore) {
+static void masssctt_core(int tid, int lmaxId, int rmaxId, int *ldegree, int *rdegree, int **lrela, int **rrela, double *lsource, double *rsource, double srate, double drate, double *rdt, int **lscore) {
 
 	int i, j, lid, rid, degree;
 	double source, totalsource;
@@ -34,7 +34,7 @@ static void masssct_core(int tid, int lmaxId, int rmaxId, int *ldegree, int *rde
 			source = lsource[i];
 			for (j = 0; j < degree; ++j) {
 				rid = lrela[i][j];
-				rdt[rid] = pow((double)lscore[i][j] / rdegree[rid], rate);
+				rdt[rid] = pow(lscore[i][j], srate) / pow(rdegree[rid], drate);
 				totalsource += rdt[rid];
 			}
 			for (j = 0; j < degree; ++j) {
@@ -50,15 +50,16 @@ static void masssct_core(int tid, int lmaxId, int rmaxId, int *ldegree, int *rde
 }
 
 
-struct METRICS *masssct(struct TASK *task) {
-	LOG(LOG_INFO, "masssct enter");
+struct METRICS *masssctt(struct TASK *task) {
+	LOG(LOG_INFO, "masssctt enter");
 	//1 level, from task
 	BIP *trainl = task->train->core[0];
 	BIP *trainr = task->train->core[1];
 	BIP *trainscorel = task->train->core[2];
 	BIP *testl = task->test->core[0];
 	int L = task->num_toprightused2cmptmetrics;
-	double rate = task->rate_masssctparam;
+	double srate = task->rate_massscttscoreparam;
+	double drate = task->rate_massscttdegreeparam;
 	double *avescore = task->dt;
 
 	//2 level, from 1 level
@@ -87,7 +88,7 @@ struct METRICS *masssct(struct TASK *task) {
 	for (i = 0; i<trainl->maxId + 1; ++i) {
 		if (trainl->degree[i]) {//each valid user in trainset.
 			//get rvlts
-			masssct_core(i, lmaxId, rmaxId, ldegree, rdegree, lrela, rrela, lsource, rsource, rate, rdt, lscore);
+			masssctt_core(i, lmaxId, rmaxId, ldegree, rdegree, lrela, rrela, lsource, rsource, srate, drate, rdt, lscore);
 			//use rvlts, get ridts & rank & topL
 			settopLrank(L, rmaxId, rdegree, rsource, ridtr, topL + i * L, rank);
 			set_R_RL_PL_METRICS(i, L, rank, trainl, trainr, testl, &R, &RL, &PL);
@@ -117,7 +118,7 @@ struct METRICS *masssct(struct TASK *task) {
 	return retn;
 }
 
-struct TASK *masssctT(struct OPTION *op) {
+struct TASK *massscttT(struct OPTION *op) {
 	struct TASK *otl = smalloc(sizeof(struct TASK));
 	//default
 	otl->train = NULL;
@@ -126,9 +127,10 @@ struct TASK *masssctT(struct OPTION *op) {
 	otl->dt = NULL;
 	
 	//algorithm specialize
-	otl->alg = masssct;
+	otl->alg = masssctt;
 	otl->num_toprightused2cmptmetrics = op->num_toprightused2cmptmetrics;
-	otl->rate_masssctparam = op->rate_masssctparam;
+	otl->rate_massscttscoreparam = op->rate_massscttscoreparam;
+	otl->rate_massscttdegreeparam = op->rate_massscttdegreeparam;
 
 	return otl;
 }

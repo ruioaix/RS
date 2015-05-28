@@ -16,6 +16,9 @@ struct OPTION {
 	double rate_massscparam;
 	bool alg_masssct;
 	double rate_masssctparam;
+	bool alg_masssctt;
+	double rate_massscttscoreparam;
+	double rate_massscttdegreeparam;
 
 	char *filename_full;
 	char *filename_train;

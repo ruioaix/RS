@@ -42,6 +42,15 @@ static void display_usage(void) {
 	puts("       Rate used in mass score (only the third step algorithm.");
 	puts("       only valid when -w option is used, otherwize this arg will be ignored.");
 	puts("       default: -0.8");
+	puts("  -x:  Calculate the result of mass score (the third step, but with two rate) algorithm");
+	puts("  --rate-mass-score-third-score doubleValue:  ");
+	puts("       Rate used in mass score (only the third step algorithm.");
+	puts("       only valid when -w option is used, otherwize this arg will be ignored.");
+	puts("       default: -0.8");
+	puts("  --rate-mass-score-third-degree doubleValue:  ");
+	puts("       Rate used in mass score (only the third step algorithm.");
+	puts("       only valid when -w option is used, otherwize this arg will be ignored.");
+	puts("       default: -0.8");
 	puts("");
 	puts("OPTION common to Algorithms:");
 	puts("  -i filename:");
@@ -83,6 +92,9 @@ static void init_OPTION(struct OPTION *op) {
 	op->rate_massscparam = 0.14;
 	op->alg_masssct = false;
 	op->rate_masssctparam = 0.14;
+	op->alg_masssctt = false;
+	op->rate_massscttscoreparam = 0.14;
+	op->rate_massscttdegreeparam = 0.14;
 
 	op->filename_full = NULL;
 	op->filename_train = NULL;
@@ -107,7 +119,7 @@ struct OPTION *setOPTION(int argc, char **argv) {
 	struct OPTION *op = smalloc(sizeof(struct OPTION));
 	init_OPTION(op);
 
-	static const char *short_options = "ho:meHNDSwi:T:t:u:d:l:L:s:";
+	static const char *short_options = "ho:meHNDSwxi:T:t:u:d:l:L:s:";
 	struct option long_options[] = {
 		{"help", no_argument, NULL, 'h'},
 		{"log-file", required_argument, NULL, 'o'},
@@ -124,6 +136,9 @@ struct OPTION *setOPTION(int argc, char **argv) {
 		{"rate-mass-score", required_argument, NULL, 302},
 		{"alg-masssct", no_argument, NULL, 'w'},
 		{"rate-mass-score-third", required_argument, NULL, 303},
+		{"alg-masssctt", no_argument, NULL, 'x'},
+		{"rate-mass-score-third-score", required_argument, NULL, 305},
+		{"rate-mass-score-third-degree", required_argument, NULL, 306},
 
 		{"filename-full", required_argument, NULL, 'i'},
 		{"filename-train", required_argument, NULL, 'T'},
@@ -185,6 +200,15 @@ struct OPTION *setOPTION(int argc, char **argv) {
 			case 303:
 				op->rate_masssctparam = strtod(optarg, NULL);
 				break;
+			case 'x':
+				op->alg_masssctt = true;
+				break;
+			case 305:
+				op->rate_massscttscoreparam = strtod(optarg, NULL);
+				break;
+			case 306:
+				op->rate_massscttdegreeparam = strtod(optarg, NULL);
+				break;
 			case 'i':
 				op->filename_full = optarg;
 				break;
@@ -229,7 +253,7 @@ struct OPTION *setOPTION(int argc, char **argv) {
 
 static void verify_OPTION(struct OPTION *op) {
 	//algorithms
-	if (!( op->alg_mass || op->alg_heats || op->alg_hybrid || op->alg_HNBI || op->alg_masssc || op->alg_masssct || op->alg_massd)) {
+	if (!( op->alg_mass || op->alg_heats || op->alg_hybrid || op->alg_HNBI || op->alg_masssc || op->alg_masssct || op->alg_massd || op->alg_masssctt)) {
 		LOG(LOG_FATAL, "no algorithms selected, what do you want to calculate?");
 	}
 
@@ -297,6 +321,11 @@ static void info_OPTION(struct OPTION *op) {
 	if (op->alg_masssct) {
 		LOG(LOG_INFO, "masssct rate:  %f", op->rate_masssctparam);
 	}
+	LOG(LOG_INFO, "  masssctt: %s", trueorfalse(op->alg_masssctt));
+	if (op->alg_masssct) {
+		LOG(LOG_INFO, "masssct score rate:  %f", op->rate_massscttscoreparam);
+		LOG(LOG_INFO, "masssct degree rate:  %f", op->rate_massscttdegreeparam);
+	}
 
 	//option common to alg
 	if (op->filename_full) {
@@ -320,5 +349,6 @@ int algnumOPTION(struct OPTION *op) {
 		(int)(op->alg_hybrid) + \
 		(int)(op->alg_massd) + \
 		(int)(op->alg_masssc) + \
-		(int)(op->alg_masssct);
+		(int)(op->alg_masssct) + \
+		(int)(op->alg_masssctt);
 }

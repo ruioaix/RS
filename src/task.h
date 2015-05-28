@@ -20,6 +20,8 @@ struct TASK {
 	double rate_massscparam;
 	double rate_masssctparam;
 	double rate_massdparam;
+	double rate_massscttscoreparam;
+	double rate_massscttdegreeparam;
 
 	//result;
 	struct METRICS *mtc;
