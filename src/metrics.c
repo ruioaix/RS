@@ -11,10 +11,15 @@ struct METRICS *createMTC(void) {
 	lp->IL = 0;
 	lp->NL = 0;
 	lp->SL = 0;
+	
+	lp->RK = NULL;
+	lp->SLK = NULL;
 	return lp;
 }
 
 void freeMTC(struct METRICS *lp) {
+	free(lp->RK);
+	free(lp->SLK);
 	free(lp);
 }
 
@@ -40,6 +45,25 @@ void set_R_RL_PL_METRICS(int lid, int L, int *rank, BIP *trainl, BIP *trainr, BI
 		*R += (double)sum_objintest_rank_in_all/(double)unselected_list_length;
 		*RL += (double)num_objintest_in_topL/(double)(testl->degree[lid]);
 		*PL += (double)num_objintest_in_topL/(double)L;
+	}
+}
+
+void set_RK_METRICS(int lid, int L, int *rank, BIP *trainl, BIP *trainr, BIP *testl, int *RKc, double *RK) {
+	if (lid < testl->maxId + 1 &&  testl->degree[lid]) {
+		int unselected_list_length = trainr->maxId - trainl->degree[lid];
+		int sum_objintest_rank_in_all = 0;
+		int num_objintest_in_topL = 0;
+		int j, id;
+		for (j=0; j<testl->degree[lid]; ++j) {
+			id = testl->rela[lid][j];
+			sum_objintest_rank_in_all += rank[id];
+			if (rank[id] <= L) {
+				++num_objintest_in_topL;
+			}
+		}
+
+		RK[trainl->degree[lid]] += (double)sum_objintest_rank_in_all/(double)unselected_list_length;
+		RKc[trainl->degree[lid]] += testl->degree[lid];
 	}
 }
 
@@ -130,4 +154,24 @@ void set_SL_METRICS(int L, int *alltrianl_topL, BIP *trainl, double *score, doub
 		}
 	}
 	*SL /= L * trainl->idNum;
+}
+
+void set_SLK_METRICS(int L, int *alltrianl_topL, BIP *trainl, double *score, double *SLK) {
+	int i, j;
+	int *SLKc = scalloc(trainl->degreeMax + 1, sizeof(int));
+	for (i = 0; i < trainl->maxId + 1; ++i) {
+		if (trainl->degree[i]) {
+			int *topL = alltrianl_topL + i*L;
+			for (j = 0; j < L; ++j) {
+				SLK[trainl->degree[i]] += score[topL[j]];
+				SLKc[trainl->degree[i]] += 1;
+			}
+		}
+	}
+	for (i = 0; i < trainl->degreeMax; ++i) {
+		if (SLKc[i]) {
+			SLK[i] /= SLKc[i];
+		}
+	}
+	free(SLKc);
 }
