@@ -48,22 +48,17 @@ void set_R_RL_PL_METRICS(int lid, int L, int *rank, BIP *trainl, BIP *trainr, BI
 	}
 }
 
-void set_RK_METRICS(int lid, int L, int *rank, BIP *trainl, BIP *trainr, BIP *testl, int *RKc, double *RK) {
+void set_RK_METRICS(int lid, int *rank, BIP *trainl, BIP *trainr, BIP *testl, int *RKc, double *RK) {
 	if (lid < testl->maxId + 1 &&  testl->degree[lid]) {
 		int unselected_list_length = trainr->maxId - trainl->degree[lid];
-		int sum_objintest_rank_in_all = 0;
-		int num_objintest_in_topL = 0;
-		int j, id;
+		int j, rid, degree;
 		for (j=0; j<testl->degree[lid]; ++j) {
-			id = testl->rela[lid][j];
-			sum_objintest_rank_in_all += rank[id];
-			if (rank[id] <= L) {
-				++num_objintest_in_topL;
-			}
+			rid = testl->rela[lid][j];
+			degree = trainr->degree[rid];
+			double rankscore = rank[rid] / (double)unselected_list_length;
+			RK[degree] += rankscore;
+			RKc[degree] += 1;
 		}
-
-		RK[trainl->degree[lid]] += (double)sum_objintest_rank_in_all/(double)unselected_list_length;
-		RKc[trainl->degree[lid]] += testl->degree[lid];
 	}
 }
 
@@ -156,15 +151,17 @@ void set_SL_METRICS(int L, int *alltrianl_topL, BIP *trainl, double *score, doub
 	*SL /= L * trainl->idNum;
 }
 
-void set_SLK_METRICS(int L, int *alltrianl_topL, BIP *trainl, double *score, double *SLK) {
+void set_SLK_METRICS(int L, int *alltrianl_topL, BIP *trainl, BIP *trainr, double *score, double *SLK) {
 	int i, j;
 	int *SLKc = scalloc(trainl->degreeMax + 1, sizeof(int));
 	for (i = 0; i < trainl->maxId + 1; ++i) {
 		if (trainl->degree[i]) {
 			int *topL = alltrianl_topL + i*L;
 			for (j = 0; j < L; ++j) {
-				SLK[trainl->degree[i]] += score[topL[j]];
-				SLKc[trainl->degree[i]] += 1;
+				int rid = topL[j];
+				int degree = trainr->degree[rid];
+				SLK[degree] += score[rid];
+				SLKc[degree] += 1;
 			}
 		}
 	}

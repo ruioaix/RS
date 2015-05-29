@@ -27,7 +27,7 @@ void set_IL_METRICS(int L, int *alltrianl_topL, BIP *trainl, BIP *trainr, NETS *
 void set_NL_METRICS(int L, int *alltrianl_topL, BIP *trainl, BIP *trainr, double *NL);
 void set_SL_METRICS(int L, int *alltrianl_topL, BIP *trainl, double *score, double *SL);
 
-void set_RK_METRICS(int lid, int L, int *rank, BIP *trainl, BIP *trainr, BIP *testl, int *RKc, double *RK);
-void set_SLK_METRICS(int L, int *alltrianl_topL, BIP *trainl, double *score, double *SLK);
+void set_RK_METRICS(int lid, int *rank, BIP *trainl, BIP *trainr, BIP *testl, int *RKc, double *RK);
+void set_SLK_METRICS(int L, int *alltrianl_topL, BIP *trainl, BIP *trainr, double *score, double *SLK);
 
 #endif

@@ -80,9 +80,9 @@ struct METRICS *massd(struct TASK *task) {
 	struct METRICS *retn = createMTC();
 	double R, RL, PL, HL, IL, NL, SL;
 	R=RL=PL=HL=IL=NL=SL=0;
-	double *RK = scalloc(trainl->degreeMax + 1, sizeof(double));
-	double *SLK = scalloc(trainl->degreeMax + 1, sizeof(double));
-	int *RKc = scalloc(trainl->degreeMax + 1, sizeof(int));
+	double *RK = scalloc(trainr->degreeMax + 1, sizeof(double));
+	double *SLK = scalloc(trainr->degreeMax + 1, sizeof(double));
+	int *RKc = scalloc(trainr->degreeMax + 1, sizeof(int));
 
 	int i;
 	for (i = 0; i<trainl->maxId + 1; ++i) {
@@ -92,14 +92,14 @@ struct METRICS *massd(struct TASK *task) {
 			//use rvlts, get ridts & rank & topL
 			settopLrank(L, rmaxId, rdegree, rsource, ridtr, topL + i * L, rank);
 			set_R_RL_PL_METRICS(i, L, rank, trainl, trainr, testl, &R, &RL, &PL);
-			set_RK_METRICS(i, L, rank, trainl, trainr, testl, RKc, RK);
+			set_RK_METRICS(i, rank, trainl, trainr, testl, RKc, RK);
 		}
 	}
 	free(lsource); free(rsource);
 	free(lidtr); free(ridtr);
 	free(rank); free(rdt);
 
-	for (i = 0; i < trainl->degreeMax + 1; ++i) {
+	for (i = 0; i < trainr->degreeMax + 1; ++i) {
 		if (RKc[i]) {
 			RK[i] /= RKc[i];
 		}
@@ -111,7 +111,7 @@ struct METRICS *massd(struct TASK *task) {
 	set_NL_METRICS(L, topL, trainl, trainr, &NL);
 	set_SL_METRICS(L, topL, trainl, avescore, &SL);
 
-	set_SLK_METRICS(L, topL, trainl, avescore, SLK);
+	set_SLK_METRICS(L, topL, trainl, trainr, avescore, SLK);
 	free(topL);
 
 	R /= testl->edgesNum;
@@ -127,7 +127,7 @@ struct METRICS *massd(struct TASK *task) {
 	retn->SL = SL;
 	retn->RK = RK;
 	retn->SLK = SLK;
-	retn->Kdegree = trainl->degreeMax + 1;
+	retn->Kdegree = trainr->degreeMax + 1;
 	return retn;
 }
 
