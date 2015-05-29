@@ -53,9 +53,10 @@ clean:
 ## run #########################################################
 r: run
 #./run -i ../DATA/movielens/movielens_3c.txt -x
-#./run -i ../DATA/movielens/movielens_3c.txt -wDS
+	./run -i ../DATA/netflix/netflix_3c.txt -wD
+#./run -i ../DATA/movielens/movielens_3c.txt -wD
 #./run -i ../DATA/rym/rym_3c.txt -wDS
-	./run -i ../DATA/rym/rym_3c.txt -x
+#./run -i ../DATA/rym/rym_3c.txt -x
 val: run
 	valgrind --tool=memcheck --leak-check=full -v --track-origins=yes ./run -i ../DATA/movielens/movielens_3c.txt -x
 #valgrind --tool=memcheck --leak-check=full -v --track-origins=yes ./run -i ../DATA/movielens/movielens_3c.txt -DSw

@@ -168,7 +168,7 @@ void set_SLK_METRICS(int L, int *alltrianl_topL, BIP *trainl, double *score, dou
 			}
 		}
 	}
-	for (i = 0; i < trainl->degreeMax; ++i) {
+	for (i = 0; i < trainl->degreeMax + 1; ++i) {
 		if (SLKc[i]) {
 			SLK[i] /= SLKc[i];
 		}

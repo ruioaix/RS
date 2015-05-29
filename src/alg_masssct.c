@@ -129,6 +129,7 @@ struct METRICS *masssct(struct TASK *task) {
 	retn->SL = SL;
 	retn->RK = RK;
 	retn->SLK = SLK;
+	retn->Kdegree = trainl->degreeMax + 1;
 	return retn;
 }
 

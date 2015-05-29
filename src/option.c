@@ -87,11 +87,11 @@ static void init_OPTION(struct OPTION *op) {
 	op->alg_HNBI = false;
 	op->rate_hnbiparam = -0.8;
 	op->alg_massd = false;
-	op->rate_massdparam = 0.14;
+	op->rate_massdparam = 1;
 	op->alg_masssc = false;
 	op->rate_massscparam = 0.14;
 	op->alg_masssct = false;
-	op->rate_masssctparam = 0.14;
+	op->rate_masssctparam = 1;
 	op->alg_masssctt = false;
 	op->rate_massscttscoreparam = 0.14;
 	op->rate_massscttdegreeparam = 0.14;

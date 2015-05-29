@@ -12,7 +12,9 @@ struct METRICS {
 	double NL;
 	double SL;
 
+	//
 	double *RK;
+	int Kdegree;
 	double *SLK;
 };
 
