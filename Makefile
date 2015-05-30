@@ -58,7 +58,7 @@ r: run
 #./run -i ../DATA/rym/rym_3c.txt -wDS
 #./run -i ../DATA/rym/rym_3c.txt -x
 val: run
-	valgrind --tool=memcheck --leak-check=full -v --track-origins=yes ./run -i ../DATA/movielens/movielens_3c.txt -wD
+	valgrind --tool=memcheck --leak-check=full -v --track-origins=yes ./run -i ../DATA/netflix/netflix_3c.txt -wD --rate-mass-degree 0.8 --rate-mass-score-third 0.8 -s 1000
 #valgrind --tool=memcheck --leak-check=full -v --track-origins=yes ./run -i ../DATA/movielens/movielens_3c.txt -DSw
 gdb: run
 	gdb --args ./run -i ../DATA/rym/rym_3c.txt -x

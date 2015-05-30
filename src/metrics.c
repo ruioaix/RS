@@ -153,7 +153,7 @@ void set_SL_METRICS(int L, int *alltrianl_topL, BIP *trainl, double *score, doub
 
 void set_SLK_METRICS(int L, int *alltrianl_topL, BIP *trainl, BIP *trainr, double *score, double *SLK) {
 	int i, j;
-	int *SLKc = scalloc(trainl->degreeMax + 1, sizeof(int));
+	int *SLKc = scalloc(trainr->degreeMax + 1, sizeof(int));
 	for (i = 0; i < trainl->maxId + 1; ++i) {
 		if (trainl->degree[i]) {
 			int *topL = alltrianl_topL + i*L;
@@ -165,7 +165,7 @@ void set_SLK_METRICS(int L, int *alltrianl_topL, BIP *trainl, BIP *trainr, doubl
 			}
 		}
 	}
-	for (i = 0; i < trainl->degreeMax + 1; ++i) {
+	for (i = 0; i < trainr->degreeMax + 1; ++i) {
 		if (SLKc[i]) {
 			SLK[i] /= SLKc[i];
 		}
