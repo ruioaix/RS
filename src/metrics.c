@@ -12,14 +12,21 @@ struct METRICS *createMTC(void) {
 	lp->NL = 0;
 	lp->SL = 0;
 	
+	//
+	lp->degreeMaxplus1 = 0;
 	lp->RK = NULL;
+	lp->RKc = NULL;
 	lp->SLK = NULL;
+	lp->SLKc = NULL;
+
 	return lp;
 }
 
 void freeMTC(struct METRICS *lp) {
 	free(lp->RK);
+	free(lp->RKc);
 	free(lp->SLK);
+	free(lp->SLKc);
 	free(lp);
 }
 
@@ -151,9 +158,8 @@ void set_SL_METRICS(int L, int *alltrianl_topL, BIP *trainl, double *score, doub
 	*SL /= L * trainl->idNum;
 }
 
-void set_SLK_METRICS(int L, int *alltrianl_topL, BIP *trainl, BIP *trainr, double *score, double *SLK) {
+void set_SLK_METRICS(int L, int *alltrianl_topL, BIP *trainl, BIP *trainr, double *score, int *SLKc, double *SLK) {
 	int i, j;
-	int *SLKc = scalloc(trainr->degreeMax + 1, sizeof(int));
 	for (i = 0; i < trainl->maxId + 1; ++i) {
 		if (trainl->degree[i]) {
 			int *topL = alltrianl_topL + i*L;
@@ -165,10 +171,4 @@ void set_SLK_METRICS(int L, int *alltrianl_topL, BIP *trainl, BIP *trainr, doubl
 			}
 		}
 	}
-	for (i = 0; i < trainr->degreeMax + 1; ++i) {
-		if (SLKc[i]) {
-			SLK[i] /= SLKc[i];
-		}
-	}
-	free(SLKc);
 }

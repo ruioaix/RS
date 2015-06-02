@@ -81,8 +81,9 @@ struct METRICS *massd(struct TASK *task) {
 	double R, RL, PL, HL, IL, NL, SL;
 	R=RL=PL=HL=IL=NL=SL=0;
 	double *RK = scalloc(trainr->degreeMax + 1, sizeof(double));
-	double *SLK = scalloc(trainr->degreeMax + 1, sizeof(double));
 	int *RKc = scalloc(trainr->degreeMax + 1, sizeof(int));
+	double *SLK = scalloc(trainr->degreeMax + 1, sizeof(double));
+	int *SLKc = scalloc(trainr->degreeMax + 1, sizeof(int));
 
 	int i;
 	for (i = 0; i<trainl->maxId + 1; ++i) {
@@ -99,19 +100,12 @@ struct METRICS *massd(struct TASK *task) {
 	free(lidtr); free(ridtr);
 	free(rank); free(rdt);
 
-	for (i = 0; i < trainr->degreeMax + 1; ++i) {
-		if (RKc[i]) {
-			RK[i] /= RKc[i];
-		}
-	}
-	free(RKc);
-
 	set_HL_METRICS(L, topL, trainl, trainr, &HL);
 	set_IL_METRICS(L, topL, trainl, trainr, task->trainr_cosine_similarity, &IL);
 	set_NL_METRICS(L, topL, trainl, trainr, &NL);
 	set_SL_METRICS(L, topL, trainl, avescore, &SL);
 
-	set_SLK_METRICS(L, topL, trainl, trainr, avescore, SLK);
+	set_SLK_METRICS(L, topL, trainl, trainr, avescore, SLKc, SLK);
 	free(topL);
 
 	R /= testl->edgesNum;
@@ -125,9 +119,14 @@ struct METRICS *massd(struct TASK *task) {
 	retn->PL = PL;
 	retn->RL = RL;
 	retn->SL = SL;
+
+	//
+	retn->degreeMaxplus1 = trainr->degreeMax + 1;
 	retn->RK = RK;
+	retn->RKc = RKc;
 	retn->SLK = SLK;
-	retn->Kdegree = trainr->degreeMax + 1;
+	retn->SLKc = SLKc;
+
 	return retn;
 }
 
