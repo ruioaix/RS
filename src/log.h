@@ -4,8 +4,8 @@
  *
  * Author: RuiXiao <xrfind@gmail.com>
  */
-#ifndef DEBUG_H
-#define DEBUG_H
+#ifndef LOG_H
+#define LOG_H
 
 //#define NDEBUG
 
