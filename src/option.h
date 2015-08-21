@@ -5,25 +5,10 @@
 
 struct OPTION {
 	bool alg_mass;
-	bool alg_heats;
-	bool alg_hybrid;
-	double rate_hybridparam;
-	bool alg_HNBI;
-	double rate_hnbiparam;
-	bool alg_massd;
-	double rate_massdparam;
-	bool alg_masssc;
-	double rate_massscparam;
-	bool alg_masssct;
-	double rate_masssctparam;
-	bool alg_masssctt;
-	double rate_massscttscoreparam;
-	double rate_massscttdegreeparam;
 
 	char *filename_full;
 	char *filename_train;
 	char *filename_test;
-	char *filename_leftobjectattr;
 
 	double rate_dividefulldataset;
 	int num_looptimes;

@@ -10,7 +10,7 @@ struct TASK {
 	struct METRICS * (*alg)(struct TASK *);
 	BIPS* train;
 	BIPS* test;
-	NETS* trainr_cosine_similarity;
+	NET* trainr_cosine_similarity;
 	double *dt;
 	int num_toprightused2cmptmetrics;
 

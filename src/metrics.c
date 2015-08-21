@@ -101,10 +101,10 @@ void set_HL_METRICS(int L, int *alltrianl_topL, BIP *trainl, BIP *trainr, double
 	*HL /= num_samerobjs_in2lobjpair;
 }
 
-void set_IL_METRICS(int L, int *alltrianl_topL, BIP *trainl, BIP *trainr, NETS *cosin_similarity, double *IL) {
+void set_IL_METRICS(int L, int *alltrianl_topL, BIP *trainl, BIP *trainr, NET *cosin_similarity, double *IL) {
 	if (cosin_similarity == NULL) return;
-	NET *sim_id = cosin_similarity->core[0];
-	NET *sim_vl = cosin_similarity->core[1];
+	NET *sim_id = cosin_similarity;
+	NET *sim_vl = cosin_similarity;
 	double *sign = scalloc((trainr->maxId + 1), sizeof(double));
 	int i, j, k;
 	*IL = 0;
