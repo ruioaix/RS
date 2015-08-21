@@ -30,10 +30,15 @@ void full(OPTION *op) {
 		NET *trainr_cosine_similarity = createNET(simf);
 		freeLF(simf);
 
-		METRICS *mtc;
+		METRICS *mtc = NULL;
 		if (op->alg_mass) {
 			mtc = mass(train, test, trainr_cosine_similarity, op->num_toprightused2cmptmetrics);
 		}
+
+		freeBIP(train);
+		freeBIP(test);
+		freeNET(trainr_cosine_similarity);
+		freeMTC(mtc);
 	}
 	freeBIP(full);
 }
