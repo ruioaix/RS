@@ -3,7 +3,7 @@
 
 #include <stdbool.h>
 
-struct OPTION {
+typedef struct OPTION {
 	bool alg_mass;
 
 	char *filename_full;
@@ -17,10 +17,10 @@ struct OPTION {
 
 	//
 	char *logfilename;
-};
+} OPTION;
 
-struct OPTION *setOPTION(int argc, char **argv);
-int algnumOPTION(struct OPTION *op);
-void freeOPTION(struct OPTION *op);
+OPTION *setOPTION(int argc, char **argv);
+int algnumOPTION(OPTION *op);
+void freeOPTION(OPTION *op);
 
 #endif

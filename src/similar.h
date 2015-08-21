@@ -1,7 +1,7 @@
 #ifndef SIMILARITY
 #define SIMILARITY 
-#include "bip.h"
 
-struct LineFile *cosineSM(BIP *left, BIP *right);
+#include "bip.h"
+LineFile *cosineSM(BIP *bip);
 
 #endif

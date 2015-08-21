@@ -8,25 +8,24 @@
 #include "alg_mass.h"
 #include <stdlib.h>
 
-void freeOTL(OTL *otl) {
+void freeTASK(TASK *otl) {
 	freeMTC(otl->mtc);
 	free(otl);
 }
 
 void freeTL(struct TASKLIST *tl) {
 	if (!tl) return;
+
 	int i;
 	for (i = 0; i < tl->listNum; ++i) {
-		freeOTL(tl->core[i]);
+		freeTASK(tl->list[i]);
 	}
+	free(tl->list);
 
-	free(tl->core);
-	freeBIPS(tl->train);
-	freeBIPS(tl->test);
+	freeBIP(tl->train);
+	freeBIP(tl->test);
 	freeNET(tl->trainr_cosine_similarity);
-	free(tl->dt);
 	free(tl->algs);
-
 	free(tl);
 }
 
@@ -39,7 +38,7 @@ static struct TASKLIST *initTL(struct OPTION *op) {
 	if (op->alg_mass) tl->algs[i++] = massT;
 
 	tl->listNum = tl->algsNum * op->num_looptimes;
-	tl->core = smalloc(tl->listNum * sizeof(OTL*));
+	tl->list = smalloc(tl->listNum * sizeof(TASK *));
 	tl->currNum = 0;
 	
 	tl->train = NULL;
@@ -54,60 +53,60 @@ static void shoot(struct TASK* otl, struct TASKLIST *tl) {
 	otl->train = tl->train;
 	otl->test = tl->test;
 	otl->trainr_cosine_similarity = tl->trainr_cosine_similarity;
-	tl->core[tl->currNum++] = otl;
-	otl->dt = tl->dt;
+	tl->list[tl->currNum++] = otl;
 
 	otl->mtc = otl->alg(otl);
 }
 
 static void fullTL(struct OPTION *op, struct TASKLIST *tl) {
-	BIPS *full;
 	struct LineFile *lf = createLF(op->filename_full, INT, INT, -1);
-	full = createBIPS(lf);
+	BIP *full = createBIP(lf);
 	freeLF(lf);
 
 	int i, j;
 	for (i = 0; i < op->num_looptimes; ++i) {
 		struct LineFile *testf, *trainf;
-		divideBIPS(full, op->rate_dividefulldataset, &testf, &trainf);
+		divideBIP(full, op->rate_dividefulldataset, &trainf, &testf);
+
 		//train
-		freeBIPS(tl->train);
-		tl->train = createBIPS(trainf);
+		freeBIP(tl->train);
+		tl->train = createBIP(trainf);
 		freeLF(trainf);
+
 		//test
-		freeBIPS(tl->test);
-		tl->test = createBIPS(testf);
+		freeBIP(tl->test);
+		tl->test = createBIP(testf);
 		freeLF(testf);
+
 		//similarity
 		freeNET(tl->trainr_cosine_similarity);
-		struct LineFile *simf = cosineSM(tl->train->core[1], tl->train->core[0]);
+		struct LineFile *simf = cosineSM(tl->train);
 		tl->trainr_cosine_similarity = createNET(simf);
 		freeLF(simf);
+
 		for (j = 0; j < tl->algsNum; ++j) {
 			shoot(tl->algs[j](op), tl);	
 		}
 	}
-
-
-	freeBIPS(full);
+	freeBIP(full);
 }
 
 static void ttTL(struct OPTION *op, struct TASKLIST *tl) {
 	struct LineFile *trainf = createLF(op->filename_train, INT, INT, -1);
 	struct LineFile *testf = createLF(op->filename_test, INT, INT, -1);
-	tl->train = createBIPS(trainf);
-	tl->test = createBIPS(testf);
+	tl->train = createBIP(trainf);
+	tl->test = createBIP(testf);
 	freeLF(trainf);
 	freeLF(testf);
 
-	struct LineFile *simf = cosineSM(tl->train->core[1], tl->train->core[0]);
+	struct LineFile *simf = cosineSM(tl->train);
 	tl->trainr_cosine_similarity = createNET(simf);
 	freeLF(simf);
 
 	if (op->alg_mass) shoot(massT(op), tl);
 }
 
-struct TASKLIST *walkingTL(struct OPTION *op) {
+TASKLIST *walkingTL(OPTION *op) {
 	struct TASKLIST *tl = initTL(op);
 
 	LOG(LOG_INFO, "start walking TASKLIST...");

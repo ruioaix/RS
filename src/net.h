@@ -1,11 +1,22 @@
 #ifndef CN_IIDNET_H
 #define CN_IIDNET_H
 
-#include "core.h"
 #include "utils.h"
 #include "linefile.h"
 
-typedef struct CORE NET;
+typedef struct NET{
+	long edgesNum;
+	int maxId;
+	int minId;
+	int idNum;
+	int degreeMax;
+	int degreeMin;
+	int *degree;
+	int **rela;
+	double **aler;
+
+} NET;
+
 
 void freeNET(NET *net);
 

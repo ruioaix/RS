@@ -4,17 +4,16 @@
 #include "task.h"
 #include "option.h"
 
-typedef struct TASK OTL;
 typedef struct TASK *(*ALGS)(struct OPTION *);
 
-struct TASKLIST {
+typedef struct TASKLIST {
 	int listNum;
 	int currNum;
-	OTL **core;
+	TASK **list;
 
 	//share
-	BIPS *train;
-	BIPS *test;
+	BIP *train;
+	BIP *test;
 	NET *trainr_cosine_similarity;
 	double *dt;
 
@@ -22,10 +21,10 @@ struct TASKLIST {
 	ALGS *algs;
 	int algsNum;
 
-};
+} TASKLIST;
 
-void freeOTL(OTL *otl);
-void freeTL(struct TASKLIST *tl);
-struct TASKLIST *walkingTL(struct OPTION *op);
+void freeTL(TASKLIST *tl);
+
+TASKLIST *walkingTL(OPTION *op);
 
 #endif

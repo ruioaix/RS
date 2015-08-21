@@ -3,8 +3,8 @@
 
 #include "metrics.h"
 #include "task.h"
+#include "option.h"
 
-struct METRICS *mass(struct TASK *task);
-struct TASK *massT(struct OPTION *op);
+TASK *massT(OPTION *op);
 
 #endif

@@ -1,10 +1,14 @@
 #include "similar.h"
 #include "log.h"
+#include "utils.h"
 #include <string.h>
 #include <math.h>
 #include <stdlib.h>
 
-struct LineFile *cosineSM(BIP *left, BIP *right) {
+LineFile *cosineSM(BIP *bip) {
+	HALFBIP *left = bip->left;
+	HALFBIP *right = bip->right;
+
 	int lmaxId = left->maxId;
 	int rmaxId = right->maxId;
 	int *ldegree = left->degree;
@@ -12,7 +16,7 @@ struct LineFile *cosineSM(BIP *left, BIP *right) {
 
 	int *sign = scalloc((rmaxId + 1),sizeof(int));
 
-	struct LineFile *simfile = createLF(NULL);
+	LineFile *simfile = createLF(NULL);
 
 	int step = 1000000;
 	int con = step;

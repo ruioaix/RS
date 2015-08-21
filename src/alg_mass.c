@@ -43,12 +43,12 @@ static void mass_core(int tid, int lmaxId, int rmaxId, int *ldegree, int *rdegre
 	}
 }
 
-struct METRICS *mass(struct TASK *task) {
+static METRICS *mass(TASK *task) {
 	LOG(LOG_INFO, "mass enter");
 	//1 level, from task
-	BIP *trainl = task->train->core[0];
-	BIP *trainr = task->train->core[1];
-	BIP *testl = task->test->core[0];
+	HALFBIP *trainl = task->train->left;
+	HALFBIP *trainr = task->train->right;
+	HALFBIP *testl = task->test->left;
 	int L = task->num_toprightused2cmptmetrics;
 
 	//2 level, from 1 level
@@ -77,19 +77,19 @@ struct METRICS *mass(struct TASK *task) {
 			mass_core(i, lmaxId, rmaxId, ldegree, rdegree, lrela, rrela, lsource, rsource);
 			//use rsource, get ridts & rank & topL
 			settopLrank(L, rmaxId, rdegree, rsource, rids, topL + i * L, rank);
-			set_R_RL_PL_METRICS(i, L, rank, trainl, trainr, testl, &R, &RL, &PL);
+			set_R_RL_PL_METRICS(i, L, rank, task->train, task->test, &R, &RL, &PL);
 		}
 	}
 	free(lsource); free(rsource);
 	free(rids);
 	free(rank);
 
-	set_HL_METRICS(L, topL, trainl, trainr, &HL);
-	set_IL_METRICS(L, topL, trainl, trainr, task->trainr_cosine_similarity, &IL);
-	set_NL_METRICS(L, topL, trainl, trainr, &NL);
+	set_HL_METRICS(L, topL, task->train, &HL);
+	set_IL_METRICS(L, topL, task->train, task->trainr_cosine_similarity, &IL);
+	set_NL_METRICS(L, topL, task->train, &NL);
 	free(topL);
 
-	R /= testl->edgesNum;
+	R /= task->test->relaNum;
 	RL /= testl->idNum;
 	PL /= testl->idNum;
 

@@ -22,7 +22,7 @@
 #ifndef LINEFILE_H 
 #define LINEFILE_H
 
-struct LineFile {
+typedef struct LineFile {
 	//private
 	int ***ilist;
 	double ***dlist;
@@ -41,7 +41,7 @@ struct LineFile {
 
 	long linesNum;
 	long memNum;
-};
+} LineFile;
 
 /**
  * create_LineFile("fileA", 1, 2, 1, 2, -1) means: 

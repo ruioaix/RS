@@ -7,7 +7,16 @@
 
 
 void freeNET(NET *net) {
-	freeCORE(net);
+	if (!net) return;
+	int i = 0;
+	for(i = 0; i < net->maxId + 1; ++i) {
+		if (net->rela) free(net->rela[i]);
+		if (net->aler) free(net->aler[i]);
+	}
+	free(net->degree);
+	free(net->rela);
+	free(net->aler);
+	free(net);
 }
 
 static inline void set_maxid_minid_NET(int *i1, int *i2, long linesNum, int *maxId_retn, int *minId_retn) {
