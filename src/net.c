@@ -60,7 +60,7 @@ static inline void set_degree_degreeMax_degreeMin_idNum_NET(int *i1, int *i2, lo
 //if objtoi2 != NULL, then objtoi1 must be NULL.
 static inline void set_rela_aler_NET(int *i1, int *i2, double *dd, int *degree, int maxId, long linesNum, int ***rela_retn, double ***aler_retn) {
 	int i;
-	int **rela = rela = smalloc((maxId + 1) * sizeof(int *));
+	int **rela = smalloc((maxId + 1) * sizeof(int *));
 	double **aler = NULL;
 	if (dd) aler = smalloc((maxId + 1) * sizeof(double *));
 
@@ -115,6 +115,7 @@ NET *createNET(const struct LineFile * const lf) {
 	long linesNum=lf->linesNum;
 	int *i1 = lf->i1;
 	int *i2 = lf->i2;
+	double *d1 = lf->d1;
 
 	int maxId, minId;
 	set_maxid_minid_NET(i1, i2, linesNum, &maxId, &minId);
@@ -125,7 +126,7 @@ NET *createNET(const struct LineFile * const lf) {
 
 	int **rela;
 	double **aler;
-	set_rela_aler_NET(i1, i2, NULL, degree, maxId, linesNum, &rela, &aler);
+	set_rela_aler_NET(i1, i2, d1, degree, maxId, linesNum, &rela, &aler);
 
 	LOG(LOG_INFO, "  Max: %5d, Min: %5d, edgesNum: %5ld", maxId, minId, linesNum);
 	return assignNET(maxId, minId, linesNum, idNum, degreeMax, degreeMin, degree, rela, aler);

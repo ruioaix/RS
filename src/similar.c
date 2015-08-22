@@ -5,9 +5,13 @@
 #include <math.h>
 #include <stdlib.h>
 
-LineFile *cosineSM(BIP *bip) {
+LineFile *cosineSM(BIP *bip, SIDE side) {
 	HALFBIP *left = bip->left;
 	HALFBIP *right = bip->right;
+	if (side == RIGHT) {
+		left = bip->right;
+		right = bip->left;
+	}
 
 	int lmaxId = left->maxId;
 	int rmaxId = right->maxId;

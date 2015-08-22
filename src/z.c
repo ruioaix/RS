@@ -26,7 +26,7 @@ void full(OPTION *op) {
 		freeLF(testf);
 
 		//similarity
-		struct LineFile *simf = cosineSM(train);
+		struct LineFile *simf = cosineSM(train, RIGHT);
 		NET *trainr_cosine_similarity = createNET(simf);
 		freeLF(simf);
 
@@ -50,7 +50,7 @@ void tt(OPTION *op) {
 	freeLF(trainf);
 	freeLF(testf);
 
-	LineFile *simf = cosineSM(train);
+	LineFile *simf = cosineSM(train, RIGHT);
 	NET *trainr_cosine_similarity = createNET(simf);
 	freeLF(simf);
 
@@ -71,6 +71,7 @@ int main(int argc, char **argv) {
 	else 
 		tt(op);
 
+	freeOPTION(op);
 	releaselog();
 	return 0;
 }

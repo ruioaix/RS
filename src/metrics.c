@@ -88,7 +88,6 @@ void set_IL_METRICS(int L, int *alltrianl_topL, BIP *train, NET *cosin_similarit
 
 	if (cosin_similarity == NULL) return;
 	NET *sim_id = cosin_similarity;
-	NET *sim_vl = cosin_similarity;
 	double *sign = scalloc((trainr->maxId + 1), sizeof(double));
 	int i, j, k;
 	*IL = 0;
@@ -98,7 +97,7 @@ void set_IL_METRICS(int L, int *alltrianl_topL, BIP *train, NET *cosin_similarit
 			for (j = 0; j < L; ++j) {
 				int id = topL[j];
 				for (k = 0; k < sim_id->degree[id]; ++k) {
-					sign[sim_id->rela[id][k]] = sim_vl->aler[id][k];
+					sign[sim_id->rela[id][k]] = sim_id->aler[id][k];
 				}
 				for (k = j + 1; k < L; ++k) {
 					id = topL[k];

@@ -2,6 +2,7 @@
 #define SIMILARITY 
 
 #include "bip.h"
-LineFile *cosineSM(BIP *bip);
+#include "utils.h"
+LineFile *cosineSM(BIP *bip, SIDE side);
 
 #endif

@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-enum SIDE {LEFT, RIGHT};
+typedef enum SIDE {LEFT, RIGHT} SIDE;
 enum TYPE {INT, DOUBLE, CSTRING};
 
 char *trueorfalse(bool b);
