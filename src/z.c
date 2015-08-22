@@ -32,6 +32,7 @@ void full(OPTION *op) {
 
 		if (op->alg_mass) {
 			METRICS *mtc = mass(train, test, trainr_cosine_similarity, op->num_toprightused2cmptmetrics);
+			printMTC(mtc);
 			freeMTC(mtc);
 		}
 

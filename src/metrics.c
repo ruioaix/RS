@@ -1,4 +1,5 @@
 #include "metrics.h"
+#include "log.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -16,6 +17,10 @@ METRICS *createMTC(void) {
 
 void freeMTC(struct METRICS *lp) {
 	free(lp);
+}
+
+void printMTC(METRICS *m) {
+	LOG(LOG_OP, "METRICS: R: %f, RL: %f, PL: %f, HL: %f, IL: %f, NL: %f, SL: %f.", m->R, m->RL, m->PL, m->HL, m->IL, m->NL, m->SL);
 }
 
 //R is rankscore.
