@@ -89,7 +89,6 @@ LineFile *pearsonSM(BIP *bip, SIDE side) {
 	double **laler = left->aler;
 
 	double *sign = smalloc((rmaxId + 1) * sizeof(double));
-	
 
 	LineFile *simfile = createLF(NULL);
 
@@ -103,58 +102,53 @@ LineFile *pearsonSM(BIP *bip, SIDE side) {
 	int i ,j, k;
 	double simvl;
 	for (i = 0; i < rmaxId + 1; ++i) {
-		sign = 0;
+		sign[i] = 0;
 	}
 
 	for (i = 0; i < lmaxId; ++i) {
 		if (ldegree[i]) {
+			double  sumx = 0, sumxx = 0;
 			for (k = 0; k < ldegree[i]; ++k) {
-				sign[lrela[i][k]] = laler[i][k];
+				double x = laler[i][k];
+				sign[lrela[i][k]] = x;
+				sumx += x;
+				sumxx += x * x;
 			}
 			for (j = i + 1; j < lmaxId + 1; ++j) {
 				if (ldegree[j]) {
 					//user i and user j.
-					double  sumx = 0, sumxsp = 0;
-					double  sumy = 0, sumysp = 0;
+					double  sumy = 0, sumyy = 0;
 					double  sumxy = 0;
-					int com = 0;
 					for (k = 0; k < ldegree[j]; ++k) {
-						double scorei = sign[lrela[j][k]];
-						double scorej = laler[j][k];
-						if (scorei > 1E-15 && scorej > 1E-15) {
-							com++;
-							sumx += scorei;
-							sumy += scorej;
-							sumxsp += scorei * scorei;
-							sumysp += scorej * scorej;
-							sumxy += scorei * scorej;
-						}
+						double x = sign[lrela[j][k]];
+						double y = laler[j][k];
+						sumy += y;
+						sumyy += y * y;
+						sumxy += x * y;
 					}
-					if (com) {
-						double fenzi = sumxy * com - sumx * sumy;
-						double fenmu1 = sumxsp * com - sumx * sumx;
-						double fenmu2 = sumysp * com - sumy * sumy;;
-						if (fenzi < 1E-17) {
-							simvl = 0;
-							//not need to do anything
-						}
-						else if (fenmu1 < 1E-17 || fenmu2 < 1E-17) {
-							LOG(LOG_FATAL, "fezi: %.17f, fenmu1: %.17f fenmu2: %.17f", fenzi, fenmu1, fenmu2);
-						}
-						else {
-							double fenmu = sqrt(fenmu1) * sqrt(fenmu2);
-							simvl = fenzi/fenmu;
-							//printf("%d, %d, %.17f\n", i, j, soij);
-							i1[linesNum] = i;
-							i2[linesNum] = j;
-							d1[linesNum] = simvl;
-							++linesNum;
-							if (linesNum == con) {
-								con += 1000000;
-								i1 = srealloc(i1, con*sizeof(int));
-								i2 = srealloc(i2, con*sizeof(int));
-								d1 = srealloc(d1, con*sizeof(double));
-							}
+					double fenzi = sumxy * rmaxId - sumx * sumy;
+					double fenmu1 = sumxx * rmaxId - sumx * sumx;
+					double fenmu2 = sumyy * rmaxId - sumy * sumy;;
+					if (fenzi < 1E-17) {
+						simvl = 0;
+						//not need to do anything
+					}
+					else if (fenmu1 < 1E-17 || fenmu2 < 1E-17) {
+						LOG(LOG_FATAL, "fezi: %.17f, fenmu1: %.17f fenmu2: %.17f", fenzi, fenmu1, fenmu2);
+					}
+					else {
+						double fenmu = sqrt(fenmu1) * sqrt(fenmu2);
+						simvl = fenzi/fenmu;
+						//printf("%d, %d, %.17f\n", i, j, soij);
+						i1[linesNum] = i;
+						i2[linesNum] = j;
+						d1[linesNum] = simvl;
+						++linesNum;
+						if (linesNum == con) {
+							con += 1000000;
+							i1 = srealloc(i1, con*sizeof(int));
+							i2 = srealloc(i2, con*sizeof(int));
+							d1 = srealloc(d1, con*sizeof(double));
 						}
 					}
 				}
