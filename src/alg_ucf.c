@@ -37,7 +37,7 @@ static void ucf_core(int tid, int lmaxId, int rmaxId, int *ldegree, int *rdegree
 }
 
 METRICS *ucf(BIP *train, BIP *test, NET *trainr_pearson_similarity, int num_toprightused2cmptmetrics, double *psimM, int K) {
-	LOG(LOG_INFO, "mass enter");
+	LOG(LOG_INFO, "UCF enter");
 	//1 level, from task
 	HALFBIP *trainl = train->left;
 	HALFBIP *trainr = train->right;

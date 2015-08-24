@@ -89,7 +89,6 @@ void tt(OPTION *op) {
 
 int main(int argc, char **argv) {
 	setloglevel(LOG_INFO);
-
 	struct OPTION *op = setOPTION(argc, argv);
 
 	if (op->filename_full) {

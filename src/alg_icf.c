@@ -26,7 +26,7 @@ static void icf_core(int tid, int rmaxId, int *ldegree, int **lrela, double *psi
 }
 
 METRICS *icf(BIP *train, BIP *test, NET *trainr_cosine_similarity, int num_toprightused2cmptmetrics, double *psimM) {
-	LOG(LOG_INFO, "mass enter");
+	LOG(LOG_INFO, "ICF enter");
 	//1 level, from task
 	HALFBIP *trainl = train->left;
 	HALFBIP *trainr = train->right;
