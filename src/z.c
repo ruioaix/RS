@@ -1,5 +1,6 @@
 #include "log.h"
 #include "alg_mass.h"
+#include "alg_ucf.h"
 #include "metrics.h"
 #include "option.h"
 #include "net.h"
@@ -7,8 +8,25 @@
 #include "utils.h"
 #include "similar.h"
 
+double *psimMf(LineFile *psimf, int maxId) {
+	long L = (maxId + 1) * (maxId + 1);
+	double *psimM = smalloc(L * sizeof(double));
+	long i;
+	for (i = 0; i < L; ++i) {
+		psimM[i] = 0;
+	}
+	for (i = 0; i < psimf->linesNum; ++i) {
+		int x = psimf->i1[i];
+		int y = psimf->i2[i];
+		double d = psimf->d1[i];
+		psimM[x * (maxId + 1) + y] = d;
+		
+	}
+	return psimM;
+}
+
 void full(OPTION *op) {
-	struct LineFile *lf = createLF(op->filename_full, INT, INT, -1);
+	struct LineFile *lf = createLF(op->filename_full, INT, INT, DOUBLE, -1);
 	BIP *full = createBIP(lf);
 	freeLF(lf);
 
@@ -32,6 +50,14 @@ void full(OPTION *op) {
 
 		if (op->alg_mass) {
 			METRICS *mtc = mass(train, test, trainr_cosine_similarity, op->num_toprightused2cmptmetrics);
+			printMTC(mtc);
+			freeMTC(mtc);
+		}
+		if (op->alg_ucf) {
+			LineFile *psimf = pearsonSM(train, LEFT);
+			double *psimM = psimMf(psimf, train->left->maxId);	
+			METRICS *mtc = ucf(train, test, trainr_cosine_similarity, op->num_toprightused2cmptmetrics, psimM, op->num_ucf_knn);
+			free(psimM);
 			printMTC(mtc);
 			freeMTC(mtc);
 		}
