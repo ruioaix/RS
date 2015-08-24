@@ -8,6 +8,34 @@
 #include "bip.h"
 #include "utils.h"
 #include "similar.h"
+#include "sort.h"
+#include <string.h>
+
+int *level(BIP *train, SIDE side) {
+	HALFBIP *hbip = train->left;
+	if (side == RIGHT) hbip = train->right;
+	int * l = scalloc(hbip->maxId + 1, sizeof(int));
+	int *dd = scalloc(hbip->maxId + 1, sizeof(int));
+	memcpy(dd, hbip->degree, (hbip->maxId + 1) * sizeof(int));
+	qsort_i_desc(dd, 0, hbip->degreeMax);
+	int l1s = dd[(int)(hbip->maxId * 0.01)];
+	int l2s = dd[(int)(hbip->maxId * 0.1)];
+	int i;
+	for (i = 0; i < hbip->maxId + 1; ++i) {
+		int deg = hbip->degree[i];
+		if (deg > l1s) {
+			l[i] = 1;
+		}
+		else if (deg > l2s) {
+			l[i] = 2;
+		}
+		else {
+			l[i] = 3;
+		}
+	}
+	free(dd);
+	return l;
+}
 
 double *psimMf(LineFile *psimf, int maxId) {
 	long L = (maxId + 1) * (maxId + 1);
@@ -21,7 +49,6 @@ double *psimMf(LineFile *psimf, int maxId) {
 		int y = psimf->i2[i];
 		double d = psimf->d1[i];
 		psimM[x * (maxId + 1) + y] = d;
-		
 	}
 	return psimM;
 }
@@ -49,8 +76,9 @@ void full(OPTION *op) {
 		NET *trainr_cosine_similarity = createNET(simf);
 		freeLF(simf);
 
+		int *l = level(train, RIGHT);
 		if (op->alg_mass) {
-			METRICS *mtc = mass(train, test, trainr_cosine_similarity, op->num_toprightused2cmptmetrics);
+			METRICS *mtc = mass(train, test, trainr_cosine_similarity, op->num_toprightused2cmptmetrics, l);
 			printMTC(mtc);
 			freeMTC(mtc);
 		}
@@ -58,7 +86,7 @@ void full(OPTION *op) {
 			LineFile *psimf = pearsonSM(train, LEFT);
 			double *psimM = psimMf(psimf, train->left->maxId);	
 			freeLF(psimf);
-			METRICS *mtc = ucf(train, test, trainr_cosine_similarity, op->num_toprightused2cmptmetrics, psimM, op->num_ucf_knn);
+			METRICS *mtc = ucf(train, test, trainr_cosine_similarity, op->num_toprightused2cmptmetrics, psimM, op->num_ucf_knn, l);
 			free(psimM);
 			printMTC(mtc);
 			freeMTC(mtc);
@@ -67,12 +95,13 @@ void full(OPTION *op) {
 			LineFile *psimf = pearsonSM(train, RIGHT);
 			double *psimM = psimMf(psimf, train->right->maxId);	
 			freeLF(psimf);
-			METRICS *mtc = icf(train, test, trainr_cosine_similarity, op->num_toprightused2cmptmetrics, psimM);
+			METRICS *mtc = icf(train, test, trainr_cosine_similarity, op->num_toprightused2cmptmetrics, psimM, l);
 			free(psimM);
 			printMTC(mtc);
 			freeMTC(mtc);
 		}
 
+		free(l);
 		freeBIP(train);
 		freeBIP(test);
 		freeNET(trainr_cosine_similarity);
@@ -92,8 +121,9 @@ void tt(OPTION *op) {
 	NET *trainr_cosine_similarity = createNET(simf);
 	freeLF(simf);
 
+	int *l = level(train, RIGHT);
 	if (op->alg_mass) {
-		METRICS *mtc = mass(train, test, trainr_cosine_similarity, op->num_toprightused2cmptmetrics);
+		METRICS *mtc = mass(train, test, trainr_cosine_similarity, op->num_toprightused2cmptmetrics, l);
 		freeMTC(mtc);
 	}
 }

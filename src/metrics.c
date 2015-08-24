@@ -12,6 +12,14 @@ METRICS *createMTC(void) {
 	lp->IL = 0;
 	lp->NL = 0;
 	lp->SL = 0;
+
+	lp->L1 = 0;
+	lp->L2 = 0;
+	lp->L3 = 0;
+	lp->PL0 = 0;
+	lp->PL1 = 0;
+	lp->PL2 = 0;
+	lp->PL3 = 0;
 	return lp;
 }
 
@@ -20,7 +28,8 @@ void freeMTC(struct METRICS *lp) {
 }
 
 void printMTC(METRICS *m) {
-	LOG(LOG_OP, "METRICS: R: %f, RL: %f, PL: %f, HL: %f, IL: %f, NL: %f, SL: %f.", m->R, m->RL, m->PL, m->HL, m->IL, m->NL, m->SL);
+	LOG(LOG_OP, "METRICS: R: %f, RL: %f, PL: %f, HL: %f, IL: %f, NL: %f, SL: %f, L1: %f, L2: %f, L3: %f, PL0: %f, PL1: %f, PL2: %f, PL3: %f", \
+			m->R, m->RL, m->PL, m->HL, m->IL, m->NL, m->SL, m->L1, m->L2, m->L3, m->PL0, m->PL1, m->PL2, m->PL3);
 }
 
 //R is rankscore.
@@ -147,4 +156,46 @@ void set_SL_METRICS(int L, int *alltrianl_topL, BIP *train, double *score, doubl
 		}
 	}
 	*SL /= L * trainl->idNum;
+}
+
+void set_LL_METRICS(int L, int *alltrianl_topL, BIP *train, int *l, double *L1, double *L2, double *L3) {
+	HALFBIP *trainl = train->left;
+	int i, j;
+	*L1 = *L2 = *L3 = 0;
+	int plus[4] ={0,0,0,0};	
+	for (i = 0; i < trainl->maxId + 1; ++i) {
+		if (trainl->degree[i]) {
+			int *topL = alltrianl_topL + i*L;
+			for (j = 0; j < L; ++j) {
+				plus[l[topL[j]]] ++;
+			}
+		}
+	}
+	*L1 = (double)plus[1] / (L * trainl->idNum);
+	*L2 = (double)plus[2] / (L * trainl->idNum);
+	*L3 = (double)plus[3] / (L * trainl->idNum);
+}
+
+void set_PLL_METRICS(int lid, int L, int *rank, BIP *test, int *l, double *PL0, double *PL1, double *PL2, double *PL3) {
+	HALFBIP *testl = test->left;
+
+	//*PL1 = *PL2 = *PL3 = 0;
+	int plus[4] ={0,0,0,0};	
+	if (lid < testl->maxId + 1 &&  testl->degree[lid]) {
+		int j, id;
+		for (j=0; j<testl->degree[lid]; ++j) {
+			id = testl->rela[lid][j];
+			if (rank[id] <= L) {
+				plus[l[id]] ++;
+			}
+			else {
+				plus[0] ++;
+			}
+		}
+
+		*PL0 += (double)plus[0];
+		*PL1 += (double)plus[1];
+		*PL2 += (double)plus[2];
+		*PL3 += (double)plus[3];
+	}
 }

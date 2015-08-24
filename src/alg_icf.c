@@ -25,7 +25,7 @@ static void icf_core(int tid, int rmaxId, int *ldegree, int **lrela, double *psi
 	}
 }
 
-METRICS *icf(BIP *train, BIP *test, NET *trainr_cosine_similarity, int num_toprightused2cmptmetrics, double *psimM) {
+METRICS *icf(BIP *train, BIP *test, NET *trainr_cosine_similarity, int num_toprightused2cmptmetrics, double *psimM, int *l) {
 	LOG(LOG_INFO, "ICF enter");
 	//1 level, from task
 	HALFBIP *trainl = train->left;
@@ -50,6 +50,8 @@ METRICS *icf(BIP *train, BIP *test, NET *trainr_cosine_similarity, int num_topri
 	struct METRICS *retn = createMTC();
 	double R, RL, PL, HL, IL, NL;
 	R=RL=PL=HL=IL=NL=0;
+	double L1, L2, L3, PL0, PL1, PL2, PL3;
+	L1=L2=L3=PL0=PL1=PL2=PL3=0;
 
 	int i;
 	for (i = 0; i<trainl->maxId + 1; ++i) {
@@ -59,6 +61,7 @@ METRICS *icf(BIP *train, BIP *test, NET *trainr_cosine_similarity, int num_topri
 			//use rsource, get ridts & rank & topL
 			settopLrank(L, rmaxId, rdegree, rsource, rids, topL + i * L, rank);
 			set_R_RL_PL_METRICS(i, L, rank, train, test, &R, &RL, &PL);
+			set_PLL_METRICS(i, L, rank, test, l, &PL0, &PL1, &PL2, &PL3);
 		}
 	}
 	free(lsource); free(rsource);
@@ -68,6 +71,7 @@ METRICS *icf(BIP *train, BIP *test, NET *trainr_cosine_similarity, int num_topri
 	set_HL_METRICS(L, topL, train, &HL);
 	set_IL_METRICS(L, topL, train, trainr_cosine_similarity, &IL);
 	set_NL_METRICS(L, topL, train, &NL);
+	set_LL_METRICS(L, topL, train, l, &L1, &L2, &L3);
 	free(topL);
 
 	R /= test->relaNum;
@@ -80,5 +84,13 @@ METRICS *icf(BIP *train, BIP *test, NET *trainr_cosine_similarity, int num_topri
 	retn->HL = HL;
 	retn->PL = PL;
 	retn->RL = RL;
+
+	retn->L1 = L1;
+	retn->L2 = L2;
+	retn->L3 = L3;
+	retn->PL0 = PL0;
+	retn->PL1 = PL1;
+	retn->PL2 = PL2;
+	retn->PL3 = PL3;
 	return retn;
 }
