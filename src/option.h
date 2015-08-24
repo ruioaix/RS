@@ -5,6 +5,8 @@
 
 typedef struct OPTION {
 	bool alg_mass;
+	bool alg_ucf;
+	bool alg_icf;
 
 	char *filename_full;
 	char *filename_train;
@@ -14,13 +16,13 @@ typedef struct OPTION {
 	int num_looptimes;
 	int num_toprightused2cmptmetrics;
 	unsigned long num_randomseed;
+	int num_ucf_knn;
 
 	//
 	char *logfilename;
 } OPTION;
 
 OPTION *setOPTION(int argc, char **argv);
-int algnumOPTION(OPTION *op);
 void freeOPTION(OPTION *op);
 
 #endif

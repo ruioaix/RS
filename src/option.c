@@ -16,6 +16,8 @@ static void display_usage(void) {
 	puts("");
 	puts("OPTION privated to Algorithm:");
 	puts("  -m:  Calculate the result of mass algorithm");
+	puts("  -U:  Calculate the result of UCF algorithm");
+	puts("  -I:  Calculate the result of ICF algorithm");
 	puts("");
 	puts("OPTION common to Algorithms:");
 	puts("  -i filename:");
@@ -36,6 +38,8 @@ static void display_usage(void) {
 	puts("       in order to get reasonable average result");
 	puts("  -L intValue:  ");
 	puts("       Number of the recommended objects which will be used to computer metrics");
+	puts("  -K intValue:  ");
+	puts("       Number of K in UCF, only the nearest K users is used");
 	puts("  -s unsignedlongValue: ");
 	puts("       Random seed");
 	puts("");
@@ -46,6 +50,8 @@ static void init_OPTION(struct OPTION *op) {
 	op->logfilename = NULL;
 
 	op->alg_mass = false;
+	op->alg_ucf = false;
+	op->alg_icf = false;
 
 	op->filename_full = NULL;
 	op->filename_train = NULL;
@@ -54,6 +60,7 @@ static void init_OPTION(struct OPTION *op) {
 	op->num_looptimes = 1;
 	op->num_toprightused2cmptmetrics = 50;
 	op->num_randomseed= 1;
+	op->num_ucf_knn = 20;
 }
 
 void freeOPTION(struct OPTION *op) {
@@ -69,12 +76,14 @@ struct OPTION *setOPTION(int argc, char **argv) {
 	struct OPTION *op = smalloc(sizeof(struct OPTION));
 	init_OPTION(op);
 
-	static const char *short_options = "ho:mi:T:t:u:d:l:L:s:";
+	static const char *short_options = "ho:mUIi:T:t:u:d:l:L:s:K:";
 	struct option long_options[] = {
 		{"help", no_argument, NULL, 'h'},
 		{"log-file", required_argument, NULL, 'o'},
 
 		{"alg-mass", no_argument, NULL, 'm'},
+		{"alg-UCF", no_argument, NULL, 'U'},
+		{"alg-ICF", no_argument, NULL, 'I'},
 
 		{"filename-full", required_argument, NULL, 'i'},
 		{"filename-train", required_argument, NULL, 'T'},
@@ -85,6 +94,7 @@ struct OPTION *setOPTION(int argc, char **argv) {
 		{"num-looptimes", required_argument, NULL, 'l'},
 		{"num-toprightused2cmptmetrics", required_argument, NULL, 'L'},
 		{"num-randomseed", required_argument, NULL, 's'},
+		{"num-UCF-KNN", required_argument, NULL, 'K'},
 
 		{0, 0, 0, 0},
 	};
@@ -102,6 +112,12 @@ struct OPTION *setOPTION(int argc, char **argv) {
 				break;
 			case 'm':
 				op->alg_mass = true;
+				break;
+			case 'U':
+				op->alg_ucf = true;
+				break;
+			case 'I':
+				op->alg_icf = true;
 				break;
 			case 'i':
 				op->filename_full = optarg;
@@ -125,6 +141,9 @@ struct OPTION *setOPTION(int argc, char **argv) {
 			case 's':
 				op->num_randomseed = strtol(optarg, NULL, 10);
 				break;
+			case 'K':
+				op->num_ucf_knn = strtol(optarg, NULL, 10);
+				break;
 
 			case '?':
 				break;
@@ -144,7 +163,7 @@ struct OPTION *setOPTION(int argc, char **argv) {
 
 static void verify_OPTION(struct OPTION *op) {
 	//algorithms
-	if (!( op->alg_mass )) {
+	if (!( op->alg_mass || op->alg_ucf || op->alg_icf)) {
 		LOG(LOG_FATAL, "no algorithms selected, what do you want to calculate?");
 	}
 
@@ -186,6 +205,11 @@ static void info_OPTION(struct OPTION *op) {
 	LOG(LOG_INFO, "Algorithm:");
 	//option privated to alg
 	LOG(LOG_INFO, "  mass:    %s", trueorfalse(op->alg_mass));
+	LOG(LOG_INFO, "  ucf:    %s", trueorfalse(op->alg_ucf));
+	if (op->alg_ucf) {
+		LOG(LOG_INFO, "      UCF K: %d", op->num_ucf_knn);
+	}
+	LOG(LOG_INFO, "  icf:    %s", trueorfalse(op->alg_icf));
 
 	//option common to alg
 	if (op->filename_full) {
@@ -200,8 +224,4 @@ static void info_OPTION(struct OPTION *op) {
 	}
 	LOG(LOG_INFO, "The num of top recommeded right objects: %d", op->num_toprightused2cmptmetrics);
 	LOG(LOG_INFO, "The seed of random number generater: %lu", op->num_randomseed);
-}
-
-int algnumOPTION(struct OPTION *op) {
-	return (int)(op->alg_mass);
 }
