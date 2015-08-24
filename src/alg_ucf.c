@@ -5,20 +5,20 @@
 #include <string.h>
 #include <stdlib.h>
 
-static void ucf_core(int tid, int lmaxId, int rmaxId, int *ldegree, int *rdegree, int **lrela, int **rrela, double *lsource, double *rsource, int *rids, int *lids, double **raler, double *psimM, int K) {
+static void ucf_core(int tid, int lmaxId, int rmaxId, int *ldegree, int *rdegree, int **lrela, int **rrela, int *lids, double **raler, double *psimM, int K, int *rids, double *lsource, double *rsource) {
 	int i, j, neigh;
 
 	for (j = 0; j < rmaxId + 1; ++j) {
-		rids[j] = 1;
+		rids[j] = 0;
 		rsource[j] = 0;
 	}
 	for (j = 0; j < ldegree[tid]; ++j) {
-		rids[lrela[tid][j]] = 0;
+		rids[lrela[tid][j]] = 1;
 	}
 
 	int k;
 	for (j = 0; j < rmaxId + 1; ++j) {
-		if (rids[j] == 0) continue;
+		if (rids[j]) continue;
 		k = 0;
 		for (i = 0; i < rdegree[j]; ++i) {
 			neigh = rrela[j][i];
@@ -68,7 +68,7 @@ METRICS *ucf(BIP *train, BIP *test, NET *trainr_pearson_similarity, int num_topr
 	for (i = 0; i<trainl->maxId + 1; ++i) {
 		if (trainl->degree[i]) {//each valid user in trainset.
 			//get rsource
-			ucf_core(i, lmaxId, rmaxId, ldegree, rdegree, lrela, rrela, lsource, rsource, rids, lids, trainr->aler, psimM, K);
+			ucf_core(i, lmaxId, rmaxId, ldegree, rdegree, lrela, rrela, lids, trainr->aler, psimM, K, rids, lsource, rsource);
 			//use rsource, get ridts & rank & topL
 			settopLrank(L, rmaxId, rdegree, rsource, rids, topL + i * L, rank);
 			set_R_RL_PL_METRICS(i, L, rank, train, test, &R, &RL, &PL);
