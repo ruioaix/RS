@@ -5,6 +5,7 @@
 
 typedef struct OPTION {
 	bool alg_mass;
+	bool alg_hybrid;
 	bool alg_ucf;
 	bool alg_icf;
 
@@ -13,6 +14,7 @@ typedef struct OPTION {
 	char *filename_test;
 
 	double rate_dividefulldataset;
+	double rate_hybridparam;
 	int num_looptimes;
 	int num_toprightused2cmptmetrics;
 	unsigned long num_randomseed;

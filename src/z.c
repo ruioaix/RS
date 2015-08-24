@@ -1,5 +1,6 @@
 #include "log.h"
 #include "alg_mass.h"
+#include "alg_hybrid.h"
 #include "alg_icf.h"
 #include "alg_ucf.h"
 #include "metrics.h"
@@ -79,6 +80,11 @@ void full(OPTION *op) {
 		int *l = level(train, RIGHT);
 		if (op->alg_mass) {
 			METRICS *mtc = mass(train, test, trainr_cosine_similarity, op->num_toprightused2cmptmetrics, l);
+			printMTC(mtc);
+			freeMTC(mtc);
+		}
+		if (op->alg_hybrid) {
+			METRICS *mtc = hybrid(train, test, trainr_cosine_similarity, op->num_toprightused2cmptmetrics, op->rate_hybridparam, l);
 			printMTC(mtc);
 			freeMTC(mtc);
 		}
