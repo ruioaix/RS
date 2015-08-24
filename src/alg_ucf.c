@@ -75,7 +75,7 @@ METRICS *ucf(BIP *train, BIP *test, NET *trainr_pearson_similarity, int num_topr
 		}
 	}
 	free(lsource); free(rsource);
-	free(rids);
+	free(lids); free(rids);
 	free(rank);
 
 	set_HL_METRICS(L, topL, train, &HL);

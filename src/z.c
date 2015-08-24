@@ -1,5 +1,6 @@
 #include "log.h"
 #include "alg_mass.h"
+#include "alg_icf.h"
 #include "alg_ucf.h"
 #include "metrics.h"
 #include "option.h"
@@ -56,7 +57,17 @@ void full(OPTION *op) {
 		if (op->alg_ucf) {
 			LineFile *psimf = pearsonSM(train, LEFT);
 			double *psimM = psimMf(psimf, train->left->maxId);	
+			freeLF(psimf);
 			METRICS *mtc = ucf(train, test, trainr_cosine_similarity, op->num_toprightused2cmptmetrics, psimM, op->num_ucf_knn);
+			free(psimM);
+			printMTC(mtc);
+			freeMTC(mtc);
+		}
+		if (op->alg_icf) {
+			LineFile *psimf = pearsonSM(train, RIGHT);
+			double *psimM = psimMf(psimf, train->right->maxId);	
+			freeLF(psimf);
+			METRICS *mtc = icf(train, test, trainr_cosine_similarity, op->num_toprightused2cmptmetrics, psimM);
 			free(psimM);
 			printMTC(mtc);
 			freeMTC(mtc);
