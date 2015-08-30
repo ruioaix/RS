@@ -20,6 +20,10 @@ METRICS *createMTC(void) {
 	lp->PL1 = 0;
 	lp->PL2 = 0;
 	lp->PL3 = 0;
+	lp->TL0 = 0;
+	lp->TL1 = 0;
+	lp->TL2 = 0;
+	lp->TL3 = 0;
 	return lp;
 }
 
@@ -28,8 +32,8 @@ void freeMTC(struct METRICS *lp) {
 }
 
 void printMTC(METRICS *m) {
-	LOG(LOG_OP, "METRICS: R: %f, RL: %f, PL: %f, HL: %f, IL: %f, NL: %f, SL: %f, L1: %f, L2: %f, L3: %f, PL0: %f, PL1: %f, PL2: %f, PL3: %f", \
-			m->R, m->RL, m->PL, m->HL, m->IL, m->NL, m->SL, m->L1, m->L2, m->L3, m->PL0, m->PL1, m->PL2, m->PL3);
+	LOG(LOG_OP, "METRICS: R: %f, RL: %f, PL: %f, HL: %f, IL: %f, NL: %f, SL: %f, L1: %f, L2: %f, L3: %f, PL0: %f, PL1: %f, PL2: %f, PL3: %f, TL0: %f, TL1: %f, TL2: %f, TL3: %f", \
+			m->R, m->RL, m->PL, m->HL, m->IL, m->NL, m->SL, m->L1, m->L2, m->L3, m->PL0, m->PL1, m->PL2, m->PL3, m->TL0, m->TL1, m->TL2, m->TL3);
 }
 
 //R is rankscore.
@@ -197,5 +201,24 @@ void set_PLL_METRICS(int lid, int L, int *rank, BIP *test, int *l, double *PL0, 
 		*PL1 += (double)plus[1];
 		*PL2 += (double)plus[2];
 		*PL3 += (double)plus[3];
+	}
+}
+
+void set_TLL_METRICS(int lid, BIP *test, int *l, double *TL0, double *TL1, double *TL2, double *TL3) {
+	HALFBIP *testl = test->left;
+
+	//*PL1 = *PL2 = *PL3 = 0;
+	int plus[4] ={0,0,0,0};	
+	if (lid < testl->maxId + 1 &&  testl->degree[lid]) {
+		int j, id;
+		for (j=0; j<testl->degree[lid]; ++j) {
+			id = testl->rela[lid][j];
+			plus[l[id]] ++;
+		}
+
+		*TL0 += (double)plus[0];
+		*TL1 += (double)plus[1];
+		*TL2 += (double)plus[2];
+		*TL3 += (double)plus[3];
 	}
 }

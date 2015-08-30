@@ -76,6 +76,8 @@ METRICS *hybrid(BIP *train, BIP *test, NET *trainr_cosine_similarity, int num_to
 	R=RL=PL=HL=IL=NL=0;
 	double L1, L2, L3, PL0, PL1, PL2, PL3;
 	L1=L2=L3=PL0=PL1=PL2=PL3=0;
+	double TL0, TL1, TL2, TL3;
+	TL0=TL1=TL2=TL3=0;
 
 	int i;
 	for (i = 0; i<trainl->maxId + 1; ++i) {
@@ -92,6 +94,7 @@ METRICS *hybrid(BIP *train, BIP *test, NET *trainr_cosine_similarity, int num_to
 			settopLrank(L, rmaxId, rdegree, rvltr, ridtr, topL + i * L, rank);
 			set_R_RL_PL_METRICS(i, L, rank, train, test, &R, &RL, &PL);
 			set_PLL_METRICS(i, L, rank, test, l, &PL0, &PL1, &PL2, &PL3);
+			set_TLL_METRICS(i, test, l, &TL0, &TL1, &TL2, &TL3);
 		}
 	}
 	free(lvltr); free(rvltr);
@@ -122,5 +125,9 @@ METRICS *hybrid(BIP *train, BIP *test, NET *trainr_cosine_similarity, int num_to
 	retn->PL1 = PL1;
 	retn->PL2 = PL2;
 	retn->PL3 = PL3;
+	retn->TL0 = TL0;
+	retn->TL1 = TL1;
+	retn->TL2 = TL2;
+	retn->TL3 = TL3;
 	return retn;
 }
