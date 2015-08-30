@@ -8,6 +8,7 @@ typedef struct OPTION {
 	bool alg_hybrid;
 	bool alg_ucf;
 	bool alg_icf;
+	bool alg_zm;
 
 	char *filename_full;
 	char *filename_train;
@@ -15,6 +16,7 @@ typedef struct OPTION {
 
 	double rate_dividefulldataset;
 	double rate_hybridparam;
+	double rate_zmparam;
 	int num_looptimes;
 	int num_toprightused2cmptmetrics;
 	unsigned long num_randomseed;
