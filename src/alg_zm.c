@@ -48,7 +48,7 @@ static void zm_core(int lid, int lmaxId, int rmaxId, int *ldegree, int *rdegree,
 
 METRICS *zm(BIP *train, BIP *test, NET *trainr_cosine_similarity, int num_toprightused2cmptmetrics, double rate_zmparam, int *l) {
 //struct METRICS *hybrid(struct TASK *task) {
-	LOG(LOG_INFO, "hybrid enter");
+	LOG(LOG_INFO, "zm enter");
 	//1 level, from task
 	HALFBIP *trainl = train->left;
 	HALFBIP *trainr = train->right;
