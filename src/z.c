@@ -2,6 +2,7 @@
 #include "alg_mass.h"
 #include "alg_hybrid.h"
 #include "alg_zm.h"
+#include "alg_zmu.h"
 #include "alg_icf.h"
 #include "alg_ucf.h"
 #include "metrics.h"
@@ -95,7 +96,7 @@ void full(OPTION *op) {
 			freeMTC(mtc);
 		}
 		if (op->alg_zmu) {
-			METRICS *mtc = zm(train, test, trainr_cosine_similarity, op->num_toprightused2cmptmetrics, op->rate_zmuparam, l);
+			METRICS *mtc = zmu(train, test, trainr_cosine_similarity, op->num_toprightused2cmptmetrics, op->rate_zmuparam, l);
 			printMTC(mtc);
 			freeMTC(mtc);
 		}
