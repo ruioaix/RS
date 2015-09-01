@@ -94,6 +94,11 @@ void full(OPTION *op) {
 			printMTC(mtc);
 			freeMTC(mtc);
 		}
+		if (op->alg_zmu) {
+			METRICS *mtc = zm(train, test, trainr_cosine_similarity, op->num_toprightused2cmptmetrics, op->rate_zmuparam, l);
+			printMTC(mtc);
+			freeMTC(mtc);
+		}
 		if (op->alg_ucf) {
 			LineFile *psimf = pearsonSM(train, LEFT);
 			double *psimM = psimMf(psimf, train->left->maxId);	
