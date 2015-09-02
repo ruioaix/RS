@@ -11,7 +11,7 @@ static void display_usage(void) {
 	puts("usage: bnrs [OPTION]\n");
 	puts("OPTION common:");
 	puts("  -h:  help");
-	puts("  -o logfilename:");
+	puts("  -g logfilename:");
 	puts("       File the log system will output log to");
 	puts("");
 	puts("OPTION privated to Algorithm:");
@@ -20,7 +20,8 @@ static void display_usage(void) {
 	puts("  -U:  Calculate the result of UCF algorithm");
 	puts("  -I:  Calculate the result of ICF algorithm");
 	puts("  -Z:  Calculate the result of ZM algorithm");
-	puts("  -M:  Calculate the result of ZM algorithm");
+	puts("  -M:  Calculate the result of ZMU algorithm");
+	puts("  -O:  Calculate the result of ZMUO algorithm");
 	puts("");
 	puts("OPTION common to Algorithms:");
 	puts("  -i filename:");
@@ -45,6 +46,9 @@ static void display_usage(void) {
 	puts("  -r doubleValue:  ");
 	puts("       Rate used in zmu alg");
 	puts("       only valid when -M option is used");
+	puts("  -o doubleValue:  ");
+	puts("       Rate used in zmuo alg");
+	puts("       only valid when -O option is used");
 	puts("  -l intValue:  ");
 	puts("       Number of times which the algorthim calculation need to be performed");
 	puts("       in order to get reasonable average result");
@@ -67,6 +71,7 @@ static void init_OPTION(struct OPTION *op) {
 	op->alg_icf = false;
 	op->alg_zm = false;
 	op->alg_zmu = false;
+	op->alg_zmuo = false;
 
 	op->filename_full = NULL;
 	op->filename_train = NULL;
@@ -75,6 +80,7 @@ static void init_OPTION(struct OPTION *op) {
 	op->rate_hybridparam = 0.2;
 	op->rate_zmparam = 0.2;
 	op->rate_zmuparam = 0.2;
+	op->rate_zmuoparam = 0.2;
 	op->num_looptimes = 1;
 	op->num_toprightused2cmptmetrics = 50;
 	op->num_randomseed= 1;
@@ -94,10 +100,10 @@ struct OPTION *setOPTION(int argc, char **argv) {
 	struct OPTION *op = smalloc(sizeof(struct OPTION));
 	init_OPTION(op);
 
-	static const char *short_options = "ho:mHUIZMi:T:t:u:d:y:z:r:l:L:s:K:";
+	static const char *short_options = "hg:mHUIZMOi:T:t:u:d:y:z:r:o:l:L:s:K:";
 	struct option long_options[] = {
 		{"help", no_argument, NULL, 'h'},
-		{"log-file", required_argument, NULL, 'o'},
+		{"log-file", required_argument, NULL, 'g'},
 
 		{"alg-mass", no_argument, NULL, 'm'},
 		{"alg-hybrid", no_argument, NULL, 'H'},
@@ -105,6 +111,7 @@ struct OPTION *setOPTION(int argc, char **argv) {
 		{"alg-ICF", no_argument, NULL, 'I'},
 		{"alg-ZM", no_argument, NULL, 'Z'},
 		{"alg-ZMU", no_argument, NULL, 'M'},
+		{"alg-ZMUO", no_argument, NULL, 'O'},
 
 		{"filename-full", required_argument, NULL, 'i'},
 		{"filename-train", required_argument, NULL, 'T'},
@@ -115,6 +122,7 @@ struct OPTION *setOPTION(int argc, char **argv) {
 		{"rate-hybridparam", required_argument, NULL, 'y'},
 		{"rate-zmparam", required_argument, NULL, 'z'},
 		{"rate-zmuparam", required_argument, NULL, 'r'},
+		{"rate-zmuoparam", required_argument, NULL, 'o'},
 		{"num-looptimes", required_argument, NULL, 'l'},
 		{"num-toprightused2cmptmetrics", required_argument, NULL, 'L'},
 		{"num-randomseed", required_argument, NULL, 's'},
@@ -131,7 +139,7 @@ struct OPTION *setOPTION(int argc, char **argv) {
 			case 'h':
 				display_usage();
 				break;
-			case 'o':
+			case 'g':
 				op->logfilename = optarg;
 				break;
 			case 'm':
@@ -150,6 +158,9 @@ struct OPTION *setOPTION(int argc, char **argv) {
 				op->alg_zm = true;
 				break;
 			case 'M':
+				op->alg_zmu = true;
+				break;
+			case 'O':
 				op->alg_zmu = true;
 				break;
 			case 'i':
@@ -173,6 +184,9 @@ struct OPTION *setOPTION(int argc, char **argv) {
 				break;
 			case 'r':
 				op->rate_zmuparam = strtod(optarg, NULL);
+				break;
+			case 'o':
+				op->rate_zmuoparam = strtod(optarg, NULL);
 				break;
 			case 'l':
 				op->num_looptimes = strtol(optarg, NULL, 10);
@@ -205,7 +219,7 @@ struct OPTION *setOPTION(int argc, char **argv) {
 
 static void verify_OPTION(struct OPTION *op) {
 	//algorithms
-	if (!( op->alg_mass || op->alg_ucf || op->alg_icf || op->alg_hybrid || op->alg_zm || op->alg_zmu)) {
+	if (!( op->alg_mass || op->alg_ucf || op->alg_icf || op->alg_hybrid || op->alg_zm || op->alg_zmu || op->alg_zmuo)) {
 		LOG(LOG_FATAL, "no algorithms selected, what do you want to calculate?");
 	}
 
@@ -258,6 +272,10 @@ static void info_OPTION(struct OPTION *op) {
 	LOG(LOG_INFO, "  zmu:    %s", trueorfalse(op->alg_zmu));
 	if (op->alg_zmu) {
 		LOG(LOG_INFO, "      zmu rate: %f", op->rate_zmuparam);
+	}
+	LOG(LOG_INFO, "  zmuo:    %s", trueorfalse(op->alg_zmuo));
+	if (op->alg_zmu) {
+		LOG(LOG_INFO, "      zmuo rate: %f", op->rate_zmuoparam);
 	}
 	LOG(LOG_INFO, "  ucf:    %s", trueorfalse(op->alg_ucf));
 	if (op->alg_ucf) {

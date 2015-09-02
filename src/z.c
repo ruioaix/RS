@@ -3,6 +3,7 @@
 #include "alg_hybrid.h"
 #include "alg_zm.h"
 #include "alg_zmu.h"
+#include "alg_zmuo.h"
 #include "alg_icf.h"
 #include "alg_ucf.h"
 #include "metrics.h"
@@ -97,6 +98,11 @@ void full(OPTION *op) {
 		}
 		if (op->alg_zmu) {
 			METRICS *mtc = zmu(train, test, trainr_cosine_similarity, op->num_toprightused2cmptmetrics, op->rate_zmuparam, l);
+			printMTC(mtc);
+			freeMTC(mtc);
+		}
+		if (op->alg_zmuo) {
+			METRICS *mtc = zmuo(train, test, trainr_cosine_similarity, op->num_toprightused2cmptmetrics, op->rate_zmuparam, l);
 			printMTC(mtc);
 			freeMTC(mtc);
 		}

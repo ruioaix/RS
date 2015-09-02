@@ -10,6 +10,7 @@ typedef struct OPTION {
 	bool alg_icf;
 	bool alg_zm;
 	bool alg_zmu;
+	bool alg_zmuo;
 
 	char *filename_full;
 	char *filename_train;
@@ -19,6 +20,7 @@ typedef struct OPTION {
 	double rate_hybridparam;
 	double rate_zmparam;
 	double rate_zmuparam;
+	double rate_zmuoparam;
 	int num_looptimes;
 	int num_toprightused2cmptmetrics;
 	unsigned long num_randomseed;
