@@ -161,7 +161,7 @@ struct OPTION *setOPTION(int argc, char **argv) {
 				op->alg_zmu = true;
 				break;
 			case 'O':
-				op->alg_zmu = true;
+				op->alg_zmuo = true;
 				break;
 			case 'i':
 				op->filename_full = optarg;
@@ -274,7 +274,7 @@ static void info_OPTION(struct OPTION *op) {
 		LOG(LOG_INFO, "      zmu rate: %f", op->rate_zmuparam);
 	}
 	LOG(LOG_INFO, "  zmuo:    %s", trueorfalse(op->alg_zmuo));
-	if (op->alg_zmu) {
+	if (op->alg_zmuo) {
 		LOG(LOG_INFO, "      zmuo rate: %f", op->rate_zmuoparam);
 	}
 	LOG(LOG_INFO, "  ucf:    %s", trueorfalse(op->alg_ucf));

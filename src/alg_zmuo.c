@@ -47,7 +47,7 @@ static void zmuo_core(int lid, int lmaxId, int rmaxId, int *ldegree, int *rdegre
 
 METRICS *zmuo(BIP *train, BIP *test, NET *trainr_cosine_similarity, int num_toprightused2cmptmetrics, double rate_zmuoparam, int *l) {
 //struct METRICS *hybrid(struct TASK *task) {
-	LOG(LOG_INFO, "zmu enter");
+	LOG(LOG_INFO, "zmuo enter");
 	//1 level, from task
 	HALFBIP *trainl = train->left;
 	HALFBIP *trainr = train->right;
