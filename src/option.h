@@ -5,6 +5,7 @@
 
 typedef struct OPTION {
 	bool alg_mass;
+	bool alg_heats;
 	bool alg_hybrid;
 	bool alg_ucf;
 	bool alg_icf;
