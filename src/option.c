@@ -16,6 +16,7 @@ static void display_usage(void) {
 	puts("");
 	puts("OPTION privated to Algorithm:");
 	puts("  -m:  Calculate the result of mass algorithm");
+	puts("  -a:  Calculate the result of heats algorithm");
 	puts("  -H:  Calculate the result of hybrid algorithm");
 	puts("  -U:  Calculate the result of UCF algorithm");
 	puts("  -I:  Calculate the result of ICF algorithm");
@@ -66,6 +67,7 @@ static void init_OPTION(struct OPTION *op) {
 	op->logfilename = NULL;
 
 	op->alg_mass = false;
+	op->alg_heats = false;
 	op->alg_hybrid = false;
 	op->alg_ucf = false;
 	op->alg_icf = false;
@@ -100,12 +102,13 @@ struct OPTION *setOPTION(int argc, char **argv) {
 	struct OPTION *op = smalloc(sizeof(struct OPTION));
 	init_OPTION(op);
 
-	static const char *short_options = "hg:mHUIZMOi:T:t:u:d:y:z:r:o:l:L:s:K:";
+	static const char *short_options = "hg:maHUIZMOi:T:t:u:d:y:z:r:o:l:L:s:K:";
 	struct option long_options[] = {
 		{"help", no_argument, NULL, 'h'},
 		{"log-file", required_argument, NULL, 'g'},
 
 		{"alg-mass", no_argument, NULL, 'm'},
+		{"alg-hybrid", no_argument, NULL, 'a'},
 		{"alg-hybrid", no_argument, NULL, 'H'},
 		{"alg-UCF", no_argument, NULL, 'U'},
 		{"alg-ICF", no_argument, NULL, 'I'},
@@ -144,6 +147,9 @@ struct OPTION *setOPTION(int argc, char **argv) {
 				break;
 			case 'm':
 				op->alg_mass = true;
+				break;
+			case 'a':
+				op->alg_heats = true;
 				break;
 			case 'H':
 				op->alg_hybrid = true;
@@ -219,7 +225,7 @@ struct OPTION *setOPTION(int argc, char **argv) {
 
 static void verify_OPTION(struct OPTION *op) {
 	//algorithms
-	if (!( op->alg_mass || op->alg_ucf || op->alg_icf || op->alg_hybrid || op->alg_zm || op->alg_zmu || op->alg_zmuo)) {
+	if (!( op->alg_mass || op->alg_heats || op->alg_ucf || op->alg_icf || op->alg_hybrid || op->alg_zm || op->alg_zmu || op->alg_zmuo)) {
 		LOG(LOG_FATAL, "no algorithms selected, what do you want to calculate?");
 	}
 
@@ -261,6 +267,7 @@ static void info_OPTION(struct OPTION *op) {
 	LOG(LOG_INFO, "Algorithm:");
 	//option privated to alg
 	LOG(LOG_INFO, "  mass:    %s", trueorfalse(op->alg_mass));
+	LOG(LOG_INFO, "  heats:    %s", trueorfalse(op->alg_heats));
 	LOG(LOG_INFO, "  hybrid:    %s", trueorfalse(op->alg_hybrid));
 	if (op->alg_hybrid) {
 		LOG(LOG_INFO, "      hybrid rate: %f", op->rate_hybridparam);

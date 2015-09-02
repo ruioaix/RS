@@ -1,5 +1,6 @@
 #include "log.h"
 #include "alg_mass.h"
+#include "alg_heats.h"
 #include "alg_hybrid.h"
 #include "alg_zm.h"
 #include "alg_zmu.h"
@@ -83,6 +84,11 @@ void full(OPTION *op) {
 		int *l = level(train, RIGHT);
 		if (op->alg_mass) {
 			METRICS *mtc = mass(train, test, trainr_cosine_similarity, op->num_toprightused2cmptmetrics, l);
+			printMTC(mtc);
+			freeMTC(mtc);
+		}
+		if (op->alg_heats) {
+			METRICS *mtc = heats(train, test, trainr_cosine_similarity, op->num_toprightused2cmptmetrics, l);
 			printMTC(mtc);
 			freeMTC(mtc);
 		}
