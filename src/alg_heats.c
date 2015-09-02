@@ -45,7 +45,7 @@ static void heats_core(int lid, int lmaxId, int rmaxId, int *ldegree, int *rdegr
 
 METRICS *heats(BIP *train, BIP *test, NET *trainr_cosine_similarity, int num_toprightused2cmptmetrics, int *l) {
 	//struct METRICS *hybrid(struct TASK *task) {
-	LOG(LOG_INFO, "zmuo enter");
+	LOG(LOG_INFO, "heats enter");
 	//1 level, from task
 	HALFBIP *trainl = train->left;
 	HALFBIP *trainr = train->right;
