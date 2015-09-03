@@ -39,15 +39,15 @@ static void display_usage(void) {
 	puts("  -d doubleValue:  ");
 	puts("       Rate used to divide full dataset to train and test dataset");
 	puts("       only valid when -i option is used");
-	puts("  -y doubleValue:  ");
-	puts("       Rate used in hybrid alg");
-	puts("       only valid when -H option is used");
 	puts("  -c doubleValue:  ");
 	puts("       Rate u used in heats2 alg");
 	puts("       only valid when -B option is used");
 	puts("  -e doubleValue:  ");
 	puts("       Rate i used in heats2 alg");
 	puts("       only valid when -B option is used");
+	puts("  -y doubleValue:  ");
+	puts("       Rate used in hybrid alg");
+	puts("       only valid when -H option is used");
 	puts("  -z doubleValue:  ");
 	puts("       Rate used in zm alg");
 	puts("       only valid when -z option is used");
@@ -87,9 +87,9 @@ static void init_OPTION(struct OPTION *op) {
 	op->filename_train = NULL;
 	op->filename_test = NULL;
 	op->rate_dividefulldataset = 0.1;
-	op->rate_hybridparam = 0.2;
 	op->rate_huparam = 0.2;
 	op->rate_hiparam = 0.2;
+	op->rate_hybridparam = 0.2;
 	op->rate_zmparam = 0.2;
 	op->rate_zmuparam = 0.2;
 	op->rate_zmuoparam = 0.2;
@@ -112,7 +112,7 @@ struct OPTION *setOPTION(int argc, char **argv) {
 	struct OPTION *op = smalloc(sizeof(struct OPTION));
 	init_OPTION(op);
 
-	static const char *short_options = "hg:maBHUIZMOi:T:t:u:d:y:z:r:o:l:L:s:K:";
+	static const char *short_options = "hg:maBHUIZMOi:T:t:u:d:c:e:y:z:r:o:l:L:s:K:";
 	struct option long_options[] = {
 		{"help", no_argument, NULL, 'h'},
 		{"log-file", required_argument, NULL, 'g'},
@@ -133,9 +133,9 @@ struct OPTION *setOPTION(int argc, char **argv) {
 		{"filename-leftobjectattr", required_argument, NULL, 'u'},
 
 		{"rate-dividefulldataset", required_argument, NULL, 'd'},
-		{"rate-hybridparam", required_argument, NULL, 'y'},
 		{"rate-huparam", required_argument, NULL, 'c'},
 		{"rate-hiparam", required_argument, NULL, 'e'},
+		{"rate-hybridparam", required_argument, NULL, 'y'},
 		{"rate-zmparam", required_argument, NULL, 'z'},
 		{"rate-zmuparam", required_argument, NULL, 'r'},
 		{"rate-zmuoparam", required_argument, NULL, 'o'},
@@ -198,14 +198,14 @@ struct OPTION *setOPTION(int argc, char **argv) {
 			case 'd':
 				op->rate_dividefulldataset = strtod(optarg, NULL);
 				break;
-			case 'y':
-				op->rate_hybridparam = strtod(optarg, NULL);
-				break;
 			case 'c':
 				op->rate_huparam = strtod(optarg, NULL);
 				break;
 			case 'e':
 				op->rate_hiparam = strtod(optarg, NULL);
+				break;
+			case 'y':
+				op->rate_hybridparam = strtod(optarg, NULL);
 				break;
 			case 'z':
 				op->rate_zmparam = strtod(optarg, NULL);

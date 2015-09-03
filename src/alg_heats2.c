@@ -47,7 +47,7 @@ static void heats2_core(int lid, int lmaxId, int rmaxId, int *ldegree, int *rdeg
 
 METRICS *heats2(BIP *train, BIP *test, NET *trainr_cosine_similarity, int num_toprightused2cmptmetrics, int *l, double rate_huparam, double rate_hiparam) {
 	//struct METRICS *hybrid(struct TASK *task) {
-	LOG(LOG_INFO, "heats enter");
+	LOG(LOG_INFO, "heats2 enter");
 	//1 level, from task
 	HALFBIP *trainl = train->left;
 	HALFBIP *trainr = train->right;
