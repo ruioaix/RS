@@ -6,6 +6,7 @@
 typedef struct OPTION {
 	bool alg_mass;
 	bool alg_heats;
+	bool alg_heats2;
 	bool alg_hybrid;
 	bool alg_ucf;
 	bool alg_icf;
@@ -18,6 +19,8 @@ typedef struct OPTION {
 	char *filename_test;
 
 	double rate_dividefulldataset;
+	double rate_huparam;
+	double rate_hiparam;
 	double rate_hybridparam;
 	double rate_zmparam;
 	double rate_zmuparam;

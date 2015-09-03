@@ -17,6 +17,7 @@ static void display_usage(void) {
 	puts("OPTION privated to Algorithm:");
 	puts("  -m:  Calculate the result of mass algorithm");
 	puts("  -a:  Calculate the result of heats algorithm");
+	puts("  -B:  Calculate the result of heats2 algorithm");
 	puts("  -H:  Calculate the result of hybrid algorithm");
 	puts("  -U:  Calculate the result of UCF algorithm");
 	puts("  -I:  Calculate the result of ICF algorithm");
@@ -41,6 +42,12 @@ static void display_usage(void) {
 	puts("  -y doubleValue:  ");
 	puts("       Rate used in hybrid alg");
 	puts("       only valid when -H option is used");
+	puts("  -c doubleValue:  ");
+	puts("       Rate u used in heats2 alg");
+	puts("       only valid when -B option is used");
+	puts("  -e doubleValue:  ");
+	puts("       Rate i used in heats2 alg");
+	puts("       only valid when -B option is used");
 	puts("  -z doubleValue:  ");
 	puts("       Rate used in zm alg");
 	puts("       only valid when -z option is used");
@@ -68,6 +75,7 @@ static void init_OPTION(struct OPTION *op) {
 
 	op->alg_mass = false;
 	op->alg_heats = false;
+	op->alg_heats2 = false;
 	op->alg_hybrid = false;
 	op->alg_ucf = false;
 	op->alg_icf = false;
@@ -80,6 +88,8 @@ static void init_OPTION(struct OPTION *op) {
 	op->filename_test = NULL;
 	op->rate_dividefulldataset = 0.1;
 	op->rate_hybridparam = 0.2;
+	op->rate_huparam = 0.2;
+	op->rate_hiparam = 0.2;
 	op->rate_zmparam = 0.2;
 	op->rate_zmuparam = 0.2;
 	op->rate_zmuoparam = 0.2;
@@ -102,13 +112,14 @@ struct OPTION *setOPTION(int argc, char **argv) {
 	struct OPTION *op = smalloc(sizeof(struct OPTION));
 	init_OPTION(op);
 
-	static const char *short_options = "hg:maHUIZMOi:T:t:u:d:y:z:r:o:l:L:s:K:";
+	static const char *short_options = "hg:maBHUIZMOi:T:t:u:d:y:z:r:o:l:L:s:K:";
 	struct option long_options[] = {
 		{"help", no_argument, NULL, 'h'},
 		{"log-file", required_argument, NULL, 'g'},
 
 		{"alg-mass", no_argument, NULL, 'm'},
-		{"alg-hybrid", no_argument, NULL, 'a'},
+		{"alg-heats", no_argument, NULL, 'a'},
+		{"alg-heats2", no_argument, NULL, 'B'},
 		{"alg-hybrid", no_argument, NULL, 'H'},
 		{"alg-UCF", no_argument, NULL, 'U'},
 		{"alg-ICF", no_argument, NULL, 'I'},
@@ -123,6 +134,8 @@ struct OPTION *setOPTION(int argc, char **argv) {
 
 		{"rate-dividefulldataset", required_argument, NULL, 'd'},
 		{"rate-hybridparam", required_argument, NULL, 'y'},
+		{"rate-huparam", required_argument, NULL, 'c'},
+		{"rate-hiparam", required_argument, NULL, 'e'},
 		{"rate-zmparam", required_argument, NULL, 'z'},
 		{"rate-zmuparam", required_argument, NULL, 'r'},
 		{"rate-zmuoparam", required_argument, NULL, 'o'},
@@ -150,6 +163,9 @@ struct OPTION *setOPTION(int argc, char **argv) {
 				break;
 			case 'a':
 				op->alg_heats = true;
+				break;
+			case 'B':
+				op->alg_heats2 = true;
 				break;
 			case 'H':
 				op->alg_hybrid = true;
@@ -184,6 +200,12 @@ struct OPTION *setOPTION(int argc, char **argv) {
 				break;
 			case 'y':
 				op->rate_hybridparam = strtod(optarg, NULL);
+				break;
+			case 'c':
+				op->rate_huparam = strtod(optarg, NULL);
+				break;
+			case 'e':
+				op->rate_hiparam = strtod(optarg, NULL);
 				break;
 			case 'z':
 				op->rate_zmparam = strtod(optarg, NULL);
@@ -225,7 +247,7 @@ struct OPTION *setOPTION(int argc, char **argv) {
 
 static void verify_OPTION(struct OPTION *op) {
 	//algorithms
-	if (!( op->alg_mass || op->alg_heats || op->alg_ucf || op->alg_icf || op->alg_hybrid || op->alg_zm || op->alg_zmu || op->alg_zmuo)) {
+	if (!( op->alg_mass || op->alg_heats || op->alg_ucf || op->alg_icf || op->alg_hybrid || op->alg_zm || op->alg_zmu || op->alg_zmuo || op->alg_heats2)) {
 		LOG(LOG_FATAL, "no algorithms selected, what do you want to calculate?");
 	}
 
@@ -268,6 +290,11 @@ static void info_OPTION(struct OPTION *op) {
 	//option privated to alg
 	LOG(LOG_INFO, "  mass:    %s", trueorfalse(op->alg_mass));
 	LOG(LOG_INFO, "  heats:    %s", trueorfalse(op->alg_heats));
+	LOG(LOG_INFO, "  heats2:    %s", trueorfalse(op->alg_heats2));
+	if (op->alg_heats2) {
+		LOG(LOG_INFO, "      heats2 u rate: %f", op->rate_huparam);
+		LOG(LOG_INFO, "      heats2 i rate: %f", op->rate_hiparam);
+	}
 	LOG(LOG_INFO, "  hybrid:    %s", trueorfalse(op->alg_hybrid));
 	if (op->alg_hybrid) {
 		LOG(LOG_INFO, "      hybrid rate: %f", op->rate_hybridparam);
