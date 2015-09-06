@@ -2,6 +2,7 @@
 #include "alg_mass.h"
 #include "alg_heats.h"
 #include "alg_heats2.h"
+#include "alg_kk.h"
 #include "alg_hybrid.h"
 #include "alg_zm.h"
 #include "alg_zmu.h"
@@ -95,6 +96,11 @@ void full(OPTION *op) {
 		}
 		if (op->alg_heats2) {
 			METRICS *mtc = heats2(train, test, trainr_cosine_similarity, op->num_toprightused2cmptmetrics, l, op->rate_huparam, op->rate_hiparam);
+			printMTC(mtc);
+			freeMTC(mtc);
+		}
+		if (op->alg_kk) {
+			METRICS *mtc = kk(train, test, trainr_cosine_similarity, op->num_toprightused2cmptmetrics, l, op->rate_kuparam, op->rate_kiparam);
 			printMTC(mtc);
 			freeMTC(mtc);
 		}

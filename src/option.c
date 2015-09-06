@@ -24,6 +24,7 @@ static void display_usage(void) {
 	puts("  -Z:  Calculate the result of ZM algorithm");
 	puts("  -M:  Calculate the result of ZMU algorithm");
 	puts("  -O:  Calculate the result of ZMUO algorithm");
+	puts("  -Q:  Calculate the result of KK algorithm");
 	puts("");
 	puts("OPTION common to Algorithms:");
 	puts("  -i filename:");
@@ -45,6 +46,12 @@ static void display_usage(void) {
 	puts("  -e doubleValue:  ");
 	puts("       Rate i used in heats2 alg");
 	puts("       only valid when -B option is used");
+	puts("  -f doubleValue:  ");
+	puts("       Rate u used in kk alg");
+	puts("       only valid when -Q option is used");
+	puts("  -j doubleValue:  ");
+	puts("       Rate i used in kk alg");
+	puts("       only valid when -Q option is used");
 	puts("  -y doubleValue:  ");
 	puts("       Rate used in hybrid alg");
 	puts("       only valid when -H option is used");
@@ -82,6 +89,7 @@ static void init_OPTION(struct OPTION *op) {
 	op->alg_zm = false;
 	op->alg_zmu = false;
 	op->alg_zmuo = false;
+	op->alg_kk = false;
 
 	op->filename_full = NULL;
 	op->filename_train = NULL;
@@ -89,6 +97,8 @@ static void init_OPTION(struct OPTION *op) {
 	op->rate_dividefulldataset = 0.1;
 	op->rate_huparam = 0.2;
 	op->rate_hiparam = 0.2;
+	op->rate_kuparam = 0.2;
+	op->rate_kiparam = 0.2;
 	op->rate_hybridparam = 0.2;
 	op->rate_zmparam = 0.2;
 	op->rate_zmuparam = 0.2;
@@ -112,7 +122,7 @@ struct OPTION *setOPTION(int argc, char **argv) {
 	struct OPTION *op = smalloc(sizeof(struct OPTION));
 	init_OPTION(op);
 
-	static const char *short_options = "hg:maBHUIZMOi:T:t:u:d:c:e:y:z:r:o:l:L:s:K:";
+	static const char *short_options = "hg:maBHUIZMOQi:T:t:u:d:c:e:f:j:y:z:r:o:l:L:s:K:";
 	struct option long_options[] = {
 		{"help", no_argument, NULL, 'h'},
 		{"log-file", required_argument, NULL, 'g'},
@@ -126,6 +136,7 @@ struct OPTION *setOPTION(int argc, char **argv) {
 		{"alg-ZM", no_argument, NULL, 'Z'},
 		{"alg-ZMU", no_argument, NULL, 'M'},
 		{"alg-ZMUO", no_argument, NULL, 'O'},
+		{"alg-KK", no_argument, NULL, 'Q'},
 
 		{"filename-full", required_argument, NULL, 'i'},
 		{"filename-train", required_argument, NULL, 'T'},
@@ -135,6 +146,8 @@ struct OPTION *setOPTION(int argc, char **argv) {
 		{"rate-dividefulldataset", required_argument, NULL, 'd'},
 		{"rate-huparam", required_argument, NULL, 'c'},
 		{"rate-hiparam", required_argument, NULL, 'e'},
+		{"rate-kuparam", required_argument, NULL, 'f'},
+		{"rate-kiparam", required_argument, NULL, 'j'},
 		{"rate-hybridparam", required_argument, NULL, 'y'},
 		{"rate-zmparam", required_argument, NULL, 'z'},
 		{"rate-zmuparam", required_argument, NULL, 'r'},
@@ -185,6 +198,9 @@ struct OPTION *setOPTION(int argc, char **argv) {
 			case 'O':
 				op->alg_zmuo = true;
 				break;
+			case 'Q':
+				op->alg_kk = true;
+				break;
 			case 'i':
 				op->filename_full = optarg;
 				break;
@@ -203,6 +219,12 @@ struct OPTION *setOPTION(int argc, char **argv) {
 				break;
 			case 'e':
 				op->rate_hiparam = strtod(optarg, NULL);
+				break;
+			case 'f':
+				op->rate_kuparam = strtod(optarg, NULL);
+				break;
+			case 'j':
+				op->rate_kiparam = strtod(optarg, NULL);
 				break;
 			case 'y':
 				op->rate_hybridparam = strtod(optarg, NULL);
@@ -247,7 +269,7 @@ struct OPTION *setOPTION(int argc, char **argv) {
 
 static void verify_OPTION(struct OPTION *op) {
 	//algorithms
-	if (!( op->alg_mass || op->alg_heats || op->alg_ucf || op->alg_icf || op->alg_hybrid || op->alg_zm || op->alg_zmu || op->alg_zmuo || op->alg_heats2)) {
+	if (!( op->alg_mass || op->alg_heats || op->alg_ucf || op->alg_icf || op->alg_hybrid || op->alg_zm || op->alg_zmu || op->alg_zmuo || op->alg_heats2 || op->alg_kk)) {
 		LOG(LOG_FATAL, "no algorithms selected, what do you want to calculate?");
 	}
 
@@ -294,6 +316,11 @@ static void info_OPTION(struct OPTION *op) {
 	if (op->alg_heats2) {
 		LOG(LOG_INFO, "      heats2 u rate: %f", op->rate_huparam);
 		LOG(LOG_INFO, "      heats2 i rate: %f", op->rate_hiparam);
+	}
+	LOG(LOG_INFO, "  kk:    %s", trueorfalse(op->alg_kk));
+	if (op->alg_kk) {
+		LOG(LOG_INFO, "      kk u rate: %f", op->rate_kuparam);
+		LOG(LOG_INFO, "      kk i rate: %f", op->rate_kiparam);
 	}
 	LOG(LOG_INFO, "  hybrid:    %s", trueorfalse(op->alg_hybrid));
 	if (op->alg_hybrid) {

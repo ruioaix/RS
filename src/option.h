@@ -13,6 +13,7 @@ typedef struct OPTION {
 	bool alg_zm;
 	bool alg_zmu;
 	bool alg_zmuo;
+	bool alg_kk;
 
 	char *filename_full;
 	char *filename_train;
@@ -21,6 +22,8 @@ typedef struct OPTION {
 	double rate_dividefulldataset;
 	double rate_huparam;
 	double rate_hiparam;
+	double rate_kuparam;
+	double rate_kiparam;
 	double rate_hybridparam;
 	double rate_zmparam;
 	double rate_zmuparam;
