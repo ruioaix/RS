@@ -6,23 +6,25 @@
 #include <stdlib.h>
 #include <math.h>
 
-static void kk_core(int lid, int rmaxId, int *ldegree, int *rdegree, int **lrela, double *rvltr, double rate_kuparam, double rate_kiparam) {
-	int neigh, i, j;
+static void kk_core(int lid, int rmaxId, int *ldegree, int *rdegree, double *rvltr, double rate_kuparam, double rate_kiparam) {
+	int i;
 	//one
 	double dku = pow(ldegree[lid], rate_kuparam);
 	for (i = 0; i < rmaxId + 1; ++i) {
-		double dki = pow(rdegree[i], rate_kiparam);
-		rvltr[i] = dku * dki;
-	}
-	for (j = 0; j < ldegree[lid]; ++j) {
-		neigh = lrela[lid][j];
-		rvltr[neigh] = 0;
+		if (rdegree[i]) {
+			double dki = pow(rdegree[i], rate_kiparam);
+			rvltr[i] = dku * dki;
+			//LOG(LOG_INFO, "%d, %f, %f, %E, %E", rdegree[i], rate_kiparam, dki, dku, rvltr[i]);
+		}
+		else 
+			rvltr[i] = 0;
 	}
 }
 
 METRICS *kk(BIP *train, BIP *test, NET *trainr_cosine_similarity, int num_toprightused2cmptmetrics, int *l, double rate_kuparam, double rate_kiparam) {
 	//struct METRICS *hybrid(struct TASK *task) {
 	LOG(LOG_INFO, "kk enter");
+	LOG(LOG_INFO, "kk u param: %f, i param: %f", rate_kuparam, rate_kiparam);
 	//1 level, from task
 	HALFBIP *trainl = train->left;
 	HALFBIP *trainr = train->right;
@@ -34,7 +36,6 @@ METRICS *kk(BIP *train, BIP *test, NET *trainr_cosine_similarity, int num_toprig
 	int rmaxId = trainr->maxId;
 	int *ldegree = trainl->degree;
 	int *rdegree = trainr->degree;
-	int **lrela = trainl->rela;
 
 	//3 level, from 2 level
 	double *lvltr = smalloc((lmaxId + 1)*sizeof(double));
@@ -56,7 +57,7 @@ METRICS *kk(BIP *train, BIP *test, NET *trainr_cosine_similarity, int num_toprig
 	for (i = 0; i<trainl->maxId + 1; ++i) {
 		if (trainl->degree[i]) {//each valid user in trainset.
 			//get rvlts
-			kk_core(i, rmaxId, ldegree, rdegree, lrela, rvltr, rate_kuparam, rate_kiparam);
+			kk_core(i, rmaxId, ldegree, rdegree, rvltr, rate_kuparam, rate_kiparam);
 			//use rvlts, get ridts & rank & topL
 			int j;
 			//set selected item's source to -1
