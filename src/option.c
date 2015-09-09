@@ -106,7 +106,7 @@ static void init_OPTION(struct OPTION *op) {
 	op->num_looptimes = 1;
 	op->num_toprightused2cmptmetrics = 50;
 	op->num_randomseed= 1;
-	op->num_ucf_knn = 20;
+	op->num_ucf_knn = 50;
 }
 
 void freeOPTION(struct OPTION *op) {
