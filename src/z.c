@@ -24,7 +24,7 @@ int *level(BIP *train, SIDE side) {
 	int * l = scalloc(hbip->maxId + 1, sizeof(int));
 	int *dd = scalloc(hbip->maxId + 1, sizeof(int));
 	memcpy(dd, hbip->degree, (hbip->maxId + 1) * sizeof(int));
-	qsort_i_desc(dd, 0, hbip->degreeMax);
+	qsort_i_desc(dd, 0, hbip->maxId);
 	int l1s = dd[(int)(hbip->maxId * 0.01)];
 	int l2s = dd[(int)(hbip->maxId * 0.1)];
 	int i;
