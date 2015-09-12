@@ -13,6 +13,7 @@ static void display_usage(void) {
 	puts("  -h:  help");
 	puts("  -g logfilename:");
 	puts("       File the log system will output log to");
+	puts("  -N don't calculate IL metrics");
 	puts("");
 	puts("OPTION privated to Algorithm:");
 	puts("  -m:  Calculate the result of mass algorithm");
@@ -91,6 +92,8 @@ static void init_OPTION(struct OPTION *op) {
 	op->alg_zmuo = false;
 	op->alg_kk = false;
 
+	op->noIL = false;
+
 	op->filename_full = NULL;
 	op->filename_train = NULL;
 	op->filename_test = NULL;
@@ -122,10 +125,11 @@ struct OPTION *setOPTION(int argc, char **argv) {
 	struct OPTION *op = smalloc(sizeof(struct OPTION));
 	init_OPTION(op);
 
-	static const char *short_options = "hg:maBHUIZMOQi:T:t:u:d:c:e:f:j:y:z:r:o:l:L:s:K:";
+	static const char *short_options = "hg:NmaBHUIZMOQi:T:t:u:d:c:e:f:j:y:z:r:o:l:L:s:K:";
 	struct option long_options[] = {
 		{"help", no_argument, NULL, 'h'},
 		{"log-file", required_argument, NULL, 'g'},
+		{"noIL", no_argument, NULL, 'N'},
 
 		{"alg-mass", no_argument, NULL, 'm'},
 		{"alg-heats", no_argument, NULL, 'a'},
@@ -170,6 +174,9 @@ struct OPTION *setOPTION(int argc, char **argv) {
 				break;
 			case 'g':
 				op->logfilename = optarg;
+				break;
+			case 'N':
+				op->noIL = true;
 				break;
 			case 'm':
 				op->alg_mass = true;
@@ -343,6 +350,10 @@ static void info_OPTION(struct OPTION *op) {
 		LOG(LOG_INFO, "      UCF K: %d", op->num_ucf_knn);
 	}
 	LOG(LOG_INFO, "  icf:    %s", trueorfalse(op->alg_icf));
+
+	if (op->noIL) {
+		LOG(LOG_INFO, "Metrics IL will not be calculated");
+	}
 
 	//option common to alg
 	if (op->filename_full) {

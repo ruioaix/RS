@@ -15,6 +15,8 @@ typedef struct OPTION {
 	bool alg_zmuo;
 	bool alg_kk;
 
+	bool noIL;
+
 	char *filename_full;
 	char *filename_train;
 	char *filename_test;
