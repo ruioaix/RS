@@ -79,9 +79,12 @@ void full(OPTION *op) {
 		freeLF(testf);
 
 		//similarity
-		struct LineFile *simf = cosineSM(train, RIGHT);
-		NET *trainr_cosine_similarity = createNET(simf);
-		freeLF(simf);
+		NET *trainr_cosine_similarity = NULL;
+		if (!op->noIL) {
+			struct LineFile *simf = cosineSM(train, RIGHT);
+			trainr_cosine_similarity = createNET(simf);
+			freeLF(simf);
+		}
 
 		int *l = level(train, RIGHT);
 		if (op->alg_mass) {
