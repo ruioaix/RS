@@ -58,7 +58,7 @@ static void display_usage(void) {
 	puts("       only valid when -H option is used");
 	puts("  -z doubleValue:  ");
 	puts("       Rate used in zmo alg");
-	puts("       only valid when -z option is used");
+	puts("       only valid when -Z option is used");
 	puts("  -r doubleValue:  ");
 	puts("       Rate used in zmu alg");
 	puts("       only valid when -M option is used");
