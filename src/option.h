@@ -13,6 +13,7 @@ typedef struct OPTION {
 	bool alg_zmo;
 	bool alg_zmu;
 	bool alg_zmuo;
+	bool alg_zmou;
 	bool alg_kk;
 
 	bool noIL;
@@ -30,6 +31,7 @@ typedef struct OPTION {
 	double rate_zmoparam;
 	double rate_zmuparam;
 	double rate_zmuoparam;
+	double rate_zmouparam;
 	int num_looptimes;
 	int num_toprightused2cmptmetrics;
 	unsigned long num_randomseed;

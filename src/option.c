@@ -25,6 +25,7 @@ static void display_usage(void) {
 	puts("  -Z:  Calculate the result of ZMO algorithm");
 	puts("  -M:  Calculate the result of ZMU algorithm");
 	puts("  -O:  Calculate the result of ZMUO algorithm");
+	puts("  -V:  Calculate the result of ZMOU algorithm");
 	puts("  -Q:  Calculate the result of KK algorithm");
 	puts("");
 	puts("OPTION common to Algorithms:");
@@ -65,6 +66,9 @@ static void display_usage(void) {
 	puts("  -o doubleValue:  ");
 	puts("       Rate used in zmuo alg");
 	puts("       only valid when -O option is used");
+	puts("  -v doubleValue:  ");
+	puts("       Rate used in zmou alg");
+	puts("       only valid when -V option is used");
 	puts("  -l intValue:  ");
 	puts("       Number of times which the algorthim calculation need to be performed");
 	puts("       in order to get reasonable average result");
@@ -90,6 +94,7 @@ static void init_OPTION(struct OPTION *op) {
 	op->alg_zmo = false;
 	op->alg_zmu = false;
 	op->alg_zmuo = false;
+	op->alg_zmou = false;
 	op->alg_kk = false;
 
 	op->noIL = false;
@@ -106,6 +111,7 @@ static void init_OPTION(struct OPTION *op) {
 	op->rate_zmoparam = 0.2;
 	op->rate_zmuparam = 0.2;
 	op->rate_zmuoparam = 0.2;
+	op->rate_zmouparam = 0.2;
 	op->num_looptimes = 1;
 	op->num_toprightused2cmptmetrics = 50;
 	op->num_randomseed= 1;
@@ -125,7 +131,7 @@ struct OPTION *setOPTION(int argc, char **argv) {
 	struct OPTION *op = smalloc(sizeof(struct OPTION));
 	init_OPTION(op);
 
-	static const char *short_options = "hg:NmaBHUIZMOQi:T:t:u:d:c:e:f:j:y:z:r:o:l:L:s:K:";
+	static const char *short_options = "hg:NmaBHUIZMOVQi:T:t:u:d:c:e:f:j:y:z:r:o:v:l:L:s:K:";
 	struct option long_options[] = {
 		{"help", no_argument, NULL, 'h'},
 		{"log-file", required_argument, NULL, 'g'},
@@ -140,6 +146,7 @@ struct OPTION *setOPTION(int argc, char **argv) {
 		{"alg-ZMO", no_argument, NULL, 'Z'},
 		{"alg-ZMU", no_argument, NULL, 'M'},
 		{"alg-ZMUO", no_argument, NULL, 'O'},
+		{"alg-ZMOU", no_argument, NULL, 'V'},
 		{"alg-KK", no_argument, NULL, 'Q'},
 
 		{"filename-full", required_argument, NULL, 'i'},
@@ -156,6 +163,7 @@ struct OPTION *setOPTION(int argc, char **argv) {
 		{"rate-zmoparam", required_argument, NULL, 'z'},
 		{"rate-zmuparam", required_argument, NULL, 'r'},
 		{"rate-zmuoparam", required_argument, NULL, 'o'},
+		{"rate-zmouparam", required_argument, NULL, 'v'},
 		{"num-looptimes", required_argument, NULL, 'l'},
 		{"num-toprightused2cmptmetrics", required_argument, NULL, 'L'},
 		{"num-randomseed", required_argument, NULL, 's'},
@@ -205,6 +213,9 @@ struct OPTION *setOPTION(int argc, char **argv) {
 			case 'O':
 				op->alg_zmuo = true;
 				break;
+			case 'V':
+				op->alg_zmou = true;
+				break;
 			case 'Q':
 				op->alg_kk = true;
 				break;
@@ -245,6 +256,9 @@ struct OPTION *setOPTION(int argc, char **argv) {
 			case 'o':
 				op->rate_zmuoparam = strtod(optarg, NULL);
 				break;
+			case 'v':
+				op->rate_zmouparam = strtod(optarg, NULL);
+				break;
 			case 'l':
 				op->num_looptimes = strtol(optarg, NULL, 10);
 				break;
@@ -276,7 +290,7 @@ struct OPTION *setOPTION(int argc, char **argv) {
 
 static void verify_OPTION(struct OPTION *op) {
 	//algorithms
-	if (!( op->alg_mass || op->alg_heats || op->alg_ucf || op->alg_icf || op->alg_hybrid || op->alg_zmo || op->alg_zmu || op->alg_zmuo || op->alg_heats2 || op->alg_kk)) {
+	if (!( op->alg_mass || op->alg_heats || op->alg_ucf || op->alg_icf || op->alg_hybrid || op->alg_zmo || op->alg_zmu || op->alg_zmuo || op->alg_zmou || op->alg_heats2 || op->alg_kk)) {
 		LOG(LOG_FATAL, "no algorithms selected, what do you want to calculate?");
 	}
 
@@ -344,6 +358,10 @@ static void info_OPTION(struct OPTION *op) {
 	LOG(LOG_INFO, "  zmuo:    %s", trueorfalse(op->alg_zmuo));
 	if (op->alg_zmuo) {
 		LOG(LOG_INFO, "      zmuo rate: %f", op->rate_zmuoparam);
+	}
+	LOG(LOG_INFO, "  zmou:    %s", trueorfalse(op->alg_zmou));
+	if (op->alg_zmou) {
+		LOG(LOG_INFO, "      zmou rate: %f", op->rate_zmouparam);
 	}
 	LOG(LOG_INFO, "  ucf:    %s", trueorfalse(op->alg_ucf));
 	if (op->alg_ucf) {
