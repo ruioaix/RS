@@ -113,7 +113,7 @@ void full(OPTION *op) {
 			freeMTC(mtc);
 		}
 		if (op->alg_zmo) {
-			METRICS *mtc = zmo(train, test, trainr_cosine_similarity, op->num_toprightused2cmptmetrics, op->rate_zmparam, l);
+			METRICS *mtc = zmo(train, test, trainr_cosine_similarity, op->num_toprightused2cmptmetrics, op->rate_zmoparam, l);
 			printMTC(mtc);
 			freeMTC(mtc);
 		}

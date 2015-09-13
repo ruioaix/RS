@@ -22,7 +22,7 @@ static void display_usage(void) {
 	puts("  -H:  Calculate the result of hybrid algorithm");
 	puts("  -U:  Calculate the result of UCF algorithm");
 	puts("  -I:  Calculate the result of ICF algorithm");
-	puts("  -Z:  Calculate the result of ZM algorithm");
+	puts("  -Z:  Calculate the result of ZMO algorithm");
 	puts("  -M:  Calculate the result of ZMU algorithm");
 	puts("  -O:  Calculate the result of ZMUO algorithm");
 	puts("  -Q:  Calculate the result of KK algorithm");
@@ -57,7 +57,7 @@ static void display_usage(void) {
 	puts("       Rate used in hybrid alg");
 	puts("       only valid when -H option is used");
 	puts("  -z doubleValue:  ");
-	puts("       Rate used in zm alg");
+	puts("       Rate used in zmo alg");
 	puts("       only valid when -z option is used");
 	puts("  -r doubleValue:  ");
 	puts("       Rate used in zmu alg");
@@ -103,7 +103,7 @@ static void init_OPTION(struct OPTION *op) {
 	op->rate_kuparam = 0.2;
 	op->rate_kiparam = 0.2;
 	op->rate_hybridparam = 0.2;
-	op->rate_zmparam = 0.2;
+	op->rate_zmoparam = 0.2;
 	op->rate_zmuparam = 0.2;
 	op->rate_zmuoparam = 0.2;
 	op->num_looptimes = 1;
@@ -137,7 +137,7 @@ struct OPTION *setOPTION(int argc, char **argv) {
 		{"alg-hybrid", no_argument, NULL, 'H'},
 		{"alg-UCF", no_argument, NULL, 'U'},
 		{"alg-ICF", no_argument, NULL, 'I'},
-		{"alg-ZM", no_argument, NULL, 'Z'},
+		{"alg-ZMO", no_argument, NULL, 'Z'},
 		{"alg-ZMU", no_argument, NULL, 'M'},
 		{"alg-ZMUO", no_argument, NULL, 'O'},
 		{"alg-KK", no_argument, NULL, 'Q'},
@@ -153,7 +153,7 @@ struct OPTION *setOPTION(int argc, char **argv) {
 		{"rate-kuparam", required_argument, NULL, 'f'},
 		{"rate-kiparam", required_argument, NULL, 'j'},
 		{"rate-hybridparam", required_argument, NULL, 'y'},
-		{"rate-zmparam", required_argument, NULL, 'z'},
+		{"rate-zmoparam", required_argument, NULL, 'z'},
 		{"rate-zmuparam", required_argument, NULL, 'r'},
 		{"rate-zmuoparam", required_argument, NULL, 'o'},
 		{"num-looptimes", required_argument, NULL, 'l'},
@@ -237,7 +237,7 @@ struct OPTION *setOPTION(int argc, char **argv) {
 				op->rate_hybridparam = strtod(optarg, NULL);
 				break;
 			case 'z':
-				op->rate_zmparam = strtod(optarg, NULL);
+				op->rate_zmoparam = strtod(optarg, NULL);
 				break;
 			case 'r':
 				op->rate_zmuparam = strtod(optarg, NULL);
@@ -333,9 +333,9 @@ static void info_OPTION(struct OPTION *op) {
 	if (op->alg_hybrid) {
 		LOG(LOG_INFO, "      hybrid rate: %f", op->rate_hybridparam);
 	}
-	LOG(LOG_INFO, "  zm:    %s", trueorfalse(op->alg_zmo));
+	LOG(LOG_INFO, "  zmo:    %s", trueorfalse(op->alg_zmo));
 	if (op->alg_zmo) {
-		LOG(LOG_INFO, "      zm rate: %f", op->rate_zmparam);
+		LOG(LOG_INFO, "      zm rate: %f", op->rate_zmoparam);
 	}
 	LOG(LOG_INFO, "  zmu:    %s", trueorfalse(op->alg_zmu));
 	if (op->alg_zmu) {

@@ -27,7 +27,7 @@ typedef struct OPTION {
 	double rate_kuparam;
 	double rate_kiparam;
 	double rate_hybridparam;
-	double rate_zmparam;
+	double rate_zmoparam;
 	double rate_zmuparam;
 	double rate_zmuoparam;
 	int num_looptimes;

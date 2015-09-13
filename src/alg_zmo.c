@@ -46,15 +46,15 @@ static void zmo_core(int lid, int lmaxId, int rmaxId, int *ldegree, int *rdegree
 	}
 }
 
-METRICS *zmo(BIP *train, BIP *test, NET *trainr_cosine_similarity, int num_toprightused2cmptmetrics, double rate_zmparam, int *l) {
+METRICS *zmo(BIP *train, BIP *test, NET *trainr_cosine_similarity, int num_toprightused2cmptmetrics, double rate_zmoparam, int *l) {
 //struct METRICS *hybrid(struct TASK *task) {
-	LOG(LOG_INFO, "zm enter");
+	LOG(LOG_INFO, "zmo enter");
 	//1 level, from task
 	HALFBIP *trainl = train->left;
 	HALFBIP *trainr = train->right;
 	HALFBIP *testl = test->left;
 	int L = num_toprightused2cmptmetrics;
-	double rate = rate_zmparam;
+	double rate = rate_zmoparam;
 
 	//2 level, from 1 level
 	int lmaxId = trainl->maxId;
@@ -84,7 +84,7 @@ METRICS *zmo(BIP *train, BIP *test, NET *trainr_cosine_similarity, int num_topri
 	for (i = 0; i<trainl->maxId + 1; ++i) {
 		if (trainl->degree[i]) {//each valid user in trainset.
 			//get rvlts
-			zm_core(i, lmaxId, rmaxId, ldegree, rdegree, lrela, rrela, rate, lvltr, rvltr);
+			zmo_core(i, lmaxId, rmaxId, ldegree, rdegree, lrela, rrela, rate, lvltr, rvltr);
 			//use rvlts, get ridts & rank & topL
 			int j;
 			//set selected item's source to -1
