@@ -1,4 +1,4 @@
-#include "alg_zm.h"
+#include "alg_zmo.h"
 #include "sort.h"
 #include "log.h"
 #include "alg.h"
@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-static void zm_core(int lid, int lmaxId, int rmaxId, int *ldegree, int *rdegree, int **lrela, int **rrela, double rate, double *lvltr, double *rvltr) {
+static void zmo_core(int lid, int lmaxId, int rmaxId, int *ldegree, int *rdegree, int **lrela, int **rrela, double rate, double *lvltr, double *rvltr) {
 	int i, j, neigh;
 
 	//one
@@ -46,7 +46,7 @@ static void zm_core(int lid, int lmaxId, int rmaxId, int *ldegree, int *rdegree,
 	}
 }
 
-METRICS *zm(BIP *train, BIP *test, NET *trainr_cosine_similarity, int num_toprightused2cmptmetrics, double rate_zmparam, int *l) {
+METRICS *zmo(BIP *train, BIP *test, NET *trainr_cosine_similarity, int num_toprightused2cmptmetrics, double rate_zmparam, int *l) {
 //struct METRICS *hybrid(struct TASK *task) {
 	LOG(LOG_INFO, "zm enter");
 	//1 level, from task

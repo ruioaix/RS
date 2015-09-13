@@ -10,7 +10,7 @@ typedef struct OPTION {
 	bool alg_hybrid;
 	bool alg_ucf;
 	bool alg_icf;
-	bool alg_zm;
+	bool alg_zmo;
 	bool alg_zmu;
 	bool alg_zmuo;
 	bool alg_kk;

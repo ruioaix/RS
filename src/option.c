@@ -87,7 +87,7 @@ static void init_OPTION(struct OPTION *op) {
 	op->alg_hybrid = false;
 	op->alg_ucf = false;
 	op->alg_icf = false;
-	op->alg_zm = false;
+	op->alg_zmo = false;
 	op->alg_zmu = false;
 	op->alg_zmuo = false;
 	op->alg_kk = false;
@@ -197,7 +197,7 @@ struct OPTION *setOPTION(int argc, char **argv) {
 				op->alg_icf = true;
 				break;
 			case 'Z':
-				op->alg_zm = true;
+				op->alg_zmo = true;
 				break;
 			case 'M':
 				op->alg_zmu = true;
@@ -276,7 +276,7 @@ struct OPTION *setOPTION(int argc, char **argv) {
 
 static void verify_OPTION(struct OPTION *op) {
 	//algorithms
-	if (!( op->alg_mass || op->alg_heats || op->alg_ucf || op->alg_icf || op->alg_hybrid || op->alg_zm || op->alg_zmu || op->alg_zmuo || op->alg_heats2 || op->alg_kk)) {
+	if (!( op->alg_mass || op->alg_heats || op->alg_ucf || op->alg_icf || op->alg_hybrid || op->alg_zmo || op->alg_zmu || op->alg_zmuo || op->alg_heats2 || op->alg_kk)) {
 		LOG(LOG_FATAL, "no algorithms selected, what do you want to calculate?");
 	}
 
@@ -333,8 +333,8 @@ static void info_OPTION(struct OPTION *op) {
 	if (op->alg_hybrid) {
 		LOG(LOG_INFO, "      hybrid rate: %f", op->rate_hybridparam);
 	}
-	LOG(LOG_INFO, "  zm:    %s", trueorfalse(op->alg_zm));
-	if (op->alg_zm) {
+	LOG(LOG_INFO, "  zm:    %s", trueorfalse(op->alg_zmo));
+	if (op->alg_zmo) {
 		LOG(LOG_INFO, "      zm rate: %f", op->rate_zmparam);
 	}
 	LOG(LOG_INFO, "  zmu:    %s", trueorfalse(op->alg_zmu));

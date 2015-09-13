@@ -4,7 +4,7 @@
 #include "alg_heats2.h"
 #include "alg_kk.h"
 #include "alg_hybrid.h"
-#include "alg_zm.h"
+#include "alg_zmo.h"
 #include "alg_zmu.h"
 #include "alg_zmuo.h"
 #include "alg_icf.h"
@@ -112,8 +112,8 @@ void full(OPTION *op) {
 			printMTC(mtc);
 			freeMTC(mtc);
 		}
-		if (op->alg_zm) {
-			METRICS *mtc = zm(train, test, trainr_cosine_similarity, op->num_toprightused2cmptmetrics, op->rate_zmparam, l);
+		if (op->alg_zmo) {
+			METRICS *mtc = zmo(train, test, trainr_cosine_similarity, op->num_toprightused2cmptmetrics, op->rate_zmparam, l);
 			printMTC(mtc);
 			freeMTC(mtc);
 		}
