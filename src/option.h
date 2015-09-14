@@ -8,6 +8,7 @@ typedef struct OPTION {
 	bool alg_heats;
 	bool alg_heats2;
 	bool alg_hybrid;
+	bool alg_hybridr;
 	bool alg_ucf;
 	bool alg_icf;
 	bool alg_zmo;
@@ -28,6 +29,7 @@ typedef struct OPTION {
 	double rate_kuparam;
 	double rate_kiparam;
 	double rate_hybridparam;
+	double rate_hybridrparam;
 	double rate_zmoparam;
 	double rate_zmuparam;
 	double rate_zmuoparam;

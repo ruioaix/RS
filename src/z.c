@@ -4,6 +4,7 @@
 #include "alg_heats2.h"
 #include "alg_kk.h"
 #include "alg_hybrid.h"
+#include "alg_hybridr.h"
 #include "alg_zmo.h"
 #include "alg_zmu.h"
 #include "alg_zmuo.h"
@@ -110,6 +111,11 @@ void full(OPTION *op) {
 		}
 		if (op->alg_hybrid) {
 			METRICS *mtc = hybrid(train, test, trainr_cosine_similarity, op->num_toprightused2cmptmetrics, op->rate_hybridparam, l);
+			printMTC(mtc);
+			freeMTC(mtc);
+		}
+		if (op->alg_hybridr) {
+			METRICS *mtc = hybridr(train, test, trainr_cosine_similarity, op->num_toprightused2cmptmetrics, op->rate_hybridparam, l);
 			printMTC(mtc);
 			freeMTC(mtc);
 		}
