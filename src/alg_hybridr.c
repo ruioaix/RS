@@ -45,15 +45,15 @@ static void hybridr_core(int lid, int lmaxId, int rmaxId, int *ldegree, int *rde
 	}
 }
 
-METRICS *hybridr(BIP *train, BIP *test, NET *trainr_cosine_similarity, int num_toprightused2cmptmetrics, double rate_hybridparam, int *l) {
+METRICS *hybridr(BIP *train, BIP *test, NET *trainr_cosine_similarity, int num_toprightused2cmptmetrics, double rate_hybridrparam, int *l) {
 //struct METRICS *hybrid(struct TASK *task) {
-	LOG(LOG_INFO, "hybrid enter");
+	LOG(LOG_INFO, "hybridr enter");
 	//1 level, from task
 	HALFBIP *trainl = train->left;
 	HALFBIP *trainr = train->right;
 	HALFBIP *testl = test->left;
 	int L = num_toprightused2cmptmetrics;
-	double rate = rate_hybridparam;
+	double rate = rate_hybridrparam;
 
 	//2 level, from 1 level
 	int lmaxId = trainl->maxId;

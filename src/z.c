@@ -115,7 +115,7 @@ void full(OPTION *op) {
 			freeMTC(mtc);
 		}
 		if (op->alg_hybridr) {
-			METRICS *mtc = hybridr(train, test, trainr_cosine_similarity, op->num_toprightused2cmptmetrics, op->rate_hybridparam, l);
+			METRICS *mtc = hybridr(train, test, trainr_cosine_similarity, op->num_toprightused2cmptmetrics, op->rate_hybridrparam, l);
 			printMTC(mtc);
 			freeMTC(mtc);
 		}
